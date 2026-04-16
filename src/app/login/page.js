@@ -1,393 +1,3 @@
-// 'use client';
-
-// import { useState, useEffect } from 'react';
-// import Link from 'next/link';
-// import { useRouter } from 'next/navigation';
-// import { toast } from 'sonner';
-// import { motion } from 'framer-motion';
-// import Navbar from '../components/layout/Navbar';
-// import Footer from '../components/layout/Footer';
-
-// export default function LoginPage() {
-//   const router = useRouter();
-//   const [formData, setFormData] = useState({
-//     email: '',
-//     password: '',
-//     rememberMe: false
-//   });
-
-//   const [isSubmitting, setIsSubmitting] = useState(false);
-//   const [showPassword, setShowPassword] = useState(false);
-//   const [isClient, setIsClient] = useState(false);
-
-//   // Load remembered email on component mount (client-side only)
-//   useEffect(() => {
-//     setIsClient(true);
-//     if (typeof window !== 'undefined') {
-//       const rememberedEmail = localStorage.getItem('rememberedEmail');
-//       if (rememberedEmail) {
-//         setFormData(prev => ({ ...prev, email: rememberedEmail, rememberMe: true }));
-//       }
-//     }
-//   }, []);
-
-//   const handleChange = (e) => {
-//     const { name, value, type, checked } = e.target;
-//     setFormData(prev => ({
-//       ...prev,
-//       [name]: type === 'checkbox' ? checked : value
-//     }));
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setIsSubmitting(true);
-
-//     // Show loading toast
-//     const loadingToast = toast.loading('Signing in...');
-
-//     try {
-//       const response = await fetch('http://localhost:5000/api/auth/login', {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({
-//           email: formData.email,
-//           password: formData.password
-//         }),
-//       });
-
-//       const data = await response.json();
-
-//       // Dismiss loading toast
-//       toast.dismiss(loadingToast);
-
-//       if (!response.ok) {
-//         // Error toast
-//         toast.error(data.error || 'Login failed', {
-//           description: 'Please check your credentials and try again.',
-//           duration: 5000,
-//         });
-//         setIsSubmitting(false);
-//         return;
-//       }
-
-//       // Success toast
-//       toast.success('Login successful!', {
-//         description: `Welcome back, ${data.user.contactPerson || data.user.companyName}!`,
-//         duration: 4000,
-//       });
-
-//       // Store token and user data (client-side only)
-//       if (typeof window !== 'undefined') {
-//         localStorage.setItem('token', data.token);
-//         localStorage.setItem('user', JSON.stringify(data.user));
-
-//         // Store in session storage if remember me is checked
-//         if (formData.rememberMe) {
-//           localStorage.setItem('rememberedEmail', formData.email);
-//         } else {
-//           localStorage.removeItem('rememberedEmail');
-//         }
-//       }
-
-//       // Redirect based on role
-//       setTimeout(() => {
-//         switch(data.user.role) {
-//           case 'admin':
-//             router.push('/admin/dashboard');
-//             break;
-//           case 'moderator':
-//             router.push('/moderator/dashboard');
-//             break;
-//           default:
-//             router.push('/customer/dashboard');
-//         }
-//       }, 1500);
-
-//     } catch (error) {
-//       console.error('Login error:', error);
-      
-//       // Error toast
-//       toast.error('Connection Error', {
-//         description: 'Unable to connect to server. Please try again.',
-//         duration: 5000,
-//       });
-      
-//       setIsSubmitting(false);
-//     }
-//   };
-
-//   // Custom Icons with Peach Theme
-//   const EnvelopeIcon = () => (
-//     <svg className="w-5 h-5" style={{ color: '#d9884e' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-//       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-//     </svg>
-//   );
-
-//   const LockIcon = () => (
-//     <svg className="w-5 h-5" style={{ color: '#d9884e' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-//       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-//     </svg>
-//   );
-
-//   const EyeIcon = ({ isVisible }) => (
-//     <svg className="w-5 h-5" style={{ color: '#d9884e' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-//       {isVisible ? (
-//         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-//       ) : (
-//         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-//       )}
-//     </svg>
-//   );
-
-//   const ShoppingBagIcon = () => (
-//     <svg className="w-16 h-16" style={{ color: '#d9884e' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-//       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-//     </svg>
-//   );
-
-//   const CartIcon = () => (
-//     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-//       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-//     </svg>
-//   );
-
-//   return (
-  
-//        <>
-//        <Navbar />
-//     <div className="min-h-screen mt-12 bg-gradient-to-br from-orange-50 to-amber-50 pt-24 pb-12">
-//       <div className="container mx-auto px-4">
-//         {/* Header */}
-//         <motion.div
-//           initial={{ opacity: 0, y: -20 }}
-//           animate={{ opacity: 1, y: 0 }}
-//           transition={{ duration: 0.6 }}
-//           className="text-center mb-8"
-//         >
-//           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
-//             Welcome to{' '}
-//             <span style={{ color: '#d9884e' }}>B2B Marketplace</span>
-//           </h1>
-//           <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-//             Your one-stop destination for wholesale fashion and accessories
-//           </p>
-//         </motion.div>
-
-//         <div className="max-w-6xl mx-auto">
-//           <div className="grid md:grid-cols-2 gap-8 items-start">
-//             {/* Left Column - E-commerce Features */}
-//             <motion.div
-//               initial={{ opacity: 0, x: -30 }}
-//               animate={{ opacity: 1, x: 0 }}
-//               transition={{ duration: 0.6, delay: 0.2 }}
-//               className="hidden md:block"
-//             >
-//               <div className="bg-white rounded-2xl shadow-xl p-8 border border-orange-100">
-//                 <div className="flex justify-center mb-6">
-//                   <div className="p-4 rounded-full" style={{ backgroundColor: '#d9884e20' }}>
-//                     <ShoppingBagIcon />
-//                   </div>
-//                 </div>
-                
-//                 <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">
-//                   Why Shop With Us?
-//                 </h2>
-
-//                 <div className="space-y-5">
-//                   {[
-//                     { icon: '🚀', title: 'Bulk Order Discounts', desc: 'Special pricing for orders above 100 pieces' },
-//                     { icon: '✨', title: 'Quality Guaranteed', desc: '100% inspection before shipping' },
-//                     { icon: '🌍', title: 'Global Shipping', desc: 'Fast delivery to 50+ countries' },
-//                     { icon: '🏷️', title: 'Wholesale Prices', desc: 'Factory direct pricing, no middlemen' },
-                 
-//                   ].map((item, index) => (
-//                     <motion.div
-//                       key={index}
-//                       initial={{ opacity: 0, x: -20 }}
-//                       animate={{ opacity: 1, x: 0 }}
-//                       transition={{ delay: 0.3 + index * 0.1 }}
-//                       className="flex items-start gap-4 p-4 rounded-xl hover:bg-orange-50 transition-colors"
-//                     >
-//                       <div className="text-3xl">{item.icon}</div>
-//                       <div>
-//                         <h3 className="font-semibold text-gray-900">{item.title}</h3>
-//                         <p className="text-sm text-gray-600">{item.desc}</p>
-//                       </div>
-//                     </motion.div>
-//                   ))}
-//                 </div>
-
-//                 {/* Stats */}
-//                 <div className="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-gray-200">
-//                   <div className="text-center">
-//                     <p className="text-2xl font-bold" style={{ color: '#d9884e' }}>500+</p>
-//                     <p className="text-xs text-gray-500">Active Retailers</p>
-//                   </div>
-//                   <div className="text-center border-x border-gray-200">
-//                     <p className="text-2xl font-bold" style={{ color: '#d9884e' }}>50+</p>
-//                     <p className="text-xs text-gray-500">Countries</p>
-//                   </div>
-//                   <div className="text-center">
-//                     <p className="text-2xl font-bold" style={{ color: '#d9884e' }}>10k+</p>
-//                     <p className="text-xs text-gray-500">Orders</p>
-//                   </div>
-//                 </div>
-//               </div>
-//             </motion.div>
-
-//             {/* Right Column - Login Form */}
-//             <motion.div
-//               initial={{ opacity: 0, x: 30 }}
-//               animate={{ opacity: 1, x: 0 }}
-//               transition={{ duration: 0.6, delay: 0.2 }}
-//             >
-//               <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-//                 {/* Form Header */}
-//                 <div className="px-8 py-6 text-center" style={{ background: 'linear-gradient(135deg, #d9884e 0%, #e6a87c 100%)' }}>
-//                   <div className="flex justify-center mb-3">
-//                     <CartIcon />
-//                   </div>
-//                   <h2 className="text-2xl font-bold text-white">Account Login</h2>
-//                   <p className="text-orange-100 mt-1">Sign in to manage your wholesale orders</p>
-//                 </div>
-
-//                 <form onSubmit={handleSubmit} className="p-8">
-//                   <div className="space-y-5">
-//                     {/* Email Field */}
-//                     <div>
-//                       <label className="block text-sm font-medium text-gray-700 mb-2">
-//                         Email Address <span style={{ color: '#d9884e' }}>*</span>
-//                       </label>
-//                       <div className="relative">
-//                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-//                           <EnvelopeIcon />
-//                         </div>
-//                         <input
-//                           type="email"
-//                           name="email"
-//                           value={formData.email}
-//                           onChange={handleChange}
-//                           required
-//                           className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d9884e] focus:border-[#d9884e] transition-colors"
-//                           placeholder="your@company.com"
-//                         />
-//                       </div>
-//                     </div>
-
-//                     {/* Password Field */}
-//                     <div>
-//                       <label className="block text-sm font-medium text-gray-700 mb-2">
-//                         Password <span style={{ color: '#d9884e' }}>*</span>
-//                       </label>
-//                       <div className="relative">
-//                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-//                           <LockIcon />
-//                         </div>
-//                         <input
-//                           type={showPassword ? "text" : "password"}
-//                           name="password"
-//                           value={formData.password}
-//                           onChange={handleChange}
-//                           required
-//                           className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d9884e] focus:border-[#d9884e] transition-colors"
-//                           placeholder="Enter your password"
-//                         />
-//                         <button
-//                           type="button"
-//                           onClick={() => setShowPassword(!showPassword)}
-//                           className="absolute inset-y-0 right-0 pr-3 flex items-center"
-//                         >
-//                           <EyeIcon isVisible={showPassword} />
-//                         </button>
-//                       </div>
-//                     </div>
-
-//                     {/* Remember Me & Forgot Password */}
-                    
-
-                 
-//                   </div>
-
-//                   {/* Submit Button */}
-//                   <div className="mt-6">
-//                     <button
-//                       type="submit"
-//                       disabled={isSubmitting}
-//                       className="w-full px-8 py-4 text-white rounded-lg hover:opacity-90 transition-all transform hover:scale-105 flex items-center justify-center gap-2 font-medium text-lg"
-//                       style={{ 
-//                         background: 'linear-gradient(135deg, #d9884e 0%, #e6a87c 100%)',
-//                         opacity: isSubmitting ? 0.7 : 1
-//                       }}
-//                     >
-//                       {isSubmitting ? (
-//                         <>
-//                           <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-//                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-//                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-//                           </svg>
-//                           Signing in...
-//                         </>
-//                       ) : (
-//                         'Sign In to B2B Account'
-//                       )}
-//                     </button>
-//                   </div>
-
-//                   {/* Register Link */}
-//                   <div className="text-center mt-6">
-//                     <p className="text-gray-600">
-//                       New to our B2B marketplace?{' '}
-//                       <Link href="/register" className="font-medium hover:underline" style={{ color: '#d9884e' }}>
-//                         Create account
-//                       </Link>
-//                     </p>
-//                   </div>
-
-//                   {/* Terms */}
-//                   <div className="mt-6 pt-6 border-t border-gray-200">
-//                     <p className="text-xs text-gray-500 text-center">
-//                       By signing in, you agree to our{' '}
-//                       <Link href="/terms" className="hover:underline" style={{ color: '#d9884e' }}>
-//                         Terms of Service
-//                       </Link>{' '}
-//                       and{' '}
-//                       <Link href="/privacy" className="hover:underline" style={{ color: '#d9884e' }}>
-//                         Privacy Policy
-//                       </Link>
-//                     </p>
-//                   </div>
-//                 </form>
-//               </div>
-
-//               {/* Support Link */}
-//               <motion.div
-//                 initial={{ opacity: 0 }}
-//                 animate={{ opacity: 1 }}
-//                 transition={{ delay: 0.6 }}
-//                 className="mt-6 text-center"
-//               >
-//                 <p className="text-sm text-gray-500">
-//                   Need help with your account?{' '}
-//                   <Link href="/contact" className="hover:underline font-medium" style={{ color: '#d9884e' }}>
-//                     Contact B2B Support
-//                   </Link>
-//                 </p>
-//               </motion.div>
-//             </motion.div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//     <Footer />
-//     </>
-//   );
-// }
-
-
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -399,6 +9,7 @@ import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import ForgotPasswordModal from '../components/auth/ForgotPasswordModal';
 import GoogleLoginButton from '../components/GoogleLoginButton';
+import { Leaf, Mail, Lock, Eye, EyeOff, ArrowRight, CheckCircle, Globe, Truck, Shield, Award } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -412,6 +23,15 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [activeFeature, setActiveFeature] = useState(0);
+
+  // Auto-rotate features
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveFeature((prev) => (prev + 1) % 4);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Load remembered email on component mount (client-side only)
   useEffect(() => {
@@ -436,7 +56,6 @@ export default function LoginPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Show loading toast
     const loadingToast = toast.loading('Signing in...');
 
     try {
@@ -452,23 +71,18 @@ export default function LoginPage() {
       });
 
       const data = await response.json();
-
-      // Dismiss loading toast
       toast.dismiss(loadingToast);
 
       if (!response.ok) {
-        // Check if the error is due to unverified email
         if (data.requiresVerification) {
           toast.info('Please verify your email first', {
             description: 'Please check your email for verification code.',
             duration: 5000,
           });
-          // You might want to redirect to a verification page or show OTP modal
           setIsSubmitting(false);
           return;
         }
         
-        // Error toast
         toast.error(data.error || 'Login failed', {
           description: 'Please check your credentials and try again.',
           duration: 5000,
@@ -477,18 +91,15 @@ export default function LoginPage() {
         return;
       }
 
-      // Success toast
       toast.success('Login successful!', {
         description: `Welcome back, ${data.user.contactPerson || data.user.companyName}!`,
         duration: 4000,
       });
 
-      // Store token and user data (client-side only)
       if (typeof window !== 'undefined') {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
 
-        // Store in session storage if remember me is checked
         if (formData.rememberMe) {
           localStorage.setItem('rememberedEmail', formData.email);
         } else {
@@ -496,7 +107,6 @@ export default function LoginPage() {
         }
       }
 
-      // Redirect based on role
       setTimeout(() => {
         switch(data.user.role) {
           case 'admin':
@@ -512,297 +122,355 @@ export default function LoginPage() {
 
     } catch (error) {
       console.error('Login error:', error);
-      
-      // Error toast
       toast.error('Connection Error', {
         description: 'Unable to connect to server. Please try again.',
         duration: 5000,
       });
-      
       setIsSubmitting(false);
     }
   };
 
-  // Custom Icons with Peach Theme
-  const EnvelopeIcon = () => (
-    <svg className="w-5 h-5" style={{ color: '#d9884e' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-    </svg>
-  );
-
-  const LockIcon = () => (
-    <svg className="w-5 h-5" style={{ color: '#d9884e' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-    </svg>
-  );
-
-  const EyeIcon = ({ isVisible }) => (
-    <svg className="w-5 h-5" style={{ color: '#d9884e' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      {isVisible ? (
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-      ) : (
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-      )}
-    </svg>
-  );
-
-  const ShoppingBagIcon = () => (
-    <svg className="w-16 h-16" style={{ color: '#d9884e' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-    </svg>
-  );
-
-  const CartIcon = () => (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-    </svg>
-  );
+  const features = [
+    { icon: Leaf, title: '100% Eco-Friendly', desc: 'Sustainable jute products', color: '#3bc24f' },
+    { icon: Globe, title: 'Global Export', desc: 'Serving 35+ countries', color: '#6B4F3A' },
+    { icon: Shield, title: 'Trade Assurance', desc: 'Secure payments', color: '#3bc24f' },
+    { icon: Truck, title: 'Fast Shipping', desc: 'Reliable delivery', color: '#6B4F3A' },
+  ];
 
   return (
     <>
       <Navbar />
-      <div className="min-h-screen md:mt-12 mt-4 bg-gradient-to-br from-orange-50 to-amber-50 pt-24 pb-12">
-        <div className="container mx-auto px-4">
-          {/* Header */}
+      <div className="min-h-screen bg-white pt-16 pb-8">
+        <div className="container mx-auto px-4 max-w-7xl">
+          {/* Brand Header - Reduced spacing */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-8"
+            transition={{ duration: 0.5 }}
+            className="text-center mb-6"
           >
-            <h1 className="text-2xl md:text-5xl font-bold text-gray-900 md:mb-3 mb-1">
-              Welcome to{' '}
-              <span style={{ color: '#d9884e' }}>Asian Clothify</span>
+            <div className="inline-flex items-center  mt-6 gap-2 bg-[#F5E6D3] rounded-full px-3 py-1 mb-3">
+              <Leaf className="w-3.5 h-3.5 text-[#3bc24f]" />
+              <span className="text-[#6B4F3A] text-xs font-medium">Premium Jute Products Supplier</span>
+            </div>
+            <h1 className="text-2xl md:text-3xl font-bold text-[#6B4F3A] font-serif">
+              Welcome to <span className="text-[#3bc24f]">Jute Craftify</span>
             </h1>
-            <p className="text-gray-600  md:text-xl max-w-2xl mx-auto text-sm">
-              Your one-stop destination for wholesale fashion and accessories
-            </p>
+            <p className="text-gray-500 text-sm mt-1 font-sans">Sign in to access your wholesale dashboard</p>
           </motion.div>
 
-          <div className="max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-8 items-start">
-              {/* Left Column - E-commerce Features */}
-              <motion.div
-                initial={{ opacity: 0, x: -30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="hidden md:block"
-              >
-                <div className="bg-white rounded-2xl shadow-xl p-8 border border-orange-100">
-                  <div className="flex justify-center mb-6">
-                    <div className="p-4 rounded-full" style={{ backgroundColor: '#d9884e20' }}>
-                      <ShoppingBagIcon />
-                    </div>
-                  </div>
-                  
-                  <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">
-                    Why Shop With Us?
-                  </h2>
-
-                  <div className="space-y-5">
-                    {[
-                      { icon: '🚀', title: 'Bulk Order Discounts', desc: 'Special pricing for orders above 100 pieces' },
-                      { icon: '✨', title: 'Quality Guaranteed', desc: '100% inspection before shipping' },
-                      { icon: '🌍', title: 'Global Shipping', desc: 'Fast delivery to 50+ countries' },
-                      { icon: '🏷️', title: 'Wholesale Prices', desc: 'Factory direct pricing, no middlemen' },
-                    ].map((item, index) => (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.3 + index * 0.1 }}
-                        className="flex items-start gap-4 p-4 rounded-xl hover:bg-orange-50 transition-colors"
-                      >
-                        <div className="text-3xl">{item.icon}</div>
-                        <div>
-                          <h3 className="font-semibold text-gray-900">{item.title}</h3>
-                          <p className="text-sm text-gray-600">{item.desc}</p>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-
-                  {/* Stats */}
-                  <div className="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-gray-200">
-                    <div className="text-center">
-                      <p className="text-2xl font-bold" style={{ color: '#d9884e' }}>500+</p>
-                      <p className="text-xs text-gray-500">Active Retailers</p>
-                    </div>
-                    <div className="text-center border-x border-gray-200">
-                      <p className="text-2xl font-bold" style={{ color: '#d9884e' }}>50+</p>
-                      <p className="text-xs text-gray-500">Countries</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold" style={{ color: '#d9884e' }}>10k+</p>
-                      <p className="text-xs text-gray-500">Orders</p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Right Column - Login Form */}
-              <motion.div
-                initial={{ opacity: 0, x: 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-              >
-                <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-                  {/* Form Header */}
-                  <div className="px-8 py-6 text-center" style={{ background: 'linear-gradient(135deg, #d9884e 0%, #e6a87c 100%)' }}>
-                    <div className="flex justify-center mb-3">
-                      <CartIcon />
-                    </div>
-                    <h2 className="text-2xl font-bold text-white">Account Login</h2>
-                    <p className="text-orange-100 mt-1">Sign in to manage your wholesale orders</p>
-                  </div>
-
-                  <form onSubmit={handleSubmit} className="p-8">
-                    <div className="space-y-5">
-                      {/* Email Field */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Email Address <span style={{ color: '#d9884e' }}>*</span>
-                        </label>
-                        <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <EnvelopeIcon />
-                          </div>
-                          <input
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d9884e] focus:border-[#d9884e] transition-colors"
-                            placeholder="your@company.com"
-                          />
-                        </div>
-                      </div>
-
-                      {/* Password Field */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Password <span style={{ color: '#d9884e' }}>*</span>
-                        </label>
-                        <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <LockIcon />
-                          </div>
-                          <input
-                            type={showPassword ? "text" : "password"}
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                            className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d9884e] focus:border-[#d9884e] transition-colors"
-                            placeholder="Enter your password"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                          >
-                            <EyeIcon isVisible={showPassword} />
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Remember Me & Forgot Password */}
-                      <div className="flex justify-end ">
-                       
-                        <button
-                          type="button"
-                          onClick={() => setShowForgotPassword(true)}
-                          className="text-sm text-[#d9884e] hover:underline font-medium"
-                        >
-                          Forgot password?
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Submit Button */}
-                    <div className="mt-6">
-                      <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="w-full px-8 py-4 text-white rounded-lg hover:opacity-90 transition-all transform hover:scale-105 flex items-center justify-center gap-2 font-medium text-sm md:text-lg "
-                        style={{ 
-                          background: 'linear-gradient(135deg, #d9884e 0%, #e6a87c 100%)',
-                          opacity: isSubmitting ? 0.7 : 1
-                        }}
-                      >
-                        {isSubmitting ? (
-                          <>
-                            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            Signing in...
-                          </>
-                        ) : (
-                          'Sign In to Asian Clothify'
-                        )}
-                      </button>
-
-                      <div className="mt-6">
-  <div className="relative">
-    <div className="absolute inset-0 flex items-center">
-      <div className="w-full border-t border-gray-300" />
-    </div>
-    <div className="relative flex justify-center text-sm">
-      <span className="px-2 bg-white text-gray-500">Or continue with</span>
-    </div>
+          <div className="grid lg:grid-cols-2 gap-6 items-stretch">
+            {/* Left Side - Hero Visual Section - Reduced Height */}
+           <motion.div
+  initial={{ opacity: 0, x: -30 }}
+  animate={{ opacity: 1, x: 0 }}
+  transition={{ duration: 0.6 }}
+  className="relative rounded-2xl overflow-hidden min-h-[480px] flex items-center"
+>
+  {/* Background Image */}
+  <div 
+    className="absolute inset-0 bg-cover bg-center"
+    style={{
+      backgroundImage: `url('https://i.ibb.co.com/G4RJnfg0/nuts-glass-autumn-leaves.jpg')`,
+    }}
+  >
+    <div className="absolute inset-0 bg-gradient-to-br from-[#6B4F3A]/60 to-[#2A1B14]/95"></div>
   </div>
 
-  <div className="mt-6">
-    <GoogleLoginButton mode="login" />
+  {/* Content */}
+  <div className="relative z-10 p-6 text-white w-full">
+    {/* Rotating Feature Badge */}
+    <motion.div
+      key={activeFeature}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="mb-3"
+    >
+      <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md rounded-full px-3 py-1 border border-white/30">
+        {(() => {
+          const FeatureIcon = features[activeFeature].icon;
+          return <FeatureIcon className="w-3.5 h-3.5 text-[#3bc24f]" />;
+        })()}
+        <span className="text-xs font-medium">{features[activeFeature].title}</span>
+      </div>
+    </motion.div>
+
+    {/* Main Quote */}
+    <motion.h2
+      key={activeFeature + '-title'}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.1 }}
+      className="text-2xl md:text-3xl font-bold font-serif mb-2"
+    >
+      {features[activeFeature].title}
+    </motion.h2>
+    
+    <motion.p
+      key={activeFeature + '-desc'}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      className="text-white/80 text-sm mb-3 font-sans max-w-sm"
+    >
+      {features[activeFeature].desc}
+    </motion.p>
+
+    {/* Additional Text Block 1 */}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.3 }}
+      className="mb-3"
+    >
+      <p className="text-white/70 text-xs leading-relaxed font-sans max-w-sm">
+        🌿 <span className="font-semibold">100% Natural Jute:</span> Our products are made from 
+        sustainably sourced, biodegradable jute fiber.
+      </p>
+    </motion.div>
+
+    {/* Additional Text Block 2 */}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.35 }}
+      className="mb-3"
+    >
+      <p className="text-white/70 text-xs leading-relaxed font-sans max-w-sm">
+        🏭 <span className="font-semibold">Direct Manufacturing:</span> No middlemen - factory direct 
+        pricing for bulk orders.
+      </p>
+    </motion.div>
+
+    {/* Additional Text Block 3 */}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.4 }}
+      className="mb-4"
+    >
+      <p className="text-white/70 text-xs leading-relaxed font-sans max-w-sm">
+        🤝 <span className="font-semibold">24/7 Customer Support:</span> Dedicated team to assist 
+        with your inquiries and orders.
+      </p>
+    </motion.div>
+
+    {/* Trust Indicators */}
+    <div className="flex flex-wrap gap-3 mt-2 pt-3 border-t border-white/20">
+      <div className="flex items-center gap-1.5">
+        <Award className="w-4 h-4 text-[#3bc24f]" />
+        <div>
+          <p className="text-[10px] text-white/60">Experience</p>
+          <p className="font-semibold text-xs">12+ Years</p>
+        </div>
+      </div>
+      <div className="flex items-center gap-1.5">
+        <Globe className="w-4 h-4 text-[#3bc24f]" />
+        <div>
+          <p className="text-[10px] text-white/60">Countries</p>
+          <p className="font-semibold text-xs">35+</p>
+        </div>
+      </div>
+      <div className="flex items-center gap-1.5">
+        <CheckCircle className="w-4 h-4 text-[#3bc24f]" />
+        <div>
+          <p className="text-[10px] text-white/60">Happy Clients</p>
+          <p className="font-semibold text-xs">500+</p>
+        </div>
+      </div>
+      <div className="flex items-center gap-1.5">
+        <Truck className="w-4 h-4 text-[#3bc24f]" />
+        <div>
+          <p className="text-[10px] text-white/60">Orders Shipped</p>
+          <p className="font-semibold text-xs">10K+</p>
+        </div>
+      </div>
+    </div>
+
+    {/* Feature Dots */}
+    <div className="flex gap-1.5 mt-4">
+      {features.map((_, idx) => (
+        <button
+          key={idx}
+          onClick={() => setActiveFeature(idx)}
+          className={`h-1 rounded-full transition-all duration-300 ${
+            activeFeature === idx ? 'w-5 bg-[#3bc24f]' : 'w-1.5 bg-white/40 hover:bg-white/60'
+          }`}
+        />
+      ))}
+    </div>
   </div>
-</div>
-                    </div>
+</motion.div>
 
-                    {/* Register Link */}
-                    <div className="text-center mt-6">
-                      <p className="text-gray-600">
-                        New to Asian Clothify?{' '}
-                        <Link href="/register" className="font-medium hover:underline" style={{ color: '#d9884e' }}>
-                          Create account
-                        </Link>
-                      </p>
-                    </div>
+            {/* Right Side - Modern Login Form - Reduced Height */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100"
+            >
+              {/* Form Header - Reduced */}
+              <div className="text-center mb-5">
+                <div className="w-12 h-12 rounded-xl bg-[#F5E6D3] flex items-center justify-center mx-auto mb-3">
+                  <Leaf className="w-6 h-6 text-[#3bc24f]" />
+                </div>
+                <h2 className="text-xl font-bold text-[#6B4F3A] font-serif">Account Login</h2>
+                <p className="text-gray-500 text-xs mt-0.5 font-sans">Access your wholesale account</p>
+              </div>
 
-                    {/* Terms */}
-                    <div className="mt-6 pt-6 border-t border-gray-200">
-                      <p className="text-xs text-gray-500 text-center">
-                        By signing in, you agree to our{' '}
-                        <Link href="/terms" className="hover:underline" style={{ color: '#d9884e' }}>
-                          Terms of Service
-                        </Link>{' '}
-                        and{' '}
-                        <Link href="/privacy" className="hover:underline" style={{ color: '#d9884e' }}>
-                          Privacy Policy
-                        </Link>
-                      </p>
-                    </div>
-                  </form>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Email Field */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1.5 font-sans">
+                    Email Address
+                  </label>
+                  <div className="relative group">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#3bc24f] transition-colors" />
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className="w-full pl-9 pr-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3bc24f] focus:border-transparent transition-all font-sans bg-gray-50 focus:bg-white"
+                      placeholder="your@company.com"
+                    />
+                  </div>
                 </div>
 
-                {/* Support Link */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.6 }}
-                  className="mt-6 text-center"
+                {/* Password Field */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1.5 font-sans">
+                    Password
+                  </label>
+                  <div className="relative group">
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#3bc24f] transition-colors" />
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      required
+                      className="w-full pl-9 pr-9 py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3bc24f] focus:border-transparent transition-all font-sans bg-gray-50 focus:bg-white"
+                      placeholder="Enter your password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-4 h-4 text-gray-400 hover:text-[#3bc24f] transition-colors" />
+                      ) : (
+                        <Eye className="w-4 h-4 text-gray-400 hover:text-[#3bc24f] transition-colors" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Options Row - Compact */}
+                <div className="flex items-center justify-between">
+                  <label className="flex items-center gap-1.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="rememberMe"
+                      checked={formData.rememberMe}
+                      onChange={handleChange}
+                      className="w-3.5 h-3.5 rounded border-gray-300 text-[#3bc24f] focus:ring-[#3bc24f]"
+                    />
+                    <span className="text-xs text-gray-600 font-sans">Remember me</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowForgotPassword(true)}
+                    className="text-xs text-[#3bc24f] hover:underline font-medium font-sans"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+
+                {/* Submit Button - Compact */}
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-[#3bc24f] text-white py-2.5 rounded-lg font-semibold hover:bg-[#2da63f] transition-all duration-300 flex items-center justify-center gap-2 font-sans disabled:opacity-70 text-sm mt-4"
                 >
-                  <p className="text-sm text-gray-500">
-                    Need help with your account?{' '}
-                    <Link href="/contact" className="hover:underline font-medium" style={{ color: '#d9884e' }}>
-                      Contact Asian Clothify Support
+                  {isSubmitting ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Signing in...
+                    </>
+                  ) : (
+                    <>
+                      Sign In
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+
+                {/* Divider - Compact */}
+                <div className="relative my-4">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-200" />
+                  </div>
+                  <div className="relative flex justify-center text-xs">
+                    <span className="px-2 bg-white text-gray-500 font-sans">Or continue with</span>
+                  </div>
+                </div>
+
+                {/* Google Login */}
+                <GoogleLoginButton mode="login" />
+
+                {/* Register Link - Compact */}
+                <div className="text-center mt-4">
+                  <p className="text-xs text-gray-600 font-sans">
+                    Don't have an account?{' '}
+                    <Link href="/register" className="font-semibold text-[#3bc24f] hover:underline">
+                      Create account
                     </Link>
                   </p>
-                </motion.div>
-              </motion.div>
-            </div>
+                </div>
+
+                {/* Terms - Compact */}
+                <p className="text-[10px] text-gray-400 text-center font-sans pt-3 border-t border-gray-100">
+                  By signing in, you agree to our{' '}
+                  <Link href="/terms" className="hover:text-[#3bc24f]">Terms</Link> and{' '}
+                  <Link href="/privacy" className="hover:text-[#3bc24f]">Privacy Policy</Link>
+                </p>
+              </form>
+            </motion.div>
           </div>
+
+          {/* Trust Bar - Compact */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.8 }}
+            className="mt-6 pt-4 border-t border-gray-200"
+          >
+            <div className="flex flex-wrap justify-center gap-6">
+              <div className="flex items-center gap-1.5">
+                <CheckCircle className="w-3.5 h-3.5 text-[#3bc24f]" />
+                <span className="text-[10px] text-gray-500 font-sans">ISO 9001:2015 Certified</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <CheckCircle className="w-3.5 h-3.5 text-[#3bc24f]" />
+                <span className="text-[10px] text-gray-500 font-sans">GOTS Certified</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <CheckCircle className="w-3.5 h-3.5 text-[#3bc24f]" />
+                <span className="text-[10px] text-gray-500 font-sans">Fair Trade Certified</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <CheckCircle className="w-3.5 h-3.5 text-[#3bc24f]" />
+                <span className="text-[10px] text-gray-500 font-sans">OEKO-TEX Certified</span>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
 

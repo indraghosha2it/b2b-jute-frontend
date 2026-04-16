@@ -1,911 +1,851 @@
-
-
-
-// app/privacy-policy/page.jsx
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import {
-  FaShieldAlt,
-  FaLock,
-  FaEye,
-  FaCookieBite,
-  FaUserSecret,
-  FaFileContract,
-  FaDatabase,
-  FaEnvelope,
-  FaPhone,
-  FaMapMarkerAlt,
-  FaCheckCircle,
-  FaRegClock,
-  FaGlobe,
-  FaServer,
-  FaUserLock,
-  FaCreditCard,
-  FaBell,
-  FaDownload,
-  FaShareAlt,
-  FaArrowRight,
-  FaLockOpen,
-  FaUserShield,
-  FaClipboardCheck,
-  FaGavel,
-  FaBalanceScale,
-  FaHandshake,
-  FaInfoCircle,
-  FaExclamationTriangle,
-  FaToggleOn,
-  FaBuilding,
-  FaBars,
-  FaTimes
-} from 'react-icons/fa';
-import { MdPrivacyTip, MdSecurity, MdVerifiedUser, MdPolicy, MdUpdate } from 'react-icons/md';
-import { HiDocumentText, HiShieldCheck, HiOutlineRefresh } from 'react-icons/hi';
-import { BsShieldLock, BsShieldShaded, BsFileText } from 'react-icons/bs';
-import { RiFileShieldLine, RiGovernmentLine } from 'react-icons/ri';
+  Shield,
+  Lock,
+  Eye,
+  Database,
+  Cookie,
+  Mail,
+  Phone,
+  MapPin,
+  Globe,
+  CheckCircle,
+  AlertCircle,
+  RefreshCw,
+  Download,
+  Headset,
+  Send,
+  FileText,
+  UserCheck,
+  Trash2,
+  Share2,
+  Bell,
+  Server,
+  Clock,
+  ArrowUp,
+  Facebook,
+  Linkedin,
+  Instagram,
+  Twitter,
+  Heart,
+  FileKey,
+  Fingerprint,
+  Building2,
+  Briefcase,
+  Scale,
+  Award,
+  Radio,
+  Settings,
+  Network,
+  Cloud,
+  Smartphone,
+  CalendarDays,
+  FileSignature,
+  ShieldCheck,
+  UserX,
+  MessageSquare,
+  Video,
+  CreditCard,
+  Truck,
+  Package,
+  BarChart3,
+  TrendingUp,
+  Users,
+  Sparkles
+} from 'lucide-react';
 import Footer from '../components/layout/Footer';
 import Navbar from '../components/layout/Navbar';
 import WhatsAppButton from '../components/layout/WhatsAppButton';
 
 export default function PrivacyPolicyPage() {
-  const [activeSection, setActiveSection] = useState('introduction');
-  const [lastUpdated] = useState('March 15, 2026');
-  const [showCookieConsent, setShowCookieConsent] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const sectionRefs = useRef({});
-  const mobileMenuRef = useRef(null);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
 
-useEffect(() => {
-  let timeoutId = null;
-  
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          // Clear any pending timeout
-          if (timeoutId) {
-            clearTimeout(timeoutId);
-          }
-          
-          // Set a small timeout to avoid conflicts with manual clicks
-          timeoutId = setTimeout(() => {
-            setActiveSection(entry.target.id);
-            if (window.innerWidth < 1024) {
-              setMobileMenuOpen(false);
-            }
-          }, 100); // Small delay to allow manual click to take precedence
-        }
-      });
-    },
-    { 
-      threshold: 0.3,
-      rootMargin: '-80px 0px -80px 0px'
-    }
-  );
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 400);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
-  // Observe all section refs
-  Object.values(sectionRefs.current).forEach((ref) => {
-    if (ref) observer.observe(ref);
-  });
-
-  return () => {
-    observer.disconnect();
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-  };
-}, []);
-
-  const handleCookieAccept = () => {
-    localStorage.setItem('cookieConsent', 'accepted');
-    setShowCookieConsent(false);
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleCookieDecline = () => {
-    localStorage.setItem('cookieConsent', 'declined');
-    setShowCookieConsent(false);
+  // Detailed Data Collection Categories
+  const dataCategories = [
+    {
+      icon: Building2,
+      title: 'Business Information',
+      items: ['Company Legal Name', 'Trade License Number', 'VAT/GST Registration', 'Business Type (Importer/Wholesaler/Manufacturer)', 'Years in Operation', 'Annual Purchase Volume'],
+      color: 'from-blue-500 to-cyan-500'
+    },
+    {
+      icon: Users,
+      title: 'Contact & Account Data',
+      items: ['Primary Contact Name & Title', 'Alternative Contact Person', 'Email Addresses (Corporate & Personal)', 'Phone Numbers (Office & Mobile)', 'Billing & Shipping Addresses', 'Language Preferences'],
+      color: 'from-emerald-500 to-teal-500'
+    },
+    {
+      icon: Package,
+      title: 'Transaction & Order Data',
+      items: ['Purchase History & Frequency', 'Product Categories Interested', 'Custom Specifications & Samples', 'Order Quantities & MOQ Preferences', 'Shipping & Delivery Preferences', 'Payment Terms & Credit History'],
+      color: 'from-amber-500 to-orange-500'
+    },
+    {
+      icon: BarChart3,
+      title: 'Technical & Usage Data',
+      items: ['IP Address & Geographic Location', 'Browser Type & Device Information', 'Pages Visited & Time Spent', 'RFQ Form Submissions History', 'PDF Catalog Downloads', 'Newsletter Engagement Metrics'],
+      color: 'from-purple-500 to-pink-500'
+    }
+  ];
+
+  // Legal Basis for Processing
+  const legalBasis = [
+    {
+      icon: FileSignature,
+      title: 'Contractual Necessity',
+      description: 'Processing required to fulfill RFQs, orders, and service agreements',
+      examples: ['Processing quotations', 'Order fulfillment', 'Shipping coordination']
+    },
+    {
+      icon: ShieldCheck,
+      title: 'Legitimate Interest',
+      description: 'Processing necessary for our business operations and improvement',
+      examples: ['Website analytics', 'Customer service', 'Fraud prevention']
+    },
+    {
+      icon: Scale,
+      title: 'Legal Compliance',
+      description: 'Processing required to comply with applicable laws and regulations',
+      examples: ['Tax reporting', 'Customs declarations', 'Audit trails']
+    },
+    {
+      icon: UserCheck,
+      title: 'Consent',
+      description: 'Processing based on your explicit agreement',
+      examples: ['Marketing communications', 'Cookie preferences', 'Testimonials']
+    }
+  ];
+
+  // Data Sharing & Third Parties
+  const thirdParties = [
+    {
+      category: 'Logistics & Shipping Partners',
+      companies: ['DHL', 'FedEx', 'Maersk', 'Local Freight Forwarders'],
+      purpose: 'Order delivery, tracking, and customs clearance',
+      dataShared: ['Shipping addresses', 'Contact details', 'Package contents']
+    },
+    {
+      category: 'Payment Processors',
+      companies: ['Stripe', 'PayPal', 'Bank Transfer Services', 'Letter of Credit Banks'],
+      purpose: 'Secure payment processing and fraud detection',
+      dataShared: ['Billing information', 'Transaction amounts', 'Payment confirmation']
+    },
+    {
+      category: 'Service Providers',
+      companies: ['CRM Platform', 'Email Marketing Tools', 'Analytics Services', 'Cloud Hosting'],
+      purpose: 'Business operations, communication, and analytics',
+      dataShared: ['Contact information', 'Usage data', 'Communication history']
+    },
+    {
+      category: 'Compliance & Legal',
+      companies: ['Customs Authorities', 'Tax Departments', 'Legal Advisors', 'Auditors'],
+      purpose: 'Regulatory compliance and legal obligations',
+      dataShared: ['Transaction records', 'Business registration', 'Export documentation']
+    }
+  ];
+
+  // Data Retention Schedule
+  const retentionSchedule = [
+    { dataType: 'Active Client Records', retention: 'Duration of business relationship + 2 years', reason: 'Service continuity and relationship management' },
+    { dataType: 'RFQ & Inquiry Data', retention: '24 months from last interaction', reason: 'Sales follow-up and lead nurturing' },
+    { dataType: 'Transaction & Invoice Records', retention: '7 years', reason: 'Tax and accounting legal requirements' },
+    { dataType: 'Website Analytics Data', retention: '14 months', reason: 'Performance analysis and improvement' },
+    { dataType: 'Marketing Preferences', retention: 'Until opt-out or 3 years of inactivity', reason: 'Communication consent management' },
+    { dataType: 'Chat & Support Tickets', retention: '12 months', reason: 'Quality assurance and training' }
+  ];
+
+  // Security Measures
+  const securityMeasures = [
+    { icon: Lock, title: 'Encryption', description: 'AES-256 for data at rest, TLS 1.3 for data in transit' },
+    { icon: Fingerprint, title: 'Access Control', description: 'Role-based access with multi-factor authentication' },
+    { icon: Shield, title: 'Regular Audits', description: 'Quarterly security assessments and penetration testing' },
+    { icon: Network, title: 'Network Security', description: 'Firewalls, IDS/IPS, and DDoS protection' },
+    { icon: Cloud, title: 'Backup & Recovery', description: 'Daily encrypted backups with offsite storage' },
+    { icon: Radio, title: 'Monitoring', description: '24/7 real-time threat detection and alerting' }
+  ];
+
+  // International Data Transfers
+  const internationalTransfers = [
+    { from: 'Bangladesh', to: 'European Union', safeguard: 'Standard Contractual Clauses (SCCs)' },
+    { from: 'Bangladesh', to: 'United States', safeguard: 'Data Processing Agreement + SCCs' },
+    { from: 'Bangladesh', to: 'United Kingdom', safeguard: 'UK Addendum to SCCs' },
+    { from: 'Bangladesh', to: 'UAE, Singapore, India', safeguard: 'Adequacy decisions and contractual protections' }
+  ];
+
+  // Children's Privacy (B2B specific but included for compliance)
+  const childrenPrivacy = {
+    statement: 'Jute Craftify services are strictly for business-to-business transactions. We do not knowingly collect information from individuals under 18 years of age. Our products and services are intended for commercial entities, business owners, and authorized representatives only.',
+    verification: 'If we become aware of any data collected from minors, we will take immediate steps to delete such information.'
   };
 
-const scrollToSection = (sectionId) => {
-  const element = document.getElementById(sectionId);
-  if (element) {
-    const offset = 100;
-    const elementPosition = element.getBoundingClientRect().top;
-    const offsetPosition = elementPosition + window.pageYOffset - offset;
-    
-    window.scrollTo({
-      top: offsetPosition,
-      behavior: 'smooth'
-    });
-    
-    // Manually set active section on click
-    setActiveSection(sectionId);
-  }
-  setMobileMenuOpen(false);
-};
-
-  const sections = [
-    {
-      id: 'introduction',
-      icon: <MdPrivacyTip className="text-xl md:text-2xl" />,
-      title: 'Introduction',
-      color: 'from-blue-500 to-blue-600',
-      bgColor: 'blue',
-      content: (
-        <div className="space-y-4 md:space-y-6">
-          <p className="text-base md:text-lg text-gray-700 leading-relaxed">
-            At <span className="font-bold text-orange-600">Asian Clothify</span>, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website or use our services.
-          </p>
-          <p className="text-sm md:text-base text-gray-700 leading-relaxed">
-            Please read this privacy policy carefully. If you do not agree with the terms of this privacy policy, please do not access the site. We are committed to protecting the privacy of our business partners, moderators, and customers.
-          </p>
-          <div className="bg-orange-50 border-l-4 border-orange-500 p-4 md:p-5 rounded-r-xl mt-4 md:mt-6">
-            <div className="flex items-start gap-3 md:gap-4">
-              <FaInfoCircle className="text-orange-500 text-lg md:text-xl flex-shrink-0 mt-1" />
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-2 text-sm md:text-base">Quick Summary</h4>
-                <ul className="space-y-1.5 md:space-y-2 text-gray-700 text-sm md:text-base">
-                  <li className="flex items-start gap-2">
-                    <FaCheckCircle className="text-green-500 text-xs md:text-sm mt-1" />
-                    <span>We collect business information necessary for wholesale transactions</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <FaCheckCircle className="text-green-500 text-xs md:text-sm mt-1" />
-                    <span>Your data is used to process inquiries, invoices, and payments</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <FaCheckCircle className="text-green-500 text-xs md:text-sm mt-1" />
-                    <span>We never sell your personal information to third parties</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      )
-    },
-    {
-      id: 'information-collection',
-      icon: <FaDatabase className="text-xl md:text-2xl" />,
-      title: 'Information We Collect',
-      color: 'from-purple-500 to-purple-600',
-      bgColor: 'purple',
-      content: (
-        <div className="space-y-4 md:space-y-6">
-          <p className="text-sm md:text-base text-gray-700">We collect several types of information from and about users of our Asian Clothify platform, including:</p>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mt-4">
-            <div className="bg-white p-4 md:p-5 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 mb-3 md:mb-4">
-                <FaBuilding className="text-lg md:text-xl" />
-              </div>
-              <h4 className="font-semibold text-gray-900 mb-2 md:mb-3 text-sm md:text-base">Business Information</h4>
-              <ul className="space-y-1.5 md:space-y-2 text-gray-600 text-xs md:text-sm">
-                <li className="flex items-start gap-2">
-                  <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-blue-500 rounded-full mt-2"></div>
-                  <span>Company name and registration number</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-blue-500 rounded-full mt-2"></div>
-                  <span>Business address and country</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-blue-500 rounded-full mt-2"></div>
-                  <span>Tax ID / VAT number</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-blue-500 rounded-full mt-2"></div>
-                  <span>Business type and size</span>
-                </li>
-              </ul>
-            </div>
-
-            <div className="bg-white p-4 md:p-5 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-lg flex items-center justify-center text-green-600 mb-3 md:mb-4">
-                <FaUserSecret className="text-lg md:text-xl" />
-              </div>
-              <h4 className="font-semibold text-gray-900 mb-2 md:mb-3 text-sm md:text-base">Contact Information</h4>
-              <ul className="space-y-1.5 md:space-y-2 text-gray-600 text-xs md:text-sm">
-                <li className="flex items-start gap-2">
-                  <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-green-500 rounded-full mt-2"></div>
-                  <span>Contact person name</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-green-500 rounded-full mt-2"></div>
-                  <span>Business email address</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-green-500 rounded-full mt-2"></div>
-                  <span>Phone / WhatsApp number</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-green-500 rounded-full mt-2"></div>
-                  <span>Job title / position</span>
-                </li>
-              </ul>
-            </div>
-
-            <div className="bg-white p-4 md:p-5 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600 mb-3 md:mb-4">
-                <FaFileContract className="text-lg md:text-xl" />
-              </div>
-              <h4 className="font-semibold text-gray-900 mb-2 md:mb-3 text-sm md:text-base">Transaction Data</h4>
-              <ul className="space-y-1.5 md:space-y-2 text-gray-600 text-xs md:text-sm">
-                <li className="flex items-start gap-2">
-                  <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-orange-500 rounded-full mt-2"></div>
-                  <span>Inquiry history and details</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-orange-500 rounded-full mt-2"></div>
-                  <span>Invoice records</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-orange-500 rounded-full mt-2"></div>
-                  <span>Payment information</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-orange-500 rounded-full mt-2"></div>
-                  <span>Order quantities and preferences</span>
-                </li>
-              </ul>
-            </div>
-
-            <div className="bg-white p-4 md:p-5 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-red-100 rounded-lg flex items-center justify-center text-red-600 mb-3 md:mb-4">
-                <FaServer className="text-lg md:text-xl" />
-              </div>
-              <h4 className="font-semibold text-gray-900 mb-2 md:mb-3 text-sm md:text-base">Technical Data</h4>
-              <ul className="space-y-1.5 md:space-y-2 text-gray-600 text-xs md:text-sm">
-                <li className="flex items-start gap-2">
-                  <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-red-500 rounded-full mt-2"></div>
-                  <span>IP address and browser type</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-red-500 rounded-full mt-2"></div>
-                  <span>Device information</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-red-500 rounded-full mt-2"></div>
-                  <span>Usage data and cookies</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-red-500 rounded-full mt-2"></div>
-                  <span>Session information</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      )
-    },
-    {
-      id: 'how-we-use',
-      icon: <FaEye className="text-xl md:text-2xl" />,
-      title: 'How We Use Your Information',
-      color: 'from-green-500 to-green-600',
-      bgColor: 'green',
-      content: (
-        <div className="space-y-4 md:space-y-6">
-          <p className="text-sm md:text-base text-gray-700">We use the information we collect for various business purposes, including:</p>
-          
-          <div className="space-y-3 md:space-y-4 mt-4">
-            <div className="flex items-start gap-3 md:gap-4 p-3 md:p-4 bg-gray-50 rounded-xl hover:bg-green-50 transition-colors">
-              <div className="w-8 h-8 md:w-10 md:h-10 bg-green-100 rounded-lg flex items-center justify-center text-green-600 flex-shrink-0">
-                <FaHandshake className="text-base md:text-lg" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-1 text-sm md:text-base">B2B Transaction Processing</h4>
-                <p className="text-gray-600 text-xs md:text-sm">To process your inquiries, generate invoices, manage payments, and fulfill wholesale orders.</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3 md:gap-4 p-3 md:p-4 bg-gray-50 rounded-xl hover:bg-blue-50 transition-colors">
-              <div className="w-8 h-8 md:w-10 md:h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 flex-shrink-0">
-                <FaEnvelope className="text-base md:text-lg" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-1 text-sm md:text-base">Communication</h4>
-                <p className="text-gray-600 text-xs md:text-sm">To respond to your inquiries, send quotes, invoice updates, and important account notifications via email or WhatsApp.</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3 md:gap-4 p-3 md:p-4 bg-gray-50 rounded-xl hover:bg-purple-50 transition-colors">
-              <div className="w-8 h-8 md:w-10 md:h-10 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 flex-shrink-0">
-                <FaClipboardCheck className="text-base md:text-lg" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-1 text-sm md:text-base">Account Management</h4>
-                <p className="text-gray-600 text-xs md:text-sm">To manage your account, provide customer support, and verify your business credentials.</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3 md:gap-4 p-3 md:p-4 bg-gray-50 rounded-xl hover:bg-orange-50 transition-colors">
-              <div className="w-8 h-8 md:w-10 md:h-10 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600 flex-shrink-0">
-                <FaBalanceScale className="text-base md:text-lg" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-1 text-sm md:text-base">Legal Compliance</h4>
-                <p className="text-gray-600 text-xs md:text-sm">To comply with applicable laws, regulations, and legal processes, and to enforce our terms and conditions.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )
-    },
-    {
-      id: 'data-sharing',
-      icon: <FaShareAlt className="text-xl md:text-2xl" />,
-      title: 'Information Sharing & Disclosure',
-      color: 'from-orange-500 to-orange-600',
-      bgColor: 'orange',
-      content: (
-        <div className="space-y-4 md:space-y-6">
-          <p className="text-sm md:text-base text-gray-700">We may share your information in the following situations:</p>
-          
-          <div className="grid gap-3 md:gap-4 mt-4">
-            <div className="border border-gray-200 rounded-xl p-4 md:p-5 hover:border-orange-300 transition-colors">
-              <h4 className="font-semibold text-gray-900 mb-2 md:mb-3 flex items-center gap-2 text-sm md:text-base">
-                <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-orange-500 rounded-full"></div>
-                Service Providers
-              </h4>
-              <p className="text-gray-600 text-xs md:text-sm">We may share your information with third-party vendors, service providers, and contractors who perform services for us or on our behalf, such as payment processing, data analysis, email delivery, hosting services, and customer service.</p>
-            </div>
-
-            <div className="border border-gray-200 rounded-xl p-4 md:p-5 hover:border-orange-300 transition-colors">
-              <h4 className="font-semibold text-gray-900 mb-2 md:mb-3 flex items-center gap-2 text-sm md:text-base">
-                <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-orange-500 rounded-full"></div>
-                Business Transfers
-              </h4>
-              <p className="text-gray-600 text-xs md:text-sm">If we are involved in a merger, acquisition, or sale of all or a portion of our assets, your information may be transferred as part of that business transaction.</p>
-            </div>
-
-            <div className="border border-gray-200 rounded-xl p-4 md:p-5 hover:border-orange-300 transition-colors">
-              <h4 className="font-semibold text-gray-900 mb-2 md:mb-3 flex items-center gap-2 text-sm md:text-base">
-                <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-orange-500 rounded-full"></div>
-                Legal Requirements
-              </h4>
-              <p className="text-gray-600 text-xs md:text-sm">We may disclose your information where required to do so by law or in response to valid requests by public authorities (e.g., a court or government agency).</p>
-            </div>
-          </div>
-
-          <div className="bg-green-50 border border-green-200 rounded-xl p-4 md:p-5 mt-4">
-            <div className="flex items-start gap-3">
-              <FaCheckCircle className="text-green-500 text-lg md:text-xl flex-shrink-0 mt-1" />
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-1 text-sm md:text-base">What We Don't Do</h4>
-                <p className="text-gray-600 text-xs md:text-sm">We do not sell, rent, or trade your personal information to third parties for their marketing purposes.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )
-    },
-    {
-      id: 'data-security',
-      icon: <FaLock className="text-xl md:text-2xl" />,
-      title: 'Data Security',
-      color: 'from-red-500 to-red-600',
-      bgColor: 'red',
-      content: (
-        <div className="space-y-4 md:space-y-6">
-          <p className="text-sm md:text-base text-gray-700">We have implemented appropriate technical and organizational security measures designed to protect the security of any personal information we process.</p>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5 mt-4">
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-5 rounded-xl">
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-red-100 rounded-full flex items-center justify-center text-red-600 mb-3">
-                <FaLock className="text-lg md:text-xl" />
-              </div>
-              <h4 className="font-semibold text-gray-900 mb-2 text-sm md:text-base">Encryption</h4>
-              <p className="text-gray-600 text-xs md:text-sm">All data transmitted between your browser and our servers is encrypted using SSL/TLS technology.</p>
-            </div>
-
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-5 rounded-xl">
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-red-100 rounded-full flex items-center justify-center text-red-600 mb-3">
-                <FaUserShield className="text-lg md:text-xl" />
-              </div>
-              <h4 className="font-semibold text-gray-900 mb-2 text-sm md:text-base">Access Controls</h4>
-              <p className="text-gray-600 text-xs md:text-sm">Strict role-based access controls ensure that only authorized personnel can access sensitive data.</p>
-            </div>
-
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-5 rounded-xl">
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-red-100 rounded-full flex items-center justify-center text-red-600 mb-3">
-                <FaServer className="text-lg md:text-xl" />
-              </div>
-              <h4 className="font-semibold text-gray-900 mb-2 text-sm md:text-base">Secure Infrastructure</h4>
-              <p className="text-gray-600 text-xs md:text-sm">Our servers are protected by firewalls, intrusion detection systems, and regular security audits.</p>
-            </div>
-
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-5 rounded-xl">
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-red-100 rounded-full flex items-center justify-center text-red-600 mb-3">
-                <HiOutlineRefresh className="text-lg md:text-xl" />
-              </div>
-              <h4 className="font-semibold text-gray-900 mb-2 text-sm md:text-base">Regular Backups</h4>
-              <p className="text-gray-600 text-xs md:text-sm">We maintain secure, encrypted backups to prevent data loss and ensure business continuity.</p>
-            </div>
-          </div>
-
-          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 md:p-5 mt-4">
-            <p className="text-yellow-800 text-xs md:text-sm flex items-start gap-2">
-              <FaExclamationTriangle className="text-yellow-600 flex-shrink-0 mt-1 text-sm md:text-base" />
-              <span>While we strive to protect your information, no method of transmission over the Internet or electronic storage is 100% secure. We cannot guarantee absolute security.</span>
-            </p>
-          </div>
-        </div>
-      )
-    },
-    {
-      id: 'cookies',
-      icon: <FaCookieBite className="text-xl md:text-2xl" />,
-      title: 'Cookies & Tracking',
-      color: 'from-yellow-500 to-yellow-600',
-      bgColor: 'yellow',
-      content: (
-        <div className="space-y-4 md:space-y-6">
-          <p className="text-sm md:text-base text-gray-700">We use cookies and similar tracking technologies to track activity on our website and hold certain information.</p>
-          
-          <div className="overflow-x-auto -mx-4 md:mx-0 mt-4">
-            <div className="inline-block min-w-full align-middle px-4 md:px-0">
-              <table className="min-w-full bg-white border border-gray-200 rounded-xl text-xs md:text-sm">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cookie Type</th>
-                    <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Purpose</th>
-                    <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  <tr>
-                    <td className="px-3 md:px-6 py-2 md:py-4 text-xs md:text-sm text-gray-900">Essential Cookies</td>
-                    <td className="px-3 md:px-6 py-2 md:py-4 text-xs md:text-sm text-gray-600">Required for basic site functionality, authentication, and security</td>
-                    <td className="px-3 md:px-6 py-2 md:py-4 text-xs md:text-sm text-gray-600">Session / Persistent</td>
-                  </tr>
-                  <tr>
-                    <td className="px-3 md:px-6 py-2 md:py-4 text-xs md:text-sm text-gray-900">Functional Cookies</td>
-                    <td className="px-3 md:px-6 py-2 md:py-4 text-xs md:text-sm text-gray-600">Remember your preferences and settings</td>
-                    <td className="px-3 md:px-6 py-2 md:py-4 text-xs md:text-sm text-gray-600">1 year</td>
-                  </tr>
-                  <tr>
-                    <td className="px-3 md:px-6 py-2 md:py-4 text-xs md:text-sm text-gray-900">Analytics Cookies</td>
-                    <td className="px-3 md:px-6 py-2 md:py-4 text-xs md:text-sm text-gray-600">Help us understand how visitors interact with our website</td>
-                    <td className="px-3 md:px-6 py-2 md:py-4 text-xs md:text-sm text-gray-600">2 years</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <p className="text-gray-600 text-xs md:text-sm mt-4">
-            You can set your browser to refuse all or some browser cookies, or to alert you when websites set or access cookies. If you disable or refuse cookies, some parts of the website may become inaccessible or not function properly.
-          </p>
-        </div>
-      )
-    },
-    {
-      id: 'your-rights',
-      icon: <FaUserLock className="text-xl md:text-2xl" />,
-      title: 'Your Rights',
-      color: 'from-indigo-500 to-indigo-600',
-      bgColor: 'indigo',
-      content: (
-        <div className="space-y-4 md:space-y-6">
-          <p className="text-sm md:text-base text-gray-700">Depending on your location, you may have the following rights regarding your personal information:</p>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mt-4">
-            <div className="flex items-center gap-2 md:gap-3 p-3 md:p-4 bg-indigo-50 rounded-lg">
-              <FaCheckCircle className="text-indigo-500 text-base md:text-lg flex-shrink-0" />
-              <span className="text-gray-700 text-xs md:text-sm">Right to Access</span>
-            </div>
-            <div className="flex items-center gap-2 md:gap-3 p-3 md:p-4 bg-indigo-50 rounded-lg">
-              <FaCheckCircle className="text-indigo-500 text-base md:text-lg flex-shrink-0" />
-              <span className="text-gray-700 text-xs md:text-sm">Right to Rectification</span>
-            </div>
-            <div className="flex items-center gap-2 md:gap-3 p-3 md:p-4 bg-indigo-50 rounded-lg">
-              <FaCheckCircle className="text-indigo-500 text-base md:text-lg flex-shrink-0" />
-              <span className="text-gray-700 text-xs md:text-sm">Right to Erasure</span>
-            </div>
-            <div className="flex items-center gap-2 md:gap-3 p-3 md:p-4 bg-indigo-50 rounded-lg">
-              <FaCheckCircle className="text-indigo-500 text-base md:text-lg flex-shrink-0" />
-              <span className="text-gray-700 text-xs md:text-sm">Right to Restrict Processing</span>
-            </div>
-            <div className="flex items-center gap-2 md:gap-3 p-3 md:p-4 bg-indigo-50 rounded-lg">
-              <FaCheckCircle className="text-indigo-500 text-base md:text-lg flex-shrink-0" />
-              <span className="text-gray-700 text-xs md:text-sm">Right to Data Portability</span>
-            </div>
-            <div className="flex items-center gap-2 md:gap-3 p-3 md:p-4 bg-indigo-50 rounded-lg">
-              <FaCheckCircle className="text-indigo-500 text-base md:text-lg flex-shrink-0" />
-              <span className="text-gray-700 text-xs md:text-sm">Right to Object</span>
-            </div>
-          </div>
-
-          <p className="text-gray-600 text-xs md:text-sm mt-4">
-            To exercise any of these rights, please contact us using the information provided in the "Contact Us" section below.
-          </p>
-        </div>
-      )
-    },
-    {
-      id: 'children',
-      icon: <FaUserSecret className="text-xl md:text-2xl" />,
-      title: 'Children\'s Privacy',
-      color: 'from-pink-500 to-pink-600',
-      bgColor: 'pink',
-      content: (
-        <div className="space-y-4 md:space-y-6">
-          <p className="text-sm md:text-base text-gray-700">
-            Our platform is not intended for individuals under the age of 18. We do not knowingly collect personal information from children. If you become aware that a child has provided us with personal information, please contact us immediately.
-          </p>
-          <div className="bg-pink-50 border border-pink-200 rounded-xl p-4 md:p-5">
-            <p className="text-pink-800 text-xs md:text-sm">
-              <strong>Note:</strong> This is a business-to-business platform. All users must represent a registered business entity and be at least 18 years of age.
-            </p>
-          </div>
-        </div>
-      )
-    },
-    {
-      id: 'international',
-      icon: <FaGlobe className="text-xl md:text-2xl" />,
-      title: 'International Data Transfers',
-      color: 'from-teal-500 to-teal-600',
-      bgColor: 'teal',
-      content: (
-        <div className="space-y-4 md:space-y-6">
-          <p className="text-sm md:text-base text-gray-700">
-            Your information may be transferred to and maintained on servers located outside of your country of residence. We take appropriate safeguards to ensure that your information is protected in accordance with this privacy policy.
-          </p>
-          <p className="text-sm md:text-base text-gray-700">
-            By using our platform, you consent to the transfer of your information to Bangladesh and other countries where our servers and service providers are located.
-          </p>
-        </div>
-      )
-    },
-    {
-      id: 'changes',
-      icon: <MdUpdate className="text-xl md:text-2xl" />,
-      title: 'Changes to This Policy',
-      color: 'from-cyan-500 to-cyan-600',
-      bgColor: 'cyan',
-      content: (
-        <div className="space-y-4 md:space-y-6">
-          <p className="text-sm md:text-base text-gray-700">
-            We may update our Privacy Policy from time to time. 
-          </p>
-          <p className="text-sm md:text-base text-gray-700">
-            You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when they are posted on this page.
-          </p>
-        </div>
-      )
-    },
-    {
-      id: 'contact',
-      icon: <FaEnvelope className="text-xl md:text-2xl" />,
-      title: 'Contact Us',
-      color: 'from-orange-500 to-orange-600',
-      bgColor: 'orange',
-      content: (
-        <div className="space-y-4 md:space-y-6">
-          <p className="text-sm md:text-base text-gray-700">If you have questions or concerns about this Privacy Policy or our data practices, please contact us at:</p>
-          
-          <div className="bg-gradient-to-r from-orange-50 to-orange-100/50 rounded-xl md:rounded-2xl p-5 md:p-8 mt-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-              <div className="flex items-start gap-3 md:gap-4">
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-500 rounded-lg flex items-center justify-center text-white flex-shrink-0">
-                  <FaBuilding className="text-base md:text-xl" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1 text-sm md:text-base">Asian Clothify</h4>
-                  <p className="text-gray-600 text-xs md:text-sm">49/10-C, Ground Floor, Genda</p>
-                  <p className="text-gray-600 text-xs md:text-sm">Savar, Dhaka, Bangladesh</p>
-                </div>
-              </div>
-
-              <div className="space-y-3 md:space-y-4">
-                <div className="flex items-center gap-2 md:gap-3">
-                  <div className="w-8 h-8 md:w-10 md:h-10 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600">
-                    <FaEnvelope className="text-sm md:text-base" />
-                  </div>
-                  <div>
-                    <p className="text-xs md:text-sm text-gray-500">Email</p>
-                    <p className="font-semibold text-gray-900 text-xs md:text-sm">privacy@asianclothify.com</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 md:gap-3">
-                  <div className="w-8 h-8 md:w-10 md:h-10 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600">
-                    <FaPhone className="text-sm md:text-base" />
-                  </div>
-                  <div>
-                    <p className="text-xs md:text-sm text-gray-500">Phone</p>
-                    <p className="font-semibold text-gray-900 text-xs md:text-sm">+880 1305-785685</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-4 md:mt-6 pt-4 md:pt-6 border-t border-orange-200">
-              <p className="text-gray-600 text-center text-xs md:text-sm">
-                We typically respond to privacy inquiries within 48 hours.
-              </p>
-            </div>
-          </div>
-        </div>
-      )
-    }
+  // Policy Updates History
+  const updateHistory = [
+    { version: '2.0', date: 'April 15, 2026', changes: 'Major update: GDPR compliance, enhanced security measures, new data retention policy' },
+    { version: '1.5', date: 'January 10, 2026', changes: 'Added cookie preference center, updated third-party sharing disclosures' },
+    { version: '1.0', date: 'September 1, 2025', changes: 'Initial privacy policy published' }
   ];
 
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-white mt-16 overflow-x-hidden">
-        {/* HERO SECTION */}
-        <section className="relative h-[200px] md:h-[280px] lg:h-[320px] overflow-hidden">
-          <div className="absolute inset-0">
-            <img
-              src="https://i.ibb.co.com/6JmNT1nT/Screenshot-2026-03-11-151221.png"
-              alt="Privacy Policy"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-gray-900 via-gray-900/80 to-gray-900/40"></div>
+      <div className="min-h-screen bg-white overflow-x-hidden">
+        
+        {/* HERO SECTION - Enhanced */}
+        <section className="relative pt-24 pb-20 md:pt-32 md:pb-28 overflow-hidden">
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{
+              backgroundImage: `url('https://i.ibb.co.com/G4RJnfg0/nuts-glass-autumn-leaves.jpg')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-[#6B4F3A]/95 to-[#2d5a35]/90" />
           </div>
+          
+          <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto text-center">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+               
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 font-serif">
+                  Privacy <span className="text-[#3bc24f]">Policy</span>
+                </h1>
+                <p className="text-[#F5E6D3] text-lg md:text-xl max-w-2xl mx-auto font-sans">
+                  Your trust is our priority. Learn how we protect, manage, and respect your business data.
+                </p>
+                
+                {/* Quick Stats */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10 max-w-2xl mx-auto">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
+                    <div className="text-2xl font-bold text-[#3bc24f]">256-bit</div>
+                    <div className="text-xs text-white/80">SSL Encryption</div>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
+                    <div className="text-2xl font-bold text-[#3bc24f]">ISO 27001</div>
+                    <div className="text-xs text-white/80">Certified</div>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
+                    <div className="text-2xl font-bold text-[#3bc24f]">24/7</div>
+                    <div className="text-xs text-white/80">Security Monitoring</div>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
+                    <div className="text-2xl font-bold text-[#3bc24f]">GDPR</div>
+                    <div className="text-xs text-white/80">Compliant</div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
 
-          <div className="relative z-10 h-full flex items-center container mx-auto px-4">
+        {/* QUICK NAVIGATION TABS */}
+        <section className="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-wrap gap-1 py-3 overflow-x-auto">
+              {[
+                { id: 'overview', label: 'Overview', icon: Eye },
+                { id: 'collection', label: 'Data Collection', icon: Database },
+                { id: 'legal', label: 'Legal Basis', icon: Scale },
+                { id: 'sharing', label: 'Data Sharing', icon: Share2 },
+                { id: 'security', label: 'Security', icon: Shield },
+                { id: 'rights', label: 'Your Rights', icon: UserCheck },
+                { id: 'retention', label: 'Retention', icon: Clock },
+                { id: 'international', label: 'International', icon: Globe }
+              ].map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      const element = document.getElementById(tab.id);
+                      if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      setActiveTab(tab.id);
+                    }}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      activeTab === tab.id 
+                        ? 'bg-[#3A7D44] text-white shadow-md' 
+                        : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span className="hidden sm:inline">{tab.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* INTRODUCTION CARD - Enhanced */}
+        <section id="overview" className="py-12 bg-gray-50 scroll-mt-20">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="max-w-3xl"
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100"
             >
-              <div className="inline-flex items-center gap-1.5 md:gap-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5 md:px-4 md:py-2 mb-3 md:mb-4 lg:mb-6 border border-white/20">
-                <FaShieldAlt className="text-orange-400 text-sm md:text-base lg:text-xl" />
-                <span className="text-white font-medium text-xs md:text-sm">Your Privacy Matters</span>
+              <div className="relative">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#6B4F3A] via-[#3A7D44] to-[#6B4F3A]"></div>
+                <div className="p-6 md:p-8">
+                  <div className="flex items-start gap-4 flex-wrap md:flex-nowrap">
+                    <div className="w-16 h-16 bg-[#F5E6D3] rounded-2xl flex items-center justify-center flex-shrink-0">
+                      <Heart className="w-8 h-8 text-[#3A7D44]" />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl md:text-3xl font-bold text-[#6B4F3A] mb-3 font-serif">
+                        Your Privacy Matters to Us
+                      </h2>
+                      <p className="text-gray-700 leading-relaxed font-sans">
+                        At Jute Craftify, we are committed to protecting the privacy and security of our B2B clients, 
+                        partners, and website visitors. This comprehensive Privacy Policy explains how we collect, use, disclose, 
+                        and safeguard your information when you use our website and services. As a trusted global 
+                        supplier of premium jute products, we adhere to strict data protection standards and international 
+                        privacy regulations including GDPR (General Data Protection Regulation), CCPA (California Consumer Privacy Act), 
+                        and the Bangladesh Data Protection Act.
+                      </p>
+                      <div className="mt-4 flex flex-wrap gap-3">
+                        <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 px-3 py-1.5 rounded-full">
+                          <CheckCircle className="w-4 h-4 text-[#3A7D44]" />
+                          <span>GDPR Compliant</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 px-3 py-1.5 rounded-full">
+                          <CheckCircle className="w-4 h-4 text-[#3A7D44]" />
+                          <span>CCPA Ready</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 px-3 py-1.5 rounded-full">
+                          <CheckCircle className="w-4 h-4 text-[#3A7D44]" />
+                          <span>ISO 27001 Certified</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 px-3 py-1.5 rounded-full">
+                          <CheckCircle className="w-4 h-4 text-[#3A7D44]" />
+                          <span>Bangladesh Data Protection Act</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-1 md:mb-2 lg:mb-4">
-                Privacy{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600">
-                  Policy
-                </span>
-              </h1>
-
-              <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl text-gray-200 max-w-2xl">
-                How we collect, use, and protect your business information
-              </p>
             </motion.div>
           </div>
         </section>
 
-        {/* MAIN CONTENT */}
-        <div className="container mx-auto px-4 py-8 md:py-12 max-w-7xl">
-          <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
-            {/* MOBILE MENU BUTTON */}
-            <div className="lg:hidden mb-4">
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="w-full flex items-center justify-between px-4 py-3 bg-white rounded-xl shadow-md border border-gray-200"
-              >
-                <span className="font-semibold text-gray-900 flex items-center gap-2 text-sm">
-                  <BsFileText className="text-orange-500 text-base" />
-                  Policy Sections
-                </span>
-                {mobileMenuOpen ? <FaTimes className="text-gray-500" /> : <FaBars className="text-gray-500" />}
-              </button>
+        {/* DATA COLLECTION CATEGORIES - Detailed */}
+        <section id="collection" className="py-16 bg-white scroll-mt-20">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-12">
+              <span className="bg-[#F5E6D3] text-[#3A7D44] text-sm font-semibold px-4 py-1.5 rounded-full inline-block mb-4 font-sans">
+                DATA COLLECTION
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-[#6B4F3A] mb-4 font-serif">
+                Information We Collect
+              </h2>
+              <p className="text-gray-600 font-sans">
+                We collect various types of business information to provide and improve our B2B jute sourcing services
+              </p>
             </div>
 
-            {/* SIDEBAR NAVIGATION - Mobile Drawer */}
-            <AnimatePresence>
-              {mobileMenuOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.2 }}
-                  className="lg:hidden w-full mb-4"
-                  ref={mobileMenuRef}
-                >
-                  <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-4">
-                    <nav className="space-y-1 max-h-[400px] overflow-y-auto">
-                      {sections.map((section) => (
-                        <button
-  key={section.id}
-  onClick={() => scrollToSection(section.id)}
-  className={`w-full text-left px-3 py-2.5 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 flex items-center gap-3 ${
-    activeSection === section.id
-      ? `bg-gradient-to-r ${section.color} text-white shadow-md`
-      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-  }`}
->
-  <span className={`text-sm ${
-    activeSection === section.id 
-      ? 'text-white' 
-      : `text-${section.bgColor}-500`
-  }`}>
-    {section.icon}
-  </span>
-  <span className="flex-1 truncate">{section.title}</span>
-  {activeSection === section.id && (
-    <FaArrowRight className="text-white text-xs" />
-  )}
-</button>
-                      ))}
-                    </nav>
-                    
-                    {/* Download Options - Mobile */}
-                    <div className="mt-4 pt-4 border-t border-gray-200">
-                      <p className="text-xs text-gray-500 mb-2">Download Policy</p>
-                      <div className="flex gap-2">
-                        <button className="flex-1 flex items-center justify-center gap-2 px-2 py-2 bg-gray-100 rounded-lg text-xs text-gray-700 hover:bg-gray-200 transition-colors">
-                          <FaDownload className="text-xs" />
-                          PDF
-                        </button>
-                        <button className="flex-1 flex items-center justify-center gap-2 px-2 py-2 bg-gray-100 rounded-lg text-xs text-gray-700 hover:bg-gray-200 transition-colors">
-                          <FaDownload className="text-xs" />
-                          DOC
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* SIDEBAR NAVIGATION - Desktop */}
-            <div className="hidden lg:block lg:w-1/4">
-              <div className="sticky top-24 bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <BsFileText className="text-orange-500" />
-                  Policy Sections
-                </h3>
-                <nav className="space-y-1 max-h-[500px] overflow-y-auto pr-2">
-                  {sections.map((section) => (
-                    <button
-  key={section.id}
-  onClick={() => scrollToSection(section.id)}
-  className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-3 group ${
-    activeSection === section.id
-      ? `bg-gradient-to-r ${section.color} text-white shadow-lg scale-[1.02]`
-      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:scale-[1.01]'
-  }`}
->
-  <span className={`text-lg ${
-    activeSection === section.id 
-      ? 'text-white' 
-      : `text-${section.bgColor}-500 group-hover:text-${section.bgColor}-600`
-  }`}>
-    {section.icon}
-  </span>
-  <span className="flex-1 truncate">{section.title}</span>
-  {activeSection === section.id && (
-    <motion.div
-      initial={{ scale: 0 }}
-      animate={{ scale: 1 }}
-      transition={{ duration: 0.2 }}
-    >
-      <FaArrowRight className="text-white text-xs" />
-    </motion.div>
-  )}
-</button>
-                  ))}
-                </nav>
-
-                {/* Download Options - Desktop */}
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  <p className="text-xs text-gray-500 mb-3">Download Policy</p>
-                  <div className="flex gap-2">
-                    <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gray-100 rounded-lg text-sm text-gray-700 hover:bg-gray-200 transition-colors">
-                      <FaDownload className="text-xs" />
-                      PDF
-                    </button>
-                    <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gray-100 rounded-lg text-sm text-gray-700 hover:bg-gray-200 transition-colors">
-                      <FaDownload className="text-xs" />
-                      DOC
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* CONTENT AREA */}
-            <div className="w-full lg:w-3/4">
-              <div className="bg-white rounded-xl md:rounded-2xl lg:rounded-3xl shadow-lg md:shadow-xl border border-gray-200 p-5 md:p-8 lg:p-10">
-                {sections.map((section) => (
-                  <section
-                    key={section.id}
-                    id={section.id}
-                    ref={(el) => (sectionRefs.current[section.id] = el)}
-                    className="mb-8 md:mb-10 lg:mb-12 last:mb-0 scroll-mt-24"
+            <div className="grid md:grid-cols-2 gap-6">
+              {dataCategories.map((category, index) => {
+                const Icon = category.icon;
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1, duration: 0.5 }}
+                    viewport={{ once: true }}
+                    className="group relative overflow-hidden rounded-xl bg-white border border-gray-200 shadow-md hover:shadow-xl transition-all duration-300"
                   >
-                    <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
-                      <div className={`w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 rounded-xl md:rounded-2xl bg-gradient-to-br ${section.color} flex items-center justify-center text-white shadow-lg`}>
-                        {section.icon}
+                    <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${category.color} opacity-10 rounded-bl-full`}></div>
+                    <div className="p-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className={`w-12 h-12 bg-gradient-to-br ${category.color} rounded-xl flex items-center justify-center`}>
+                          <Icon className="w-6 h-6 text-white" />
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-800 font-serif">{category.title}</h3>
                       </div>
-                      <div>
-                        <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">{section.title}</h2>
-                        <div className={`h-0.5 md:h-1 w-12 md:w-16 lg:w-20 bg-gradient-to-r ${section.color} rounded-full mt-1 md:mt-2`}></div>
-                      </div>
+                      <ul className="space-y-2">
+                        {category.items.map((item, idx) => (
+                          <li key={idx} className="flex items-start gap-2 text-sm text-gray-600 font-sans">
+                            <CheckCircle className="w-4 h-4 text-[#3A7D44] mt-0.5 flex-shrink-0" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                    
-                    <div className="pl-3 md:pl-6 lg:pl-8 border-l-2 md:border-l-4 border-gray-100">
-                      {section.content}
-                    </div>
-                  </section>
-                ))}
+                  </motion.div>
+                );
+              })}
+            </div>
 
-                {/* Policy Footer */}
-                <div className="mt-8 md:mt-10 lg:mt-12 pt-6 md:pt-8 border-t border-gray-200">
-                  <div className="bg-gradient-to-r from-orange-50 to-orange-100/50 rounded-xl md:rounded-2xl p-6 md:p-8 text-center">
-                    <div className="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
-                      <FaShieldAlt className="text-white text-xl md:text-2xl" />
-                    </div>
-                    <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900 mb-2">We Value Your Trust</h3>
-                    <p className="text-sm md:text-base text-gray-600 max-w-2xl mx-auto mb-4 md:mb-6">
-                      At Asian Clothify, protecting your privacy and business information is our priority. 
-                      We're committed to transparency and maintaining the confidentiality of our partners.
-                    </p>
-                    <div className="flex flex-col sm:flex-row justify-center gap-3 md:gap-4">
-                      <Link
-                        href="/contact"
-                        className="px-4 md:px-6 py-2.5 md:py-3 bg-orange-500 text-white rounded-lg md:rounded-xl font-semibold hover:bg-orange-600 transition-all duration-300 inline-flex items-center justify-center gap-2 text-sm md:text-base"
-                      >
-                        <FaEnvelope />
-                        Privacy Questions?
-                      </Link>
-                      <Link
-                        href="/terms"
-                        className="px-4 md:px-6 py-2.5 md:py-3 bg-white text-gray-700 rounded-lg md:rounded-xl font-semibold hover:bg-gray-50 transition-all duration-300 border border-gray-200 inline-flex items-center justify-center gap-2 text-sm md:text-base"
-                      >
-                        <FaGavel />
-                        View Terms of Service
-                      </Link>
-                    </div>
-                  </div>
+            {/* Special Note on Sensitive Data */}
+            <div className="mt-8 bg-amber-50 border border-amber-200 rounded-xl p-4">
+              <div className="flex gap-3">
+                <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm text-amber-800 font-semibold font-sans">Sensitive Information Notice</p>
+                  <p className="text-sm text-amber-700 font-sans mt-1">
+                    We do not collect sensitive personal data such as government IDs, financial account passwords, 
+                    health information, or biometric data. All collected information is strictly business-related 
+                    and necessary for our B2B operations.
+                  </p>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* COOKIE CONSENT BANNER */}
-        {showCookieConsent && (
-          <motion.div
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-2xl"
-          >
-            <div className="container mx-auto px-4 py-3 md:py-4">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 md:gap-4">
-                <div className="flex items-start gap-2 md:gap-3 flex-1">
-                  <FaCookieBite className="text-orange-500 text-xl md:text-2xl flex-shrink-0 mt-1" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-1 text-sm md:text-base">Cookie Consent</h4>
-                    <p className="text-xs md:text-sm text-gray-600">
-                      We use cookies to enhance your browsing experience. By clicking "Accept", you consent to our use of cookies.
-                    </p>
+        {/* LEGAL BASIS FOR PROCESSING */}
+        <section id="legal" className="py-16 bg-gray-50 scroll-mt-20">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-12">
+              <span className="bg-[#F5E6D3] text-[#3A7D44] text-sm font-semibold px-4 py-1.5 rounded-full inline-block mb-4 font-sans">
+                LEGAL COMPLIANCE
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-[#6B4F3A] mb-4 font-serif">
+                Legal Basis for Processing
+              </h2>
+              <p className="text-gray-600 font-sans">
+                We process your data only when we have a valid legal basis under applicable privacy laws
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {legalBasis.map((basis, index) => {
+                const Icon = basis.icon;
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1, duration: 0.5 }}
+                    viewport={{ once: true }}
+                    className="bg-white rounded-xl p-6 border border-gray-200 hover:border-[#3A7D44]/30 transition-all duration-300"
+                  >
+                    <div className="w-12 h-12 bg-[#F5E6D3] rounded-xl flex items-center justify-center mb-4">
+                      <Icon className="w-6 h-6 text-[#3A7D44]" />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-800 mb-2 font-serif">{basis.title}</h3>
+                    <p className="text-sm text-gray-600 mb-3 font-sans">{basis.description}</p>
+                    <div className="bg-gray-50 rounded-lg p-3">
+                      <p className="text-xs text-gray-500 font-semibold mb-1">Examples:</p>
+                      <ul className="space-y-1">
+                        {basis.examples.map((ex, idx) => (
+                          <li key={idx} className="text-xs text-gray-600 flex items-center gap-1">
+                            <div className="w-1 h-1 bg-[#3A7D44] rounded-full"></div>
+                            <span>{ex}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* DATA SHARING & THIRD PARTIES */}
+        <section id="sharing" className="py-16 bg-white scroll-mt-20">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-12">
+              <span className="bg-[#F5E6D3] text-[#3A7D44] text-sm font-semibold px-4 py-1.5 rounded-full inline-block mb-4 font-sans">
+                TRANSPARENCY
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-[#6B4F3A] mb-4 font-serif">
+                Information Sharing & Third Parties
+              </h2>
+              <p className="text-gray-600 font-sans">
+                We share data only when necessary and always under strict confidentiality agreements
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              {thirdParties.map((party, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1, duration: 0.5 }}
+                  viewport={{ once: true }}
+                  className="bg-gray-50 rounded-xl p-5 border border-gray-200"
+                >
+                  <div className="flex flex-wrap justify-between items-start gap-4">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold text-[#6B4F3A] font-serif">{party.category}</h3>
+                      <p className="text-sm text-gray-500 mt-1">Purpose: {party.purpose}</p>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {party.companies.map((company, idx) => (
+                          <span key={idx} className="text-xs bg-white px-2 py-1 rounded-full text-gray-600 border border-gray-200">
+                            {company}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="bg-white rounded-lg p-3 min-w-[200px]">
+                      <p className="text-xs text-gray-500 font-semibold">Data Shared:</p>
+                      <ul className="mt-1 space-y-0.5">
+                        {party.dataShared.map((data, idx) => (
+                          <li key={idx} className="text-xs text-gray-600 flex items-center gap-1">
+                            <div className="w-1 h-1 bg-[#3A7D44] rounded-full"></div>
+                            <span>{data}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
-                </div>
-                <div className="flex gap-2 md:gap-3 flex-shrink-0 w-full sm:w-auto">
-                  <button
-                    onClick={handleCookieAccept}
-                    className="flex-1 sm:flex-none px-4 md:px-6 py-2 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-colors text-sm"
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="mt-6 bg-green-50 border border-green-200 rounded-xl p-4">
+              <div className="flex gap-3">
+                <Shield className="w-5 h-5 text-green-600 flex-shrink-0" />
+                <p className="text-sm text-green-800 font-sans">
+                  <strong>Our Commitment:</strong> We never sell your personal data to third parties. All data sharing is strictly for business operations, legal compliance, or with your explicit consent.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* SECURITY MEASURES - Detailed */}
+        <section id="security" className="py-16 bg-gradient-to-br from-[#6B4F3A] to-[#4A3222] text-white scroll-mt-20">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-12">
+              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md rounded-full px-4 py-1.5 mb-4">
+                <Shield className="w-4 h-4" />
+                <span className="text-sm font-medium font-sans">SECURITY INFRASTRUCTURE</span>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 font-serif">
+                How We Protect Your Data
+              </h2>
+              <p className="text-[#F5E6D3] font-sans">
+                Enterprise-grade security measures to ensure your business information remains safe
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {securityMeasures.map((measure, index) => {
+                const Icon = measure.icon;
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1, duration: 0.5 }}
+                    viewport={{ once: true }}
+                    className="bg-white/10 backdrop-blur-sm rounded-xl p-5 border border-white/20 hover:bg-white/20 transition-all duration-300"
                   >
-                    Accept
-                  </button>
-                  <button
-                    onClick={handleCookieDecline}
-                    className="flex-1 sm:flex-none px-4 md:px-6 py-2 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-colors text-sm"
+                    <div className="w-12 h-12 bg-[#3bc24f]/20 rounded-xl flex items-center justify-center mb-3">
+                      <Icon className="w-6 h-6 text-[#3bc24f]" />
+                    </div>
+                    <h3 className="text-lg font-bold mb-2 font-serif">{measure.title}</h3>
+                    <p className="text-sm text-[#F5E6D3] font-sans">{measure.description}</p>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            <div className="mt-8 text-center">
+              <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-2">
+                <Award className="w-4 h-4 text-[#3bc24f]" />
+                <span className="text-sm font-sans">ISO 27001:2022 Certified Information Security Management System</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* YOUR RIGHTS SECTION - Enhanced */}
+        <section id="rights" className="py-16 bg-white scroll-mt-20">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-12">
+              <span className="bg-[#F5E6D3] text-[#3A7D44] text-sm font-semibold px-4 py-1.5 rounded-full inline-block mb-4 font-sans">
+                DATA SUBJECT RIGHTS
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-[#6B4F3A] mb-4 font-serif">
+                Your Privacy Rights
+              </h2>
+              <p className="text-gray-600 font-sans">
+                You have control over your personal data. Here are the rights you can exercise
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[
+                { icon: Eye, title: 'Right to Access', description: 'Request a copy of all personal data we hold about you', timeframe: 'Within 30 days', fee: 'Free for first request' },
+                { icon: Trash2, title: 'Right to Deletion', description: 'Request deletion of your personal information', timeframe: 'Within 30 days', fee: 'Free', exception: 'Subject to legal retention' },
+                { icon: RefreshCw, title: 'Right to Rectification', description: 'Correct inaccurate or incomplete data', timeframe: 'Within 15 days', fee: 'Free' },
+                { icon: Database, title: 'Right to Portability', description: 'Receive your data in a structured, machine-readable format', timeframe: 'Within 30 days', fee: 'Free' },
+                { icon: UserX, title: 'Right to Object', description: 'Object to processing based on legitimate interests', timeframe: 'Within 30 days', fee: 'Free' },
+                { icon: Settings, title: 'Right to Restrict', description: 'Limit how we use your data', timeframe: 'Within 15 days', fee: 'Free' }
+              ].map((right, index) => {
+                const Icon = right.icon;
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1, duration: 0.5 }}
+                    viewport={{ once: true }}
+                    className="bg-gray-50 rounded-xl p-5 border border-gray-200 hover:shadow-md transition-all"
                   >
-                    Decline
-                  </button>
+                    <div className="w-12 h-12 bg-[#F5E6D3] rounded-xl flex items-center justify-center mb-3">
+                      <Icon className="w-6 h-6 text-[#3A7D44]" />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-800 mb-2 font-serif">{right.title}</h3>
+                    <p className="text-sm text-gray-600 mb-3 font-sans">{right.description}</p>
+                    <div className="flex justify-between items-center text-xs text-gray-500 pt-2 border-t border-gray-200">
+                      <span>⏱ {right.timeframe}</span>
+                      <span>💰 {right.fee}</span>
+                    </div>
+                    {right.exception && <p className="text-xs text-amber-600 mt-2">{right.exception}</p>}
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            <div className="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-5">
+              <div className="flex gap-3">
+                <Mail className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                <div>
+                  <p className="text-sm text-blue-800 font-semibold font-sans">To Exercise Your Rights:</p>
+                  <p className="text-sm text-blue-700 font-sans mt-1">
+                    Contact our Data Protection Officer at <strong>privacy@jutecraftify.com</strong> or call <strong>+880 1234 567890</strong>. 
+                    We will verify your identity before processing any request to protect your data.
+                  </p>
                 </div>
               </div>
             </div>
-          </motion.div>
-        )}
+          </div>
+        </section>
+
+        {/* DATA RETENTION SCHEDULE */}
+        <section id="retention" className="py-16 bg-gray-50 scroll-mt-20">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-12">
+              <span className="bg-[#F5E6D3] text-[#3A7D44] text-sm font-semibold px-4 py-1.5 rounded-full inline-block mb-4 font-sans">
+                DATA LIFECYCLE
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-[#6B4F3A] mb-4 font-serif">
+                Data Retention Schedule
+              </h2>
+              <p className="text-gray-600 font-sans">
+                We retain your data only as long as necessary for business and legal purposes
+              </p>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full bg-white rounded-xl overflow-hidden shadow-md">
+                <thead className="bg-[#6B4F3A] text-white">
+                  <tr>
+                    <th className="px-4 py-3 text-left font-semibold font-sans">Data Type</th>
+                    <th className="px-4 py-3 text-left font-semibold font-sans">Retention Period</th>
+                    <th className="px-4 py-3 text-left font-semibold font-sans">Reason</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {retentionSchedule.map((item, index) => (
+                    <tr key={index} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-sm text-gray-800 font-sans font-medium">{item.dataType}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600 font-sans">{item.retention}</td>
+                      <td className="px-4 py-3 text-sm text-gray-500 font-sans">{item.reason}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        {/* INTERNATIONAL DATA TRANSFERS */}
+        <section id="international" className="py-16 bg-white scroll-mt-20">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div>
+                <div className="inline-flex items-center gap-2 bg-[#F5E6D3] rounded-full px-4 py-1.5 mb-4">
+                  <Globe className="w-4 h-4 text-[#3A7D44]" />
+                  <span className="text-sm font-semibold text-[#6B4F3A] font-sans">INTERNATIONAL COMPLIANCE</span>
+                </div>
+                <h2 className="text-3xl font-bold text-[#6B4F3A] mb-4 font-serif">International Data Transfers</h2>
+                <p className="text-gray-700 mb-6 leading-relaxed font-sans">
+                  As a global exporter serving clients worldwide, your data may be transferred to and processed in countries 
+                  outside your residence. We ensure appropriate safeguards are in place for all international data transfers.
+                </p>
+                <div className="space-y-3">
+                  {internationalTransfers.map((transfer, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-gray-700">{transfer.from}</span>
+                        <span className="text-gray-400">→</span>
+                        <span className="font-semibold text-gray-700">{transfer.to}</span>
+                      </div>
+                      <span className="text-xs text-[#3A7D44] bg-white px-2 py-1 rounded-full">{transfer.safeguard}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="bg-gradient-to-br from-[#6B4F3A] to-[#4A3222] rounded-2xl p-6 text-white">
+                <h3 className="text-xl font-bold mb-4 font-serif">GDPR & CCPA Compliance</h3>
+                <p className="text-sm text-[#F5E6D3] mb-4">
+                  We have appointed a Data Protection Officer (DPO) and comply with GDPR requirements for EU clients, 
+                  as well as CCPA provisions for California residents.
+                </p>
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="w-4 h-4 text-[#3bc24f]" />
+                    Standard Contractual Clauses (SCCs) in place
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="w-4 h-4 text-[#3bc24f]" />
+                    Data Processing Agreements (DPAs) with all vendors
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="w-4 h-4 text-[#3bc24f]" />
+                    Privacy Shield framework adherence
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CHILDREN'S PRIVACY */}
+        <section className="py-12 bg-gray-50">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="bg-white rounded-xl p-6 border border-gray-200">
+              <div className="flex gap-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Users className="w-6 h-6 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-800 font-serif">Children's Privacy</h3>
+                  <p className="text-gray-600 text-sm mt-1 font-sans">{childrenPrivacy.statement}</p>
+                  <p className="text-gray-500 text-xs mt-2 font-sans">{childrenPrivacy.verification}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* POLICY UPDATE HISTORY */}
+        <section className="py-12 bg-white">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-8">
+              <h3 className="text-xl font-bold text-[#6B4F3A] font-serif">Policy Update History</h3>
+              <p className="text-sm text-gray-500">Track changes to our Privacy Policy over time</p>
+            </div>
+            <div className="max-w-2xl mx-auto space-y-3">
+              {updateHistory.map((update, index) => (
+                <div key={index} className="flex gap-3 p-3 bg-gray-50 rounded-lg">
+                  <div className="w-16 text-center">
+                    <span className="text-xs font-bold text-[#3A7D44]">{update.version}</span>
+                    <p className="text-xs text-gray-500">{update.date}</p>
+                  </div>
+                  <p className="text-sm text-gray-600 flex-1 font-sans">{update.changes}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* CONTACT INFORMATION - Enhanced */}
+        <section className="py-16 bg-gradient-to-r from-[#6B4F3A] to-[#4A3222] text-white">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto text-center">
+              <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Headset className="w-10 h-10 text-[#3bc24f]" />
+              </div>
+              <h2 className="text-3xl font-bold mb-4 font-serif">Have Questions About Our Privacy Practices?</h2>
+              <p className="text-[#F5E6D3] mb-8 font-sans">
+                Our Data Protection Team is available Monday-Friday, 9 AM - 6 PM BST to address your privacy concerns.
+              </p>
+              <div className="grid md:grid-cols-3 gap-4 mb-8">
+                <div className="bg-white/10 rounded-lg p-3">
+                  <Mail className="w-5 h-5 mx-auto mb-2 text-[#3bc24f]" />
+                  <p className="text-sm font-sans">privacy@jutecraftify.com</p>
+                </div>
+                <div className="bg-white/10 rounded-lg p-3">
+                  <Phone className="w-5 h-5 mx-auto mb-2 text-[#3bc24f]" />
+                  <p className="text-sm font-sans">+880 1234 567890</p>
+                </div>
+                <div className="bg-white/10 rounded-lg p-3">
+                  <MapPin className="w-5 h-5 mx-auto mb-2 text-[#3bc24f]" />
+                  <p className="text-sm font-sans">Khulna, Bangladesh</p>
+                </div>
+              </div>
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2 bg-[#3A7D44] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#2d6336] transition-all duration-300 font-sans"
+              >
+                <Send className="w-4 h-4" />
+                Contact Privacy Team
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* FINAL CTA */}
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-3xl">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <Sparkles className="w-12 h-12 text-[#3A7D44] mx-auto mb-4" />
+              <h2 className="text-3xl md:text-4xl font-bold text-[#6B4F3A] mb-4 font-serif">
+                Ready to Partner With a Trusted Supplier?
+              </h2>
+              <p className="text-gray-600 text-lg mb-8 font-sans">
+                Join hundreds of global businesses that trust Jute Craftify for sustainable jute solutions
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link
+                  href="/products"
+                  className="px-8 py-3 bg-[#3A7D44] text-white rounded-lg font-semibold hover:bg-[#2d6336] transition-all duration-300 transform hover:scale-105 font-sans"
+                >
+                  Browse Products
+                </Link>
+                <Link
+                  href="/contact"
+                  className="px-8 py-3 border-2 border-[#6B4F3A] text-[#6B4F3A] rounded-lg font-semibold hover:bg-[#6B4F3A] hover:text-white transition-all duration-300 font-sans"
+                >
+                  Request a Quote
+                </Link>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        <Footer />
       </div>
-      <Footer />
-        <WhatsAppButton />
+
+    <WhatsAppButton />
     </>
   );
 }

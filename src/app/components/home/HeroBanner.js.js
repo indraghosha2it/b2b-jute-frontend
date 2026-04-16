@@ -1,441 +1,268 @@
-// 'use client';
-
-// import { useState, useEffect } from 'react';
-// import Link from 'next/link';
-// import Image from 'next/image';
-
-// export default function HeroBanner() {
-//   const [currentSlide, setCurrentSlide] = useState(0);
-  
-//   // Banner slides data with clothing images
-//   const slides = [
-//     {
-//       id: 1,
-//       title: "Premium Wholesale Apparel",
-//       subtitle: "Factory-direct pricing for retailers worldwide",
-//       highlights: ["Low MOQ", "Fast Global Shipping", "Custom Branding"],
-//       // Bulk t-shirts / wholesale clothing
-//       image: "https://i.ibb.co.com/WvgNd004/photo-1567401893414-76b7b1e5a7a5.jpg",
-//       bgColor: "from-blue-900 to-purple-900",
-//       cta: "Start Your Inquiry",
-//       ctaLink: "/inquiry"
-//     },
-//     {
-//       id: 2,
-//       title: "Bulk Orders Made Easy",
-//       subtitle: "Get tiered pricing on 500+ products",
-//       highlights: ["Volume Discounts", "Sample Orders", "Quality Guaranteed"],
-//       // Stacked hoodies / bulk clothing
-//       image: "https://i.ibb.co.com/VWmB7V88/photo-1556905055-8f358a7a47b2.jpg",
-//       bgColor: "from-green-900 to-teal-900",
-//       cta: "Browse Collection",
-//       ctaLink: "/products"
-//     },
-//     {
-//       id: 3,
-//       title: "Global Shipping Partner",
-//       subtitle: "Delivering to 50+ countries worldwide",
-//       highlights: ["Express Delivery", "Trackable Shipments", "Customs Support"],
-//       // Fashion warehouse / shipping
-//       image: "https://i.ibb.co.com/k6VRrzL5/photo-1441986300917-64674bd600d8.jpg",
-//       bgColor: "from-orange-900 to-red-900",
-//       cta: "Contact Us",
-//       ctaLink: "/contact"
-//     }
-//   ];
-
-//   // Auto slide change
-//   useEffect(() => {
-//     const timer = setInterval(() => {
-//       setCurrentSlide((prev) => (prev + 1) % slides.length);
-//     }, 5000);
-    
-//     return () => clearInterval(timer);
-//   }, [slides.length]);
-
-//   // Manual navigation
-//   const goToSlide = (index) => {
-//     setCurrentSlide(index);
-//   };
-
-//   const nextSlide = () => {
-//     setCurrentSlide((prev) => (prev + 1) % slides.length);
-//   };
-
-//   const prevSlide = () => {
-//     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-//   };
-
-//   return (
-//     <div className="relative w-full mt-12 h-[430px] md:h-[490px] lg:h-[530px] overflow-hidden">
-//       {/* Slides */}
-//       {slides.map((slide, index) => (
-//         <div
-//           key={slide.id}
-//           className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-//             index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
-//           }`}
-//         >
-//           {/* Background Image */}
-//           <div className="absolute inset-0 bg-black/40 z-10" />
-//           <img
-//             src={slide.image}
-//             alt={slide.title}
-//             className="absolute inset-0 w-full h-full object-cover z-0"
-//           />
-          
-//           {/* Gradient Overlay */}
-//           <div className={`absolute inset-0 bg-gradient-to-r ${slide.bgColor} opacity-30 z-10`} />
-          
-//           {/* Content - Adjusted for increased height */}
-//           <div className="relative z-20 h-full flex items-center justify-center text-white">
-//             <div className="container mx-auto px-4 text-center md:text-left md:px-8 lg:px-16">
-//               <div className="max-w-2xl mx-auto md:mx-0">
-//                 {/* Title with animation - Slightly larger */}
-//                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 animate-fade-in-up">
-//                   {slide.title}
-//                 </h1>
-                
-//                 {/* Subtitle - Slightly larger */}
-//                 <p className="text-lg md:text-xl lg:text-2xl mb-6 text-gray-200 animate-fade-in-up animation-delay-200">
-//                   {slide.subtitle}
-//                 </p>
-                
-//                 {/* Highlights */}
-//                 <div className="flex flex-wrap gap-3 mb-8 justify-center md:justify-start animate-fade-in-up animation-delay-400">
-//                   {slide.highlights.map((highlight, i) => (
-//                     <span
-//                       key={i}
-//                       className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm md:text-base border border-white/30"
-//                     >
-//                       {highlight}
-//                     </span>
-//                   ))}
-//                 </div>
-                
-//                 {/* CTA Button */}
-//                 <Link
-//                   href={slide.ctaLink}
-//                   className="inline-flex items-center px-8 py-4 bg-[#d9884e] text-white font-semibold rounded-lg hover:bg-[#e67d32] transition-all duration-300 transform hover:scale-105 shadow-lg animate-fade-in-up animation-delay-600"
-//                 >
-//                   {slide.cta}
-//                   <svg
-//                     className="ml-2 w-5 h-5"
-//                     fill="none"
-//                     stroke="currentColor"
-//                     viewBox="0 0 24 24"
-//                   >
-//                     <path
-//                       strokeLinecap="round"
-//                       strokeLinejoin="round"
-//                       strokeWidth={2}
-//                       d="M13 7l5 5m0 0l-5 5m5-5H6"
-//                     />
-//                   </svg>
-//                 </Link>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       ))}
-      
-//       {/* Navigation Arrows */}
-//       <button
-//         onClick={prevSlide}
-//         className="absolute left-4 top-1/2 transform -translate-y-1/2 z-30 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all duration-300"
-//         aria-label="Previous slide"
-//       >
-//         <svg
-//           className="w-6 h-6"
-//           fill="none"
-//           stroke="currentColor"
-//           viewBox="0 0 24 24"
-//         >
-//           <path
-//             strokeLinecap="round"
-//             strokeLinejoin="round"
-//             strokeWidth={2}
-//             d="M15 19l-7-7 7-7"
-//           />
-//         </svg>
-//       </button>
-      
-//       <button
-//         onClick={nextSlide}
-//         className="absolute right-4 top-1/2 transform -translate-y-1/2 z-30 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all duration-300"
-//         aria-label="Next slide"
-//       >
-//         <svg
-//           className="w-6 h-6"
-//           fill="none"
-//           stroke="currentColor"
-//           viewBox="0 0 24 24"
-//         >
-//           <path
-//             strokeLinecap="round"
-//             strokeLinejoin="round"
-//             strokeWidth={2}
-//             d="M9 5l7 7-7 7"
-//           />
-//         </svg>
-//       </button>
-      
-//       {/* Slide Indicators */}
-//       <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-30 flex space-x-3">
-//         {slides.map((_, index) => (
-//           <button
-//             key={index}
-//             onClick={() => goToSlide(index)}
-//             className={`w-3 h-3 rounded-full transition-all duration-300 ${
-//               index === currentSlide
-//                 ? 'bg-[#d9884e] w-8'
-//                 : 'bg-white/50 hover:bg-white'
-//             }`}
-//             aria-label={`Go to slide ${index + 1}`}
-//           />
-//         ))}
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
-export default function HeroBanner() {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  
-  // Banner slides data with clothing images
-  const slides = [
- {
-  id: 1,
-  title: "Premium Wholesale Apparel",
-  subtitle: "Factory-direct pricing for retailers worldwide",
-  highlights: ["Low MOQ", "Fast Global Shipping", "Custom Branding"],
-  // Bulk t-shirts / wholesale clothing
-  image: "https://i.ibb.co.com/WvgNd004/photo-1567401893414-76b7b1e5a7a5.jpg",
-  bgColor: "from-blue-900 to-purple-900",
-  cta: "Start Inquiry",
-  ctaLink: "/contact#inquiry-form" // Add #inquiry-form hash
-},
+export default function HeroSection() {
+  const [isVisible, setIsVisible] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Product showcase images
+  const productImages = [
     {
-      id: 2,
-      title: "Bulk Orders Made Easy",
-      subtitle: "Get tiered pricing on 500+ products",
-      highlights: ["Volume Discounts", "Sample Orders", "Quality Guaranteed"],
-      // Stacked hoodies / bulk clothing
-      image: "https://i.ibb.co.com/VWmB7V88/photo-1556905055-8f358a7a47b2.jpg",
-      bgColor: "from-green-900 to-teal-900",
-      cta: "Browse Collection",
-      ctaLink: "/products"
+      url: "https://i.ibb.co.com/C3m0HNW2/mediterranean-aesthetics-bag-still-life.jpg",
+      name: "Premium Jute Bags",
+      category: "Shopping & Tote"
     },
     {
-      id: 3,
-      title: "Global Shipping Partner",
-      subtitle: "Delivering to 50+ countries worldwide",
-      highlights: ["Express Delivery", "Trackable Shipments", "Customs Support"],
-      // Fashion warehouse / shipping
-      image: "https://i.ibb.co.com/k6VRrzL5/photo-1441986300917-64674bd600d8.jpg",
-      bgColor: "from-orange-900 to-red-900",
-      cta: "Contact Us",
-      ctaLink: "/contact"
-    }
+      url: "https://i.ibb.co.com/rhs0mbn/Home-pages.jpg",
+      name: "Raw Jute Fiber",
+      category: "Industrial Grade"
+    },
+    {
+      url: "https://i.ibb.co.com/LhvmZfgc/91-CPUL-e-ES.jpg",
+      name: "Jute Rugs & Mats",
+      category: "Home Decor"
+    },
+    {
+      url: "https://i.ibb.co.com/Hs6Ch96/thread-fabric-high-angle.jpg",
+      name: "Jute Yarn & Twine",
+      category: "Eco-Friendly"
+    },
   ];
 
-  // Auto slide change
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 5000);
+    setIsVisible(true);
     
-    return () => clearInterval(timer);
-  }, [slides.length]);
-
-  // Manual navigation
-  const goToSlide = (index) => {
-    setCurrentSlide(index);
-  };
-
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % slides.length);
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-  };
+    // Rotate images every 4 seconds
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % productImages.length);
+    }, 4000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div className="relative w-full mt-12 h-[400px] sm:h-[430px] md:h-[490px] lg:h-[530px] overflow-hidden">
-      {/* Slides */}
-      {slides.map((slide, index) => (
-        <div
-          key={slide.id}
-          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-            index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
-          }`}
-        >
-          {/* Background Image */}
-          <div className="absolute inset-0 bg-black/40 z-10" />
-          <img
-            src={slide.image}
-            alt={slide.title}
-            className="absolute inset-0 w-full h-full object-cover z-0"
-          />
+    <section className="relative mt-16 min-h-[70vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden">
+      {/* Background Image - Natural Jute Texture */}
+      <div 
+        className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url('https://i.ibb.co.com/nqZZx5Pn/asian-market-bamboo-wicker-baskets.jpg')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        {/* Simple Dark Overlay */}
+        <div className="absolute inset-0 bg-black/60" />
+      </div>
+
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 lg:py-10">
+        <div className="flex flex-col lg:flex-row items-center gap-6 md:gap-8 lg:gap-12">
           
-          {/* Gradient Overlay */}
-          <div className={`absolute inset-0 bg-gradient-to-r ${slide.bgColor} opacity-30 z-10`} />
-          
-          {/* Content - Responsive text sizing */}
-          <div className="relative z-20 h-full flex items-center justify-center text-white">
-            <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-16 text-center md:text-left">
-              <div className="max-w-2xl mx-auto md:mx-0">
-                {/* Title - Responsive sizing */}
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-2 sm:mb-3 md:mb-4 animate-fade-in-up">
-                  {slide.title}
-                </h1>
-                
-                {/* Subtitle - Responsive sizing */}
-                <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl mb-3 sm:mb-4 md:mb-6 text-gray-200 animate-fade-in-up animation-delay-200 px-2 sm:px-4 md:px-0">
-                  {slide.subtitle}
-                </p>
-                
-                {/* Highlights - Responsive sizing */}
-                <div className="flex flex-wrap gap-1.5 sm:gap-2 md:gap-3 mb-4 sm:mb-6 md:mb-8 justify-center md:justify-start animate-fade-in-up animation-delay-400 px-2 sm:px-4 md:px-0">
-                  {slide.highlights.map((highlight, i) => (
-                    <span
-                      key={i}
-                      className="px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 bg-white/20 backdrop-blur-sm rounded-full text-[10px] sm:text-xs md:text-sm lg:text-base border border-white/30 whitespace-nowrap"
-                    >
-                      {highlight}
-                    </span>
-                  ))}
-                </div>
-                
-                {/* CTA Button - Responsive sizing */}
-                <Link
-                  href={slide.ctaLink}
-                  className="inline-flex items-center px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 bg-[#d9884e] text-white font-semibold rounded-lg hover:bg-[#e67d32] transition-all duration-300 transform hover:scale-105 shadow-lg animate-fade-in-up animation-delay-600 text-xs sm:text-sm md:text-base"
+          {/* LEFT SIDE - Content */}
+          <div className="flex-1 text-center lg:text-left">
+            {/* Trust Badge */}
+            <div 
+              className={`inline-flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-full px-3 py-1 mb-3 border border-white/20 transition-all duration-700 ${
+                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+            >
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#3A7D44] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#3A7D44]"></span>
+              </span>
+              <span className="text-[#F5E6D3] text-xs font-medium tracking-wide">
+                🌾 Made in Bangladesh | Trusted Global Supplier
+              </span>
+            </div>
+
+            {/* Main Headline - Smaller on mobile */}
+            <h1 
+              className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-2 md:mb-3 leading-tight transition-all duration-700 delay-100 ${
+                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+            >
+              Premium Jute Products
+              <br />
+              <span className="relative inline-block mt-0.5">
+                Supplier from Bangladesh
+                <svg 
+                  className="absolute -bottom-1 left-0 w-full h-1.5 md:h-2 text-[#3A7D44]" 
+                  viewBox="0 0 400 20" 
+                  fill="currentColor"
+                  preserveAspectRatio="none"
                 >
-                  {slide.cta}
-                  <svg
-                    className="ml-1 sm:ml-2 w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 7l5 5m0 0l-5 5m5-5H6"
-                    />
+                  <path d="M0,10 C50,20 100,0 150,10 C200,20 250,0 300,10 C350,20 400,10 400,10 L400,20 L0,20 Z" />
+                </svg>
+              </span>
+              <span className="text-white"> to the World</span>
+            </h1>
+
+            {/* Subtext with bullet points - Smaller on mobile */}
+            <div 
+              className={`flex flex-wrap justify-center lg:justify-start gap-1.5 md:gap-2 mb-3 md:mb-4 transition-all duration-700 delay-200 ${
+                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+            >
+              <div className="flex items-center gap-1 px-2 md:px-2.5 py-0.5 md:py-1 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
+                <span className="text-xs md:text-sm">📦</span>
+                <span className="text-[#F5E6D3] font-medium text-[10px] md:text-xs">Bulk Orders</span>
+              </div>
+              <div className="flex items-center gap-1 px-2 md:px-2.5 py-0.5 md:py-1 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
+                <span className="text-xs md:text-sm">⚙️</span>
+                <span className="text-[#F5E6D3] font-medium text-[10px] md:text-xs">Custom Manufacturing</span>
+              </div>
+              <div className="flex items-center gap-1 px-2 md:px-2.5 py-0.5 md:py-1 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
+                <span className="text-xs md:text-sm">🚢</span>
+                <span className="text-[#F5E6D3] font-medium text-[10px] md:text-xs">Global Export</span>
+              </div>
+            </div>
+
+            {/* CTA Buttons - Side by side on mobile */}
+            <div 
+              className={`flex flex-row justify-center lg:justify-start gap-2 md:gap-3 transition-all duration-700 delay-400 ${
+                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+            >
+              {/* Request a Quote Button - Primary */}
+              <Link
+                href="/contact"
+                className="group relative inline-flex items-center justify-center px-3 md:px-5 py-1.5 md:py-2 text-xs md:text-sm font-semibold rounded-lg overflow-hidden transition-all duration-300 transform hover:scale-105 focus:ring-2 focus:ring-[#3A7D44] focus:ring-offset-2"
+              >
+                <span className="absolute inset-0 bg-gradient-to-r from-[#3A7D44] to-[#2D5E35]"></span>
+                <span className="absolute inset-0 bg-gradient-to-r from-[#2D5E35] to-[#3A7D44] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent"></span>
+                <span className="relative flex items-center gap-1 md:gap-2 text-white">
+                  <svg className="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
-                </Link>
+                  Request a Quote
+                </span>
+              </Link>
+
+              {/* View Products Button - Secondary */}
+              <Link
+                href="/products"
+                className="group inline-flex items-center justify-center px-3 md:px-5 py-1.5 md:py-2 text-xs md:text-sm font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 border-2 border-[#F5E6D3] bg-transparent hover:bg-[#F5E6D3] focus:ring-2 focus:ring-[#F5E6D3] focus:ring-offset-2"
+              >
+                <span className="relative flex items-center gap-1 md:gap-2 text-[#F5E6D3] group-hover:text-[#6B4F3A] transition-colors duration-300">
+                  <svg className="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                  View Products
+                </span>
+              </Link>
+            </div>
+
+            {/* Product Image - Moves here on mobile (after buttons) */}
+            <div className="block lg:hidden mt-6 max-w-[280px] mx-auto">
+              <div className="relative">
+                <div className="relative overflow-hidden rounded-xl">
+                  <img
+                    src={productImages[currentImageIndex].url}
+                    alt={productImages[currentImageIndex].name}
+                    className="w-full h-auto object-cover transition-transform duration-1000 hover:scale-110"
+                    style={{ aspectRatio: '1/1' }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+                  <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent">
+                    <h3 className="text-xs font-bold text-white">{productImages[currentImageIndex].name}</h3>
+                    <p className="text-[8px] text-gray-200">{productImages[currentImageIndex].category}</p>
+                  </div>
+                </div>
+                <div className="absolute -top-2 -right-2 bg-[#3A7D44] text-white px-1.5 py-0.5 rounded-full text-[8px] font-semibold shadow-lg">
+                  🌿 Eco-Friendly
+                </div>
+                <div className="absolute -bottom-2 -left-2 bg-[#F5E6D3] text-[#6B4F3A] px-1.5 py-0.5 rounded-full text-[8px] font-semibold shadow-lg">
+                  🇧🇩 Made in BD
+                </div>
+              </div>
+              {/* Slide Indicators for mobile */}
+              <div className="flex justify-center gap-1.5 mt-3">
+                {productImages.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentImageIndex(index)}
+                    className={`h-1 rounded-full transition-all duration-300 ${
+                      currentImageIndex === index 
+                        ? 'w-6 bg-[#3A7D44]' 
+                        : 'w-1.5 bg-white/50 hover:bg-white/80'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Trust Indicators - Stats (after image on mobile) */}
+            <div 
+              className={`mt-4 md:mt-5 pt-3 md:pt-4 border-t border-white/15 flex flex-wrap justify-center lg:justify-start gap-3 sm:gap-4 md:gap-6 transition-all duration-700 delay-500 ${
+                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+            >
+              <div className="text-center lg:text-left">
+                <div className="text-base sm:text-lg md:text-xl font-bold text-[#F5E6D3]">30+</div>
+                <div className="text-[9px] md:text-[11px] text-[#E8D5C0]">Countries</div>
+              </div>
+              <div className="text-center lg:text-left">
+                <div className="text-base sm:text-lg md:text-xl font-bold text-[#F5E6D3]">500+</div>
+                <div className="text-[9px] md:text-[11px] text-[#E8D5C0]">Clients</div>
+              </div>
+              <div className="text-center lg:text-left">
+                <div className="text-base sm:text-lg md:text-xl font-bold text-[#F5E6D3]">100%</div>
+                <div className="text-[9px] md:text-[11px] text-[#E8D5C0]">Eco-Friendly</div>
+              </div>
+              <div className="text-center lg:text-left">
+                <div className="text-base sm:text-lg md:text-xl font-bold text-[#F5E6D3]">24/7</div>
+                <div className="text-[9px] md:text-[11px] text-[#E8D5C0]">Support</div>
               </div>
             </div>
           </div>
+
+          {/* RIGHT SIDE - Product Image Showcase (Desktop only) */}
+          <div className="hidden lg:block flex-1 max-w-md mx-auto lg:max-w-sm">
+            <div 
+              className={`relative transition-all duration-700 delay-200 ${
+                isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
+              }`}
+            >
+              <div className="relative bg-white/10 backdrop-blur-sm rounded-xl p-1.5 border border-white/20 shadow-xl">
+                <div className="relative overflow-hidden rounded-lg aspect-square">
+                  <img
+                    src={productImages[currentImageIndex].url}
+                    alt={productImages[currentImageIndex].name}
+                    className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+                  <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent">
+                    <h3 className="text-sm font-bold text-white">{productImages[currentImageIndex].name}</h3>
+                    <p className="text-[10px] text-gray-200">{productImages[currentImageIndex].category}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="absolute -top-2 -right-2 bg-[#3A7D44] text-white px-2 py-0.5 rounded-full text-[10px] font-semibold shadow-lg">
+                🌿 Eco-Friendly
+              </div>
+              <div className="absolute -bottom-2 -left-2 bg-[#F5E6D3] text-[#6B4F3A] px-2 py-0.5 rounded-full text-[10px] font-semibold shadow-lg">
+                🇧🇩 Made in BD
+              </div>
+            </div>
+            <div className="flex justify-center gap-2 mt-4">
+              {productImages.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentImageIndex(index)}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    currentImageIndex === index 
+                      ? 'w-8 bg-[#3A7D44]' 
+                      : 'w-2 bg-white/50 hover:bg-white/80'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
         </div>
-      ))}
-      
-      {/* Navigation Arrows - Hidden on mobile, visible on larger screens */}
-      <button
-        onClick={prevSlide}
-        className="hidden sm:block absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 z-30 bg-black/50 hover:bg-black/70 text-white p-2 sm:p-3 rounded-full transition-all duration-300"
-        aria-label="Previous slide"
-      >
-        <svg
-          className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M15 19l-7-7 7-7"
-          />
-        </svg>
-      </button>
-      
-      <button
-        onClick={nextSlide}
-        className="hidden sm:block absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 z-30 bg-black/50 hover:bg-black/70 text-white p-2 sm:p-3 rounded-full transition-all duration-300"
-        aria-label="Next slide"
-      >
-        <svg
-          className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 5l7 7-7 7"
-          />
-        </svg>
-      </button>
-      
-      {/* Slide Indicators - Responsive sizing */}
-      <div className="absolute bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 z-30 flex space-x-2 sm:space-x-3">
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => goToSlide(index)}
-            className={`transition-all duration-300 ${
-              index === currentSlide
-                ? 'bg-[#d9884e] w-4 sm:w-6 md:w-8 h-1.5 sm:h-2 md:h-3 rounded-full'
-                : 'bg-white/50 hover:bg-white w-1.5 sm:w-2 md:w-3 h-1.5 sm:h-2 md:h-3 rounded-full'
-            }`}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
       </div>
-
-      {/* Add animation keyframes */}
-      <style jsx>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        .animate-fade-in-up {
-          animation: fadeInUp 0.6s ease-out forwards;
-          opacity: 0;
-        }
-        
-        .animation-delay-200 {
-          animation-delay: 0.2s;
-        }
-        
-        .animation-delay-400 {
-          animation-delay: 0.4s;
-        }
-        
-        .animation-delay-600 {
-          animation-delay: 0.6s;
-        }
-
-        /* Additional mobile optimizations */
-        @media (max-width: 640px) {
-          .container {
-            padding-left: 1rem;
-            padding-right: 1rem;
-          }
-        }
-      `}</style>
-    </div>
+    </section>
   );
 }

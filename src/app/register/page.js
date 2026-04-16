@@ -1,12 +1,13 @@
 
 
+
 // 'use client';
 
-// import { useState } from 'react';
+// import { useRef, useState } from 'react';
 // import Link from 'next/link';
 // import { useRouter } from 'next/navigation';
 // import { toast } from 'sonner';
-// import { motion } from 'framer-motion';
+// import { motion, AnimatePresence } from 'framer-motion';
 // import Navbar from '../components/layout/Navbar';
 // import Footer from '../components/layout/Footer';
 // import GoogleLoginButton from '../components/GoogleLoginButton';
@@ -25,13 +26,29 @@
 //     zipCode: '',
 //     password: '',
 //     confirmPassword: '',
-  
 //     agreeToTerms: false
 //   });
 
 //   const [isSubmitting, setIsSubmitting] = useState(false);
 //   const [showPassword, setShowPassword] = useState(false);
 //   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
+//   // OTP Modal States
+//   const [showOtpModal, setShowOtpModal] = useState(false);
+//   const [otp, setOtp] = useState('');
+//   const [otpEmail, setOtpEmail] = useState('');
+//   const [isVerifying, setIsVerifying] = useState(false);
+//   const [resendDisabled, setResendDisabled] = useState(false);
+//   const [countdown, setCountdown] = useState(0);
+//   const [registrationData, setRegistrationData] = useState(null);
+//   const timerRef = useRef(null);
+
+//   // Helper function to format seconds as MM:SS
+// const formatTime = (seconds) => {
+//   const mins = Math.floor(seconds / 60);
+//   const secs = seconds % 60;
+//   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+// };
 
 //   const handleChange = (e) => {
 //     const { name, value, type, checked } = e.target;
@@ -61,7 +78,6 @@
 
 //     const loadingToast = toast.loading('Creating your account...');
 
-
 //     try {
 //       const response = await fetch('http://localhost:5000/api/auth/register', {
 //         method: 'POST',
@@ -79,7 +95,6 @@
 //           city: formData.city,
 //           zipCode: formData.zipCode,
 //           password: formData.password,
-         
 //           role: 'customer'
 //         }),
 //       });
@@ -93,19 +108,21 @@
 //         return;
 //       }
 
-//       // Success - show OTP verification message
+//       // Success - Show OTP modal instead of redirecting
 //       toast.success('Registration initiated!', {
-//         description: 'Please check your email for OTP verification code.',
-//         duration: 6000,
+//         description: 'Please enter the OTP sent to your email.',
+//         duration: 4000,
 //       });
 
-//       // Store email for OTP verification page
-//       localStorage.setItem('pendingVerificationEmail', formData.email);
-      
-//       // Redirect to OTP verification page
-//       setTimeout(() => {
-//         router.push('/verify-otp');
-//       }, 2000);
+//       // Store email and show OTP modal
+//       setOtpEmail(formData.email);
+//       setRegistrationData(data);
+//       setShowOtpModal(true);
+//       setOtp('');
+//       setIsSubmitting(false);
+
+//       // Start countdown for resend button
+//       startCountdown();
 
 //     } catch (error) {
 //       console.error('Registration error:', error);
@@ -117,6 +134,143 @@
 //     }
 //   };
 
+//   const handleVerifyOTP = async () => {
+//     if (!otp || otp.length !== 6) {
+//       toast.error('Please enter a valid 6-digit OTP');
+//       return;
+//     }
+
+//     setIsVerifying(true);
+//     const verifyingToast = toast.loading('Verifying OTP...');
+
+//     try {
+//       const response = await fetch('http://localhost:5000/api/auth/verify-otp', {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({
+//           email: otpEmail,
+//           otp: otp
+//         }),
+//       });
+
+//       const data = await response.json();
+//       toast.dismiss(verifyingToast);
+
+//       if (!response.ok) {
+//         toast.error(data.error || 'Invalid OTP');
+//         setIsVerifying(false);
+//         return;
+//       }
+
+//       // Success - store token and redirect
+//       localStorage.setItem('token', data.token);
+//       localStorage.setItem('user', JSON.stringify(data.user));
+      
+//       toast.success('Email verified successfully!', {
+//         description: 'Welcome to Asian Clothify!',
+//       });
+
+//       setShowOtpModal(false);
+      
+//       // Redirect based on role
+//       setTimeout(() => {
+//         if (data.user.role === 'admin') {
+//           router.push('/admin/dashboard');
+//         } else if (data.user.role === 'moderator') {
+//           router.push('/moderator/dashboard');
+//         } else {
+//           router.push('/customer/dashboard');
+//         }
+//       }, 1500);
+
+//     } catch (error) {
+//       console.error('OTP verification error:', error);
+//       toast.dismiss(verifyingToast);
+//       toast.error('Verification failed', {
+//         description: 'Please try again',
+//       });
+//       setIsVerifying(false);
+//     }
+//   };
+
+//   const handleResendOTP = async () => {
+//     if (resendDisabled) return;
+
+//     const resendToast = toast.loading('Resending OTP...');
+
+//     try {
+//       const response = await fetch('http://localhost:5000/api/auth/resend-otp', {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({
+//           email: otpEmail
+//         }),
+//       });
+
+//       const data = await response.json();
+//       toast.dismiss(resendToast);
+
+//       if (!response.ok) {
+//         toast.error(data.error || 'Failed to resend OTP');
+//         return;
+//       }
+
+//       toast.success('OTP resent successfully!', {
+//         description: 'Please check your email.',
+//       });
+
+//       // Reset countdown
+//       startCountdown();
+
+//     } catch (error) {
+//       console.error('Resend OTP error:', error);
+//       toast.dismiss(resendToast);
+//       toast.error('Failed to resend OTP');
+//     }
+//   };
+
+//   // const startCountdown = () => {
+//   //   setResendDisabled(true);
+//   //   setCountdown(600);
+//   //   const timer = setInterval(() => {
+//   //     setCountdown((prev) => {
+//   //       if (prev <= 1) {
+//   //         clearInterval(timer);
+//   //         setResendDisabled(false);
+//   //         return 0;
+//   //       }
+//   //       return prev - 1;
+//   //     });
+//   //   }, 1000);
+//   // };
+
+// const startCountdown = () => {
+//   // Clear existing timer if it exists
+//   if (timerRef.current) {
+//     clearInterval(timerRef.current);
+//     timerRef.current = null;
+//   }
+  
+//   setResendDisabled(true);
+//   setCountdown(600); // 10 minutes
+  
+//   timerRef.current = setInterval(() => {
+//     setCountdown((prev) => {
+//       if (prev <= 1) {
+//         clearInterval(timerRef.current);
+//         timerRef.current = null;
+//         setResendDisabled(false);
+//         return 0;
+//       }
+//       return prev - 1;
+//     });
+//   }, 1000);
+// };
+ 
 //   const handleGoogleSuccess = (data) => {
 //     if (data.isNewUser) {
 //       toast.success('Account created successfully!', {
@@ -159,7 +313,7 @@
 
 //           <div className="max-w-5xl mx-auto">
 //             <div className="grid md:grid-cols-12 gap-6 items-start">
-//               {/* Left Column - Member Benefits (Smaller) */}
+//               {/* Left Column - Member Benefits */}
 //               <motion.div
 //                 initial={{ opacity: 0, x: -30 }}
 //                 animate={{ opacity: 1, x: 0 }}
@@ -218,7 +372,7 @@
 //                 </div>
 //               </motion.div>
 
-//               {/* Right Column - Registration Form (Larger) */}
+//               {/* Right Column - Registration Form */}
 //               <motion.div
 //                 initial={{ opacity: 0, x: 30 }}
 //                 animate={{ opacity: 1, x: 0 }}
@@ -378,8 +532,6 @@
 //                         />
 //                       </div>
 
-                   
-
 //                       {/* Password */}
 //                       <div className="col-span-2 md:col-span-1">
 //                         <label className="block text-xs font-medium text-gray-700 mb-1">
@@ -457,7 +609,7 @@
 //                     </div>
 
 //                     {/* Submit Button */}
-//                     <div className="mt-4">
+//                     {/* <div className="mt-4">
 //                       <button
 //                         type="submit"
 //                         disabled={isSubmitting}
@@ -479,7 +631,32 @@
 //                           'Create Account'
 //                         )}
 //                       </button>
-//                     </div>
+//                     </div> */}
+
+//                     {/* Submit Button */}
+// <div className="mt-4">
+//   <button
+//     type="submit"
+//     disabled={isSubmitting || !formData.agreeToTerms}
+//     className="w-full px-6 py-2.5 text-sm text-white rounded-lg hover:opacity-90 transition-all transform hover:scale-105 flex items-center justify-center gap-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+//     style={{ 
+//       background: 'linear-gradient(135deg, #d9884e 0%, #e6a87c 100%)',
+//       opacity: (isSubmitting || !formData.agreeToTerms) ? 0.7 : 1
+//     }}
+//   >
+//     {isSubmitting ? (
+//       <>
+//         <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+//           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+//           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+//         </svg>
+//         Creating Account...
+//       </>
+//     ) : (
+//       'Create Account'
+//     )}
+//   </button>
+// </div>
 
 //                     {/* Divider */}
 //                     <div className="relative my-3">
@@ -514,11 +691,145 @@
 //           </div>
 //         </div>
 //       </div>
+
+//       {/* OTP Verification Modal */}
+//      {/* OTP Verification Modal */}
+// <AnimatePresence>
+//   {showOtpModal && (
+//     <motion.div
+//       initial={{ opacity: 0 }}
+//       animate={{ opacity: 1 }}
+//       exit={{ opacity: 0 }}
+//       className="fixed inset-0 z-50 flex items-center justify-center p-4"
+//       style={{ 
+//         background: 'rgba(255, 255, 255, 0.1)',
+//         backdropFilter: 'blur(12px)',
+//         WebkitBackdropFilter: 'blur(12px)'
+//       }}
+//       onClick={() => !isVerifying && setShowOtpModal(false)}
+//     >
+//       <motion.div
+//         initial={{ scale: 0.9, opacity: 0, y: 20 }}
+//         animate={{ scale: 1, opacity: 1, y: 0 }}
+//         exit={{ scale: 0.9, opacity: 0, y: 20 }}
+//         transition={{ type: "spring", damping: 25, stiffness: 300 }}
+//         className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative"
+//         onClick={(e) => e.stopPropagation()}
+//       >
+//         {/* Close button */}
+//         {/* <button
+//           onClick={() => setShowOtpModal(false)}
+//           disabled={isVerifying}
+//           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+//         >
+//           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+//           </svg>
+//         </button> */}
+//         <button
+//   onClick={() => {
+//     // Clear timer when modal closes
+//     if (timerRef.current) {
+//       clearInterval(timerRef.current);
+//       timerRef.current = null;
+//     }
+//     setShowOtpModal(false);
+//   }}
+//   disabled={isVerifying}
+//   className="w-full text-sm text-gray-500 hover:text-gray-700 transition-colors"
+// >
+//   Cancel
+// </button>
+
+//         <div className="text-center mb-6">
+//           <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+//             <svg className="w-8 h-8 text-[#d9884e]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+//             </svg>
+//           </div>
+//           <h3 className="text-xl font-bold text-gray-900 mb-2">Verify Your Email</h3>
+//           <p className="text-sm text-gray-600">
+//             We've sent a verification code to <br />
+//             <span className="font-semibold text-[#d9884e]">{otpEmail}</span>
+//           </p>
+//         </div>
+
+//         <div className="mb-6">
+//           <label className="block text-sm font-medium text-gray-700 mb-2">
+//             Enter OTP Code
+//           </label>
+//           <div className="flex justify-center gap-2">
+//             <input
+//               type="text"
+//               maxLength="6"
+//               value={otp}
+//               onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+//               placeholder="000000"
+//               className="w-full px-4 py-3 text-center text-2xl tracking-wider border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d9884e] focus:border-[#d9884e] focus:outline-none transition-all"
+//               autoFocus
+//               disabled={isVerifying}
+//             />
+//           </div>
+//           <p className="text-xs text-gray-500 mt-3 text-center">
+//             Enter the 6-digit code sent to your email
+//           </p>
+//         </div>
+
+//         <button
+//           onClick={handleVerifyOTP}
+//           disabled={isVerifying || otp.length !== 6}
+//           className="w-full py-3 text-white rounded-lg font-medium transition-all transform hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 shadow-md hover:shadow-lg"
+//           style={{ background: 'linear-gradient(135deg, #d9884e 0%, #e6a87c 100%)' }}
+//         >
+//           {isVerifying ? (
+//             <span className="flex items-center justify-center gap-2">
+//               <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+//                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+//                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+//               </svg>
+//               Verifying...
+//             </span>
+//           ) : (
+//             'Verify & Continue'
+//           )}
+//         </button>
+
+//         <div className="mt-4 text-center">
+//           {/* <button
+//             onClick={handleResendOTP}
+//             disabled={resendDisabled}
+//             className="text-sm text-[#d9884e] hover:text-[#c9773e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+//           >
+//             {resendDisabled ? `Resend OTP in ${countdown}s` : 'Resend OTP'}
+//           </button> */}
+
+//      <button
+//   onClick={handleResendOTP}
+//   disabled={resendDisabled}
+//   className="text-sm text-[#d9884e] hover:text-[#c9773e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+// >
+//   {resendDisabled ? `Resend OTP in ${formatTime(countdown)}` : 'Resend OTP'}
+// </button>
+//         </div>
+
+//         <div className="mt-4 pt-4 border-t border-gray-200">
+//           <button
+//             onClick={() => setShowOtpModal(false)}
+//             disabled={isVerifying}
+//             className="w-full text-sm text-gray-500 hover:text-gray-700 transition-colors"
+//           >
+//             Cancel
+//           </button>
+//         </div>
+//       </motion.div>
+//     </motion.div>
+//   )}
+// </AnimatePresence>
+
 //       <Footer />
 //     </>
 //   );
 // }
-
 
 'use client';
 
@@ -530,6 +841,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import GoogleLoginButton from '../components/GoogleLoginButton';
+import { Leaf, Mail, Lock, Eye, EyeOff, User, Building, Phone, MapPin, Globe, CheckCircle, Award, Truck, Shield } from 'lucide-react';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -563,11 +875,11 @@ export default function RegisterPage() {
   const timerRef = useRef(null);
 
   // Helper function to format seconds as MM:SS
-const formatTime = (seconds) => {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-};
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -581,14 +893,12 @@ const formatTime = (seconds) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       toast.error('Passwords do not match');
       setIsSubmitting(false);
       return;
     }
 
-    // Validate terms agreement
     if (!formData.agreeToTerms) {
       toast.error('Please agree to the terms and conditions');
       setIsSubmitting(false);
@@ -627,20 +937,16 @@ const formatTime = (seconds) => {
         return;
       }
 
-      // Success - Show OTP modal instead of redirecting
       toast.success('Registration initiated!', {
         description: 'Please enter the OTP sent to your email.',
         duration: 4000,
       });
 
-      // Store email and show OTP modal
       setOtpEmail(formData.email);
       setRegistrationData(data);
       setShowOtpModal(true);
       setOtp('');
       setIsSubmitting(false);
-
-      // Start countdown for resend button
       startCountdown();
 
     } catch (error) {
@@ -683,17 +989,15 @@ const formatTime = (seconds) => {
         return;
       }
 
-      // Success - store token and redirect
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       
       toast.success('Email verified successfully!', {
-        description: 'Welcome to Asian Clothify!',
+        description: 'Welcome to Jute Craftify!',
       });
 
       setShowOtpModal(false);
       
-      // Redirect based on role
       setTimeout(() => {
         if (data.user.role === 'admin') {
           router.push('/admin/dashboard');
@@ -742,7 +1046,6 @@ const formatTime = (seconds) => {
         description: 'Please check your email.',
       });
 
-      // Reset countdown
       startCountdown();
 
     } catch (error) {
@@ -752,43 +1055,27 @@ const formatTime = (seconds) => {
     }
   };
 
-  // const startCountdown = () => {
-  //   setResendDisabled(true);
-  //   setCountdown(600);
-  //   const timer = setInterval(() => {
-  //     setCountdown((prev) => {
-  //       if (prev <= 1) {
-  //         clearInterval(timer);
-  //         setResendDisabled(false);
-  //         return 0;
-  //       }
-  //       return prev - 1;
-  //     });
-  //   }, 1000);
-  // };
-
-const startCountdown = () => {
-  // Clear existing timer if it exists
-  if (timerRef.current) {
-    clearInterval(timerRef.current);
-    timerRef.current = null;
-  }
-  
-  setResendDisabled(true);
-  setCountdown(600); // 10 minutes
-  
-  timerRef.current = setInterval(() => {
-    setCountdown((prev) => {
-      if (prev <= 1) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-        setResendDisabled(false);
-        return 0;
-      }
-      return prev - 1;
-    });
-  }, 1000);
-};
+  const startCountdown = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    
+    setResendDisabled(true);
+    setCountdown(600);
+    
+    timerRef.current = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+          setResendDisabled(false);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
  
   const handleGoogleSuccess = (data) => {
     if (data.isNewUser) {
@@ -802,548 +1089,569 @@ const startCountdown = () => {
     toast.error(error);
   };
 
-  // Icons for benefits
-  const ShoppingBagIcon = () => (
-    <svg className="w-12 h-12" style={{ color: '#d9884e' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-    </svg>
-  );
+  const benefits = [
+    { icon: Award, title: 'Bulk Discounts', desc: 'Special pricing for bulk orders' },
+    { icon: Shield, title: 'Quality Guaranteed', desc: '100% inspection before shipping' },
+    { icon: Globe, title: 'Global Shipping', desc: 'Fast delivery to 35+ countries' },
+    { icon: Truck, title: 'Factory Direct', desc: 'No middlemen, best prices' },
+  ];
 
   return (
     <>
       <Navbar />
-      <div className="min-h-screen md:mt-12 mt-4 bg-gradient-to-br from-orange-50 to-amber-50 pt-24 pb-12">
-        <div className="container mx-auto px-4">
+      <div className="min-h-screen bg-[#F5F0EB] pt-20 pb-8">
+        <div className="container mx-auto px-4 max-w-7xl">
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-8"
+            transition={{ duration: 0.5 }}
+            className="text-center mb-6"
           >
-            <h1 className="text-2xl md:text-4xl font-bold text-gray-900 md:mb-3 mb-1">
-              Join{' '}
-              <span style={{ color: '#d9884e' }}>Asian Clothify</span>
+            <div className="inline-flex items-center gap-2 bg-[#F5E6D3] rounded-full px-3 py-1 mb-3">
+              <Leaf className="w-3.5 h-3.5 text-[#3bc24f]" />
+              <span className="text-[#6B4F3A] text-xs font-medium">Premium Jute Products Supplier</span>
+            </div>
+            <h1 className="text-2xl md:text-3xl font-bold text-[#6B4F3A] font-serif">
+              Join <span className="text-[#3bc24f]">Jute Craftify</span>
             </h1>
-            <p className="text-gray-600 md:text-lg max-w-2xl mx-auto text-sm">
-              Create your wholesale account and start ordering bulk fashion
-            </p>
+            <p className="text-gray-500 text-sm mt-1 font-sans">Create your wholesale account and start ordering premium jute products</p>
           </motion.div>
 
-          <div className="max-w-5xl mx-auto">
-            <div className="grid md:grid-cols-12 gap-6 items-start">
-              {/* Left Column - Member Benefits */}
+          <div className="max-w-6xl mx-auto">
+            <div className="grid lg:grid-cols-2 gap-6">
+              {/* Left Side - Benefits Section */}
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="hidden md:block md:col-span-4"
+                transition={{ duration: 0.6 }}
+                className="relative rounded-2xl overflow-hidden min-h-[500px] flex items-center"
               >
-                <div className="bg-white rounded-xl shadow-lg p-5 border border-orange-100 sticky top-24">
-                  <div className="flex justify-center mb-4">
-                    <div className="p-3 rounded-full" style={{ backgroundColor: '#d9884e20' }}>
-                      <ShoppingBagIcon />
+                <div 
+                  className="absolute inset-0 bg-cover bg-center"
+                  style={{
+                    backgroundImage: `url('https://i.ibb.co.com/G4RJnfg0/nuts-glass-autumn-leaves.jpg')`,
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#6B4F3A]/90 to-[#2A1B14]/95"></div>
+                </div>
+
+                <div className="relative z-10 p-6 text-white w-full">
+                  <div className="mb-4">
+                    <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md rounded-full px-3 py-1 border border-white/30">
+                      <Leaf className="w-3.5 h-3.5 text-[#3bc24f]" />
+                      <span className="text-xs font-medium">Wholesale Partner Benefits</span>
                     </div>
                   </div>
-                  
-                  <h2 className="text-lg font-bold text-gray-900 text-center mb-3">
-                    Member Benefits
+
+                  <h2 className="text-2xl md:text-3xl font-bold font-serif mb-3">
+                    Grow Your Business With Us
                   </h2>
+                  
+                  <p className="text-white/80 text-sm mb-6 font-sans">
+                    Join hundreds of satisfied global buyers who trust Jute Craftify for premium quality jute products.
+                  </p>
 
-                  <div className="space-y-2">
-                    {[
-                      { icon: '🚀', title: 'Bulk Discounts', desc: 'Special pricing for bulk orders' },
-                      { icon: '✨', title: 'Quality Guaranteed', desc: '100% inspection guaranteed' },
-                      { icon: '🌍', title: 'Global Shipping', desc: 'Fast delivery worldwide' },
-                      { icon: '🏷️', title: 'Wholesale Prices', desc: 'Factory direct pricing' },
-                    ].map((item, index) => (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.3 + index * 0.1 }}
-                        className="flex items-start gap-2 p-2 rounded-lg hover:bg-orange-50 transition-colors"
-                      >
-                        <div className="text-xl">{item.icon}</div>
-                        <div>
-                          <h3 className="font-semibold text-gray-900 text-sm">{item.title}</h3>
-                          <p className="text-xs text-gray-600">{item.desc}</p>
-                        </div>
-                      </motion.div>
-                    ))}
+                  <div className="space-y-3 mb-6">
+                    {benefits.map((benefit, index) => {
+                      const Icon = benefit.icon;
+                      return (
+                        <motion.div
+                          key={index}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.2 + index * 0.1 }}
+                          className="flex items-start gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-[#3bc24f]/20 flex items-center justify-center flex-shrink-0">
+                            <Icon className="w-4 h-4 text-[#3bc24f]" />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-sm">{benefit.title}</h3>
+                            <p className="text-xs text-white/70">{benefit.desc}</p>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
                   </div>
 
-                  {/* Stats */}
-                  <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-gray-200">
-                    <div className="text-center">
-                      <p className="text-lg font-bold" style={{ color: '#d9884e' }}>500+</p>
-                      <p className="text-xs text-gray-500">Members</p>
+                  <div className="flex flex-wrap gap-3 pt-3 border-t border-white/20">
+                    <div className="flex items-center gap-1.5">
+                      <CheckCircle className="w-4 h-4 text-[#3bc24f]" />
+                      <div>
+                        <p className="text-[10px] text-white/60">Happy Clients</p>
+                        <p className="font-semibold text-xs">500+</p>
+                      </div>
                     </div>
-                    <div className="text-center border-x border-gray-200">
-                      <p className="text-lg font-bold" style={{ color: '#d9884e' }}>50+</p>
-                      <p className="text-xs text-gray-500">Countries</p>
+                    <div className="flex items-center gap-1.5">
+                      <Globe className="w-4 h-4 text-[#3bc24f]" />
+                      <div>
+                        <p className="text-[10px] text-white/60">Countries</p>
+                        <p className="font-semibold text-xs">35+</p>
+                      </div>
                     </div>
-                    <div className="text-center">
-                      <p className="text-lg font-bold" style={{ color: '#d9884e' }}>10k+</p>
-                      <p className="text-xs text-gray-500">Orders</p>
+                    <div className="flex items-center gap-1.5">
+                      <Truck className="w-4 h-4 text-[#3bc24f]" />
+                      <div>
+                        <p className="text-[10px] text-white/60">Orders Shipped</p>
+                        <p className="font-semibold text-xs">10K+</p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </motion.div>
 
-              {/* Right Column - Registration Form */}
+              {/* Right Side - Registration Form */}
               <motion.div
                 initial={{ opacity: 0, x: 30 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="md:col-span-8"
+                transition={{ duration: 0.6 }}
+                className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100"
               >
-                <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                  {/* Form Header */}
-                  <div className="px-6 py-4 text-center" style={{ background: 'linear-gradient(135deg, #d9884e 0%, #e6a87c 100%)' }}>
-                    <h2 className="text-xl font-bold text-white">Create Account</h2>
-                    <p className="text-orange-100 text-xs mt-0.5">Start your wholesale journey today</p>
+                <div className="text-center mb-5">
+                  <div className="w-12 h-12 rounded-xl bg-[#F5E6D3] flex items-center justify-center mx-auto mb-3">
+                    <User className="w-6 h-6 text-[#3bc24f]" />
                   </div>
+                  <h2 className="text-xl font-bold text-[#6B4F3A] font-serif">Create Account</h2>
+                  <p className="text-gray-500 text-xs mt-0.5 font-sans">Start your wholesale journey today</p>
+                </div>
 
-                  <form onSubmit={handleSubmit} className="p-6">
-                    <div className="grid md:grid-cols-2 gap-3">
-                      {/* Company Name */}
-                      <div className="col-span-2 md:col-span-1">
-                        <label className="block text-xs font-medium text-gray-700 mb-1">
-                          Company Name <span style={{ color: '#d9884e' }}>*</span>
-                        </label>
+                <form onSubmit={handleSubmit}>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    {/* Company Name */}
+                    <div className="col-span-2 md:col-span-1">
+                      <label className="block text-xs font-medium text-gray-700 mb-1 font-sans">
+                        Company Name <span className="text-[#3bc24f]">*</span>
+                      </label>
+                      <div className="relative">
+                        <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                         <input
                           type="text"
                           name="companyName"
                           value={formData.companyName}
                           onChange={handleChange}
                           required
-                          className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d9884e] focus:border-[#d9884e]"
+                          className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3bc24f] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
                           placeholder="Your company name"
                         />
                       </div>
+                    </div>
 
-                      {/* Contact Person */}
-                      <div className="col-span-2 md:col-span-1">
-                        <label className="block text-xs font-medium text-gray-700 mb-1">
-                          Contact Person <span style={{ color: '#d9884e' }}>*</span>
-                        </label>
+                    {/* Contact Person */}
+                    <div className="col-span-2 md:col-span-1">
+                      <label className="block text-xs font-medium text-gray-700 mb-1 font-sans">
+                        Contact Person <span className="text-[#3bc24f]">*</span>
+                      </label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                         <input
                           type="text"
                           name="contactPerson"
                           value={formData.contactPerson}
                           onChange={handleChange}
                           required
-                          className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d9884e] focus:border-[#d9884e]"
+                          className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3bc24f] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
                           placeholder="Full name"
                         />
                       </div>
+                    </div>
 
-                      {/* Email */}
-                      <div className="col-span-2">
-                        <label className="block text-xs font-medium text-gray-700 mb-1">
-                          Email Address <span style={{ color: '#d9884e' }}>*</span>
-                        </label>
+                    {/* Email */}
+                    <div className="col-span-2">
+                      <label className="block text-xs font-medium text-gray-700 mb-1 font-sans">
+                        Email Address <span className="text-[#3bc24f]">*</span>
+                      </label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                         <input
                           type="email"
                           name="email"
                           value={formData.email}
                           onChange={handleChange}
                           required
-                          className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d9884e] focus:border-[#d9884e]"
+                          className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3bc24f] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
                           placeholder="your@company.com"
                         />
                       </div>
+                    </div>
 
-                      {/* Phone */}
-                      <div className="col-span-2 md:col-span-1">
-                        <label className="block text-xs font-medium text-gray-700 mb-1">
-                          Phone Number <span style={{ color: '#d9884e' }}>*</span>
-                        </label>
+                    {/* Phone */}
+                    <div className="col-span-2 md:col-span-1">
+                      <label className="block text-xs font-medium text-gray-700 mb-1 font-sans">
+                        Phone Number <span className="text-[#3bc24f]">*</span>
+                      </label>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                         <input
                           type="tel"
                           name="phone"
                           value={formData.phone}
                           onChange={handleChange}
                           required
-                          className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d9884e] focus:border-[#d9884e]"
+                          className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3bc24f] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
                           placeholder="+1 234 567 8900"
                         />
                       </div>
+                    </div>
 
-                      {/* WhatsApp */}
-                      <div className="col-span-2 md:col-span-1">
-                        <label className="block text-xs font-medium text-gray-700 mb-1">
-                          WhatsApp Number <span style={{ color: '#d9884e' }}>*</span>
-                        </label>
+                    {/* WhatsApp */}
+                    <div className="col-span-2 md:col-span-1">
+                      <label className="block text-xs font-medium text-gray-700 mb-1 font-sans">
+                        WhatsApp Number <span className="text-[#3bc24f]">*</span>
+                      </label>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                         <input
                           type="tel"
                           name="whatsapp"
                           value={formData.whatsapp}
                           onChange={handleChange}
                           required
-                          className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d9884e] focus:border-[#d9884e]"
+                          className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3bc24f] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
                           placeholder="+1 234 567 8900"
                         />
                       </div>
+                    </div>
 
-                      {/* Country */}
-                      <div className="col-span-2 md:col-span-1">
-                        <label className="block text-xs font-medium text-gray-700 mb-1">
-                          Country <span style={{ color: '#d9884e' }}>*</span>
-                        </label>
+                    {/* Country */}
+                    <div className="col-span-2 md:col-span-1">
+                      <label className="block text-xs font-medium text-gray-700 mb-1 font-sans">
+                        Country <span className="text-[#3bc24f]">*</span>
+                      </label>
+                      <div className="relative">
+                        <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                         <input
                           type="text"
                           name="country"
                           value={formData.country}
                           onChange={handleChange}
                           required
-                          className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d9884e] focus:border-[#d9884e]"
+                          className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3bc24f] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
                           placeholder="United States"
                         />
                       </div>
+                    </div>
 
-                      {/* City */}
-                      <div className="col-span-2 md:col-span-1">
-                        <label className="block text-xs font-medium text-gray-700 mb-1">
-                          City <span style={{ color: '#d9884e' }}>*</span>
-                        </label>
+                    {/* City */}
+                    <div className="col-span-2 md:col-span-1">
+                      <label className="block text-xs font-medium text-gray-700 mb-1 font-sans">
+                        City <span className="text-[#3bc24f]">*</span>
+                      </label>
+                      <div className="relative">
+                        <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                         <input
                           type="text"
                           name="city"
                           value={formData.city}
                           onChange={handleChange}
                           required
-                          className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d9884e] focus:border-[#d9884e]"
+                          className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3bc24f] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
                           placeholder="New York"
                         />
                       </div>
+                    </div>
 
-                      {/* Address */}
-                      <div className="col-span-1">
-                        <label className="block text-xs font-medium text-gray-700 mb-1">
-                          Street Address <span style={{ color: '#d9884e' }}>*</span>
-                        </label>
+                    {/* Address */}
+                    <div className="col-span-1">
+                      <label className="block text-xs font-medium text-gray-700 mb-1 font-sans">
+                        Street Address <span className="text-[#3bc24f]">*</span>
+                      </label>
+                      <div className="relative">
+                        <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                         <input
                           type="text"
                           name="address"
                           value={formData.address}
                           onChange={handleChange}
                           required
-                          className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d9884e] focus:border-[#d9884e]"
+                          className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3bc24f] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
                           placeholder="123 Business St"
                         />
                       </div>
+                    </div>
 
-                      {/* Zip Code */}
-                      <div className="col-span-2 md:col-span-1">
-                        <label className="block text-xs font-medium text-gray-700 mb-1">
-                          Zip Code <span style={{ color: '#d9884e' }}>*</span>
-                        </label>
+                    {/* Zip Code */}
+                    <div className="col-span-2 md:col-span-1">
+                      <label className="block text-xs font-medium text-gray-700 mb-1 font-sans">
+                        Zip Code <span className="text-[#3bc24f]">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="zipCode"
+                        value={formData.zipCode}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3bc24f] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                        placeholder="10001"
+                      />
+                    </div>
+
+                    {/* Password */}
+                    <div className="col-span-2 md:col-span-1">
+                      <label className="block text-xs font-medium text-gray-700 mb-1 font-sans">
+                        Password <span className="text-[#3bc24f]">*</span>
+                      </label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                         <input
-                          type="text"
-                          name="zipCode"
-                          value={formData.zipCode}
+                          type={showPassword ? "text" : "password"}
+                          name="password"
+                          value={formData.password}
                           onChange={handleChange}
                           required
-                          className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d9884e] focus:border-[#d9884e]"
-                          placeholder="10001"
+                          minLength="8"
+                          className="w-full pl-9 pr-9 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3bc24f] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                          placeholder="Min. 8 characters"
                         />
-                      </div>
-
-                      {/* Password */}
-                      <div className="col-span-2 md:col-span-1">
-                        <label className="block text-xs font-medium text-gray-700 mb-1">
-                          Password <span style={{ color: '#d9884e' }}>*</span>
-                        </label>
-                        <div className="relative">
-                          <input
-                            type={showPassword ? "text" : "password"}
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                            minLength="8"
-                            className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d9884e] focus:border-[#d9884e]"
-                            placeholder="Min. 8 characters"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute inset-y-0 right-0 pr-2 flex items-center text-sm"
-                          >
-                            {showPassword ? '👁️' : '👁️‍🗨️'}
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Confirm Password */}
-                      <div className="col-span-2 md:col-span-1">
-                        <label className="block text-xs font-medium text-gray-700 mb-1">
-                          Confirm Password <span style={{ color: '#d9884e' }}>*</span>
-                        </label>
-                        <div className="relative">
-                          <input
-                            type={showConfirmPassword ? "text" : "password"}
-                            name="confirmPassword"
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            required
-                            minLength="8"
-                            className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d9884e] focus:border-[#d9884e]"
-                            placeholder="Re-enter password"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            className="absolute inset-y-0 right-0 pr-2 flex items-center text-sm"
-                          >
-                            {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Terms Agreement */}
-                      <div className="col-span-2">
-                        <label className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            name="agreeToTerms"
-                            checked={formData.agreeToTerms}
-                            onChange={handleChange}
-                            className="rounded border-gray-300 text-[#d9884e] focus:ring-[#d9884e]"
-                          />
-                          <span className="text-xs text-gray-600">
-                            I agree to the{' '}
-                            <Link href="/terms" className="text-[#d9884e] hover:underline">
-                              Terms
-                            </Link>{' '}
-                            and{' '}
-                            <Link href="/privacy" className="text-[#d9884e] hover:underline">
-                              Privacy
-                            </Link>
-                          </span>
-                        </label>
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                        >
+                          {showPassword ? (
+                            <EyeOff className="w-3.5 h-3.5 text-gray-400 hover:text-[#3bc24f]" />
+                          ) : (
+                            <Eye className="w-3.5 h-3.5 text-gray-400 hover:text-[#3bc24f]" />
+                          )}
+                        </button>
                       </div>
                     </div>
 
-                    {/* Submit Button */}
-                    {/* <div className="mt-4">
-                      <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="w-full px-6 py-2.5 text-sm text-white rounded-lg hover:opacity-90 transition-all transform hover:scale-105 flex items-center justify-center gap-2 font-medium"
-                        style={{ 
-                          background: 'linear-gradient(135deg, #d9884e 0%, #e6a87c 100%)',
-                          opacity: isSubmitting ? 0.7 : 1
-                        }}
-                      >
-                        {isSubmitting ? (
-                          <>
-                            <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            Creating Account...
-                          </>
-                        ) : (
-                          'Create Account'
-                        )}
-                      </button>
-                    </div> */}
-
-                    {/* Submit Button */}
-<div className="mt-4">
-  <button
-    type="submit"
-    disabled={isSubmitting || !formData.agreeToTerms}
-    className="w-full px-6 py-2.5 text-sm text-white rounded-lg hover:opacity-90 transition-all transform hover:scale-105 flex items-center justify-center gap-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-    style={{ 
-      background: 'linear-gradient(135deg, #d9884e 0%, #e6a87c 100%)',
-      opacity: (isSubmitting || !formData.agreeToTerms) ? 0.7 : 1
-    }}
-  >
-    {isSubmitting ? (
-      <>
-        <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-        Creating Account...
-      </>
-    ) : (
-      'Create Account'
-    )}
-  </button>
-</div>
-
-                    {/* Divider */}
-                    <div className="relative my-3">
-                      <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-gray-300" />
-                      </div>
-                      <div className="relative flex justify-center text-xs">
-                        <span className="px-2 bg-white text-gray-500">Or sign up with</span>
+                    {/* Confirm Password */}
+                    <div className="col-span-2 md:col-span-1">
+                      <label className="block text-xs font-medium text-gray-700 mb-1 font-sans">
+                        Confirm Password <span className="text-[#3bc24f]">*</span>
+                      </label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                        <input
+                          type={showConfirmPassword ? "text" : "password"}
+                          name="confirmPassword"
+                          value={formData.confirmPassword}
+                          onChange={handleChange}
+                          required
+                          minLength="8"
+                          className="w-full pl-9 pr-9 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3bc24f] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                          placeholder="Re-enter password"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                        >
+                          {showConfirmPassword ? (
+                            <EyeOff className="w-3.5 h-3.5 text-gray-400 hover:text-[#3bc24f]" />
+                          ) : (
+                            <Eye className="w-3.5 h-3.5 text-gray-400 hover:text-[#3bc24f]" />
+                          )}
+                        </button>
                       </div>
                     </div>
 
-                    {/* Google Sign Up Button */}
-                    <GoogleLoginButton 
-                      mode="signup"
-                      onSuccess={handleGoogleSuccess}
-                      onError={handleGoogleError}
-                    />
-
-                    {/* Login Link */}
-                    <div className="text-center mt-3">
-                      <p className="text-xs text-gray-600">
-                        Already have an account?{' '}
-                        <Link href="/login" className="font-medium hover:underline" style={{ color: '#d9884e' }}>
-                          Sign in
-                        </Link>
-                      </p>
+                    {/* Terms Agreement */}
+                    <div className="col-span-2">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          name="agreeToTerms"
+                          checked={formData.agreeToTerms}
+                          onChange={handleChange}
+                          className="rounded border-gray-300 text-[#3bc24f] focus:ring-[#3bc24f] w-3.5 h-3.5"
+                        />
+                        <span className="text-xs text-gray-600 font-sans">
+                          I agree to the{' '}
+                          <Link href="/terms" className="text-[#3bc24f] hover:underline">
+                            Terms
+                          </Link>{' '}
+                          and{' '}
+                          <Link href="/privacy" className="text-[#3bc24f] hover:underline">
+                            Privacy Policy
+                          </Link>
+                        </span>
+                      </label>
                     </div>
-                  </form>
-                </div>
+                  </div>
+
+                  {/* Submit Button */}
+                  <div className="mt-5">
+                    <button
+                      type="submit"
+                      disabled={isSubmitting || !formData.agreeToTerms}
+                      className="w-full bg-[#3bc24f] text-white py-2.5 rounded-lg font-semibold hover:bg-[#2da63f] transition-all duration-300 flex items-center justify-center gap-2 font-sans disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Creating Account...
+                        </>
+                      ) : (
+                        'Create Account'
+                      )}
+                    </button>
+                  </div>
+
+                  {/* Divider */}
+                  <div className="relative my-4">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-200" />
+                    </div>
+                    <div className="relative flex justify-center text-xs">
+                      <span className="px-2 bg-white text-gray-500 font-sans">Or sign up with</span>
+                    </div>
+                  </div>
+
+                  {/* Google Sign Up Button */}
+                  <GoogleLoginButton 
+                    mode="signup"
+                    onSuccess={handleGoogleSuccess}
+                    onError={handleGoogleError}
+                  />
+
+                  {/* Login Link */}
+                  <div className="text-center mt-4">
+                    <p className="text-xs text-gray-600 font-sans">
+                      Already have an account?{' '}
+                      <Link href="/login" className="font-semibold text-[#3bc24f] hover:underline">
+                        Sign in
+                      </Link>
+                    </p>
+                  </div>
+                </form>
               </motion.div>
             </div>
           </div>
+
+          {/* Trust Bar */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.8 }}
+            className="mt-6 pt-4 border-t border-gray-200"
+          >
+            <div className="flex flex-wrap justify-center gap-6">
+              <div className="flex items-center gap-1.5">
+                <CheckCircle className="w-3.5 h-3.5 text-[#3bc24f]" />
+                <span className="text-[10px] text-gray-500 font-sans">ISO 9001:2015 Certified</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <CheckCircle className="w-3.5 h-3.5 text-[#3bc24f]" />
+                <span className="text-[10px] text-gray-500 font-sans">GOTS Certified</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <CheckCircle className="w-3.5 h-3.5 text-[#3bc24f]" />
+                <span className="text-[10px] text-gray-500 font-sans">Fair Trade Certified</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <CheckCircle className="w-3.5 h-3.5 text-[#3bc24f]" />
+                <span className="text-[10px] text-gray-500 font-sans">OEKO-TEX Certified</span>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
 
       {/* OTP Verification Modal */}
-     {/* OTP Verification Modal */}
-<AnimatePresence>
-  {showOtpModal && (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ 
-        background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)'
-      }}
-      onClick={() => !isVerifying && setShowOtpModal(false)}
-    >
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0, y: 20 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.9, opacity: 0, y: 20 }}
-        transition={{ type: "spring", damping: 25, stiffness: 300 }}
-        className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Close button */}
-        {/* <button
-          onClick={() => setShowOtpModal(false)}
-          disabled={isVerifying}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button> */}
-        <button
-  onClick={() => {
-    // Clear timer when modal closes
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-    setShowOtpModal(false);
-  }}
-  disabled={isVerifying}
-  className="w-full text-sm text-gray-500 hover:text-gray-700 transition-colors"
->
-  Cancel
-</button>
-
-        <div className="text-center mb-6">
-          <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-[#d9884e]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-          </div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">Verify Your Email</h3>
-          <p className="text-sm text-gray-600">
-            We've sent a verification code to <br />
-            <span className="font-semibold text-[#d9884e]">{otpEmail}</span>
-          </p>
-        </div>
-
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Enter OTP Code
-          </label>
-          <div className="flex justify-center gap-2">
-            <input
-              type="text"
-              maxLength="6"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-              placeholder="000000"
-              className="w-full px-4 py-3 text-center text-2xl tracking-wider border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d9884e] focus:border-[#d9884e] focus:outline-none transition-all"
-              autoFocus
-              disabled={isVerifying}
-            />
-          </div>
-          <p className="text-xs text-gray-500 mt-3 text-center">
-            Enter the 6-digit code sent to your email
-          </p>
-        </div>
-
-        <button
-          onClick={handleVerifyOTP}
-          disabled={isVerifying || otp.length !== 6}
-          className="w-full py-3 text-white rounded-lg font-medium transition-all transform hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 shadow-md hover:shadow-lg"
-          style={{ background: 'linear-gradient(135deg, #d9884e 0%, #e6a87c 100%)' }}
-        >
-          {isVerifying ? (
-            <span className="flex items-center justify-center gap-2">
-              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-              </svg>
-              Verifying...
-            </span>
-          ) : (
-            'Verify & Continue'
-          )}
-        </button>
-
-        <div className="mt-4 text-center">
-          {/* <button
-            onClick={handleResendOTP}
-            disabled={resendDisabled}
-            className="text-sm text-[#d9884e] hover:text-[#c9773e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+      <AnimatePresence>
+        {showOtpModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ 
+              background: 'rgba(0, 0, 0, 0.6)',
+              backdropFilter: 'blur(8px)',
+            }}
+            onClick={() => !isVerifying && setShowOtpModal(false)}
           >
-            {resendDisabled ? `Resend OTP in ${countdown}s` : 'Resend OTP'}
-          </button> */}
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-[#F5E6D3] rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Mail className="w-8 h-8 text-[#3bc24f]" />
+                </div>
+                <h3 className="text-xl font-bold text-[#6B4F3A] font-serif mb-2">Verify Your Email</h3>
+                <p className="text-sm text-gray-600 font-sans">
+                  We've sent a verification code to <br />
+                  <span className="font-semibold text-[#3bc24f]">{otpEmail}</span>
+                </p>
+              </div>
 
-     <button
-  onClick={handleResendOTP}
-  disabled={resendDisabled}
-  className="text-sm text-[#d9884e] hover:text-[#c9773e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
->
-  {resendDisabled ? `Resend OTP in ${formatTime(countdown)}` : 'Resend OTP'}
-</button>
-        </div>
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2 font-sans">
+                  Enter OTP Code
+                </label>
+                <input
+                  type="text"
+                  maxLength="6"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                  placeholder="000000"
+                  className="w-full px-4 py-3 text-center text-2xl tracking-wider border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3bc24f] focus:border-[#3bc24f] focus:outline-none transition-all font-mono"
+                  autoFocus
+                  disabled={isVerifying}
+                />
+                <p className="text-xs text-gray-500 mt-3 text-center font-sans">
+                  Enter the 6-digit code sent to your email
+                </p>
+              </div>
 
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          <button
-            onClick={() => setShowOtpModal(false)}
-            disabled={isVerifying}
-            className="w-full text-sm text-gray-500 hover:text-gray-700 transition-colors"
-          >
-            Cancel
-          </button>
-        </div>
-      </motion.div>
-    </motion.div>
-  )}
-</AnimatePresence>
+              <button
+                onClick={handleVerifyOTP}
+                disabled={isVerifying || otp.length !== 6}
+                className="w-full bg-[#3bc24f] text-white py-3 rounded-lg font-semibold hover:bg-[#2da63f] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-sans"
+              >
+                {isVerifying ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Verifying...
+                  </span>
+                ) : (
+                  'Verify & Continue'
+                )}
+              </button>
+
+              <div className="mt-4 text-center">
+                <button
+                  onClick={handleResendOTP}
+                  disabled={resendDisabled}
+                  className="text-sm text-[#3bc24f] hover:text-[#2da63f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium font-sans"
+                >
+                  {resendDisabled ? `Resend OTP in ${formatTime(countdown)}` : 'Resend OTP'}
+                </button>
+              </div>
+
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <button
+                  onClick={() => {
+                    if (timerRef.current) {
+                      clearInterval(timerRef.current);
+                      timerRef.current = null;
+                    }
+                    setShowOtpModal(false);
+                  }}
+                  disabled={isVerifying}
+                  className="w-full text-sm text-gray-500 hover:text-gray-700 transition-colors font-sans"
+                >
+                  Cancel
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <Footer />
     </>

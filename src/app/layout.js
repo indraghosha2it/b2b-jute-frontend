@@ -2,61 +2,6 @@
 
 
 
-// import { Geist, Geist_Mono } from "next/font/google";
-// import "./globals.css";
-// import { Toaster } from "sonner";
-// import LayoutContent from "./components/layout/LayoutContent";
-// import WhatsAppButton from "./components/layout/WhatsAppButton";
-// import ScrollToTop from "./components/layout/ScrollToTop";
-
-// const geistSans = Geist({
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-// });
-
-// const geistMono = Geist_Mono({
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-// });
-
-// export const metadata = {
-//   title: " Asian Clothify || B2B Wholesale Clothing Platform",
-//   description: "B2B Wholesale Clothing Platform",
-// };
-
-// export default function RootLayout({ children }) {
-//   return (
-//     <html lang="en"  data-theme="light" style={{ colorScheme: 'light' }}>
-//        <head>
-//         <meta name="color-scheme" content="light only" />
-//         <style>{`
-//           :root {
-//             color-scheme: light only;
-//           }
-//         `}</style>
-//       </head>
-//       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-//         {/* <LayoutContent> */}
-//           {children}
-//         {/* </LayoutContent> */}
-        
-//         <Toaster 
-//           position="top-right"
-//           richColors
-//           closeButton
-//           expand={true}
-//           duration={4000}
-//           theme="light"
-//         />
-//         <WhatsAppButton />
-//         <ScrollToTop />
-//       </body>
-//     </html>
-//   );
-// }
-
-
-
 // app/layout.js
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -78,8 +23,8 @@ const geistMono = Geist_Mono({
 // Default metadata for the entire site
 export const metadata = {
   title: {
-    default: "Asian Clothify || Top clothing seller in Bangladesh",
-    template: "%s || Asian Clothify"
+    default: "Jute Craftify || Eco-Friendly Jute Products",
+    template: "%s || Jute Craftify"
   },
   description: " Top clothing seller in Bangladesh - Premium wholesale clothing for businesses",
   keywords: ["wholesale clothing", "b2b clothing", "bulk clothing", "fashion wholesale"],

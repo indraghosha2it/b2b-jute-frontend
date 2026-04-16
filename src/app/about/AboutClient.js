@@ -1,979 +1,594 @@
-// app/about/page.jsx
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
-import { motion, useInView, useAnimation } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import { 
-  FaHandshake, 
-  FaShippingFast, 
-  FaChartLine, 
-  FaWhatsapp,
-  FaCheckCircle,
-  FaGlobe,
-  FaUsers,
-  FaIndustry,
-  FaStar,
-  FaShieldAlt,
-  FaAward,
-  FaRegClock,
-  FaRegHeart,
-  FaMapMarkerAlt,
-  FaPhone,
-  FaEnvelope,
-  FaFacebook,
-  FaInstagram,
-  FaTwitter,
-  FaTruck,
-  FaClock,
-  FaBoxOpen,
-  FaStore,
-  FaBuilding,
-  FaRoad,
-  FaBus,
-  FaCar
-} from 'react-icons/fa';
-import { MdVerified, MdSecurity, MdSupportAgent, MdStore, MdDirections } from 'react-icons/md';
-import { BsFillShopIcon, BsGeoAltFill } from 'react-icons/bs';
-import CountUp from 'react-countup';
+  Leaf, 
+  Award, 
+  Users, 
+  Package, 
+  Ship, 
+  CheckCircle,
+  MapPin,
+  Phone,
+  Mail,
+  Globe,
+  Facebook,
+  Instagram,
+  Twitter,
+  Linkedin,
+  Youtube,
+  Clock,
+  Star,
+  Shield,
+  Recycle,
+  Droplets,
+  Sun,
+  Trees,
+  Heart,
+  MessageCircle,
+  User,
+  Send,
+  ExternalLink,
+  Target
+} from 'lucide-react';
 import Footer from '../components/layout/Footer';
 import Navbar from '../components/layout/Navbar';
-import { ChevronRight, Loader2 } from 'lucide-react';
-import WhatsAppButton from '../components/layout/WhatsAppButton';
+import CountUp from 'react-countup';
 
-export default function AboutClient() {
-  const [isVisible, setIsVisible] = useState(false);
-  const sectionRef = useRef(null);
+export default function AboutPage() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
   const statsRef = useRef(null);
-  const statsInView = useInView(statsRef, { once: true, amount: 0.3 });
-  const [hasAnimated, setHasAnimated] = useState(false);
-  const [featuredProducts, setFeaturedProducts] = useState([]);
-const [loadingProducts, setLoadingProducts] = useState(true)
+  const [statsInView, setStatsInView] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setIsVisible(true);
+          setStatsInView(true);
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.3 }
     );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
+    
+    if (statsRef.current) {
+      observer.observe(statsRef.current);
     }
-
+    
     return () => observer.disconnect();
   }, []);
 
-  // Add this function to fetch featured products
-const fetchFeaturedProducts = async () => {
-  try {
-    const response = await fetch('http://localhost:5000/api/products?isFeatured=true&limit=3&sort=-createdAt');
-    const data = await response.json();
-    
-    if (data.success) {
-      setFeaturedProducts(data.data);
-    }
-  } catch (error) {
-    console.error("Error fetching featured products:", error);
-  } finally {
-    setLoadingProducts(false);
-  }
-};
-
-// Add this useEffect to fetch products when component mounts
-useEffect(() => {
-  fetchFeaturedProducts();
-}, []);
-
-  // Company info from Facebook
-// Update the companyInfo object
-const companyInfo = {
-  name: "Asian Clothify",
-  tagline: "Top Clothing Seller in Bangladesh",
-  description: "Asian Clothify is a top clothing seller in Bangladesh, offering a wide range of stylish, high-quality apparel. With a focus on craftsmanship, affordability, and modern designs, we proudly serve global markets, delivering elegance and value in every piece.",
-  category: "Clothing company · Wholesale and supply shop",
-  address: "49/10-C, Ground Floor, Genda, Savar, Dhaka, Bangladesh",
-  phone: "01305-785685",
-  email: "info@asianclothify.com",
-  social: {
-    facebook: "Asianclothify",
-    instagram: "asia.nclothify",
-    twitter: "asianclothify",
-    youtube: "@AsianclothifyCo",
-    pinterest: "asianclothify",
-    email: "info@asianclothify.com"
-  },
-  website: "asia.nclothify"
-};
-
-  // Team members
-  const teamMembers = [
-    { name: 'Rafiq Ahmed', role: 'Founder & CEO', image: 'https://i.ibb.co.com/team/ceo.jpg', experience: '15+ years' },
-    { name: 'Fatima Begum', role: 'Production Head', image: 'https://i.ibb.co.com/team/production.jpg', experience: '12+ years' },
-    { name: 'Shahid Khan', role: 'Export Manager', image: 'https://i.ibb.co.com/team/export.jpg', experience: '10+ years' },
-    { name: 'Nasrin Akter', role: 'Quality Control', image: 'https://i.ibb.co.com/team/quality.jpg', experience: '8+ years' },
-  ];
-
-  // Values
-  const values = [
-    {
-      icon: <FaIndustry className="w-5 h-5 sm:w-6 sm:h-6" />,
-      title: 'Craftsmanship',
-      desc: 'Every piece is crafted with attention to detail and quality materials'
-    },
-    {
-      icon: <FaHandshake className="w-5 h-5 sm:w-6 sm:h-6" />,
-      title: 'Affordability',
-      desc: 'Premium quality at competitive prices for global markets'
-    },
-    {
-      icon: <FaShippingFast className="w-5 h-5 sm:w-6 sm:h-6" />,
-      title: 'Global Reach',
-      desc: 'Proudly serving international markets with efficient shipping'
-    },
-    {
-      icon: <FaUsers className="w-5 h-5 sm:w-6 sm:h-6" />,
-      title: 'Modern Designs',
-      desc: 'Contemporary styles that keep you ahead of fashion trends'
-    },
-  ];
-
-  // Stats with numeric values for counting
-  const stats = [
-    { value: 8, label: 'Years in Business', icon: <FaRegClock />, suffix: '+' },
-    { value: 500, label: 'Active Clients', icon: <FaUsers />, suffix: '+' },
-    { value: 50, label: 'Countries', icon: <FaGlobe />, suffix: '+' },
-    { value: 15, label: 'Orders Shipped', icon: <FaShippingFast />, suffix: 'K+' },
-    { value: 98, label: 'Client Retention', icon: <FaRegHeart />, suffix: '%' },
-    { value: 4.9, label: 'Customer Rating', icon: <FaStar />, suffix: '', prefix: '⭐ ' },
-  ];
-
-  // Alibaba Stats
-  const alibabaStats = [
-    { value: 'Gold', label: 'Supplier Status', icon: <FaAward /> },
-    { value: '98%', label: 'Response Rate', icon: <FaCheckCircle /> },
-    { value: '<2h', label: 'Response Time', icon: <FaClock /> },
-    { value: '15K+', label: 'Transactions', icon: <FaBoxOpen /> },
-    { value: '4.9', label: 'Seller Rating', icon: <FaStar /> },
-    { value: '✓', label: 'Trade Assurance', icon: <FaShieldAlt /> },
-  ];
-
-  // Helper function to render count with proper formatting
-  const renderCount = (stat) => {
-    if (!statsInView) return '0';
-    
-    if (stat.label === 'Customer Rating') {
-      return (
-        <CountUp
-          start={0}
-          end={stat.value}
-          duration={2.5}
-          decimals={1}
-          delay={0.2}
-          onEnd={() => setHasAnimated(true)}
-        />
-      );
-    }
-    
-    return (
-      <CountUp
-        start={0}
-        end={stat.value}
-        duration={2.5}
-        delay={0.2}
-        onEnd={() => setHasAnimated(true)}
-      />
-    );
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setSubmitSuccess(true);
+      setFormData({ name: '', email: '', phone: '', message: '' });
+      setTimeout(() => setSubmitSuccess(false), 5000);
+    }, 1500);
+  };
+
+  // Company Stats
+  const stats = [
+    { icon: Award, value: 12, label: 'Years Experience', suffix: '+' },
+    { icon: Users, value: 500, label: 'Happy Clients', suffix: '+' },
+    { icon: Package, value: 2000, label: 'Projects Completed', suffix: '+' },
+    { icon: Ship, value: 35, label: 'Countries Exported', suffix: '+' },
+  ];
+
+  // Certifications
+  const certifications = [
+    { name: 'ISO 9001:2015', description: 'Quality Management System', icon: Shield },
+    { name: 'GOTS Certified', description: 'Global Organic Textile Standard', icon: Leaf },
+    { name: 'Fair Trade', description: 'Ethical Trade Certified', icon: Heart },
+    { name: 'OEKO-TEX', description: 'Eco-Friendly Textile', icon: Recycle },
+  ];
+
+  // Sustainability Initiatives
+  const sustainabilityInitiatives = [
+    { icon: Droplets, title: 'Water Conservation', description: 'Zero liquid discharge system reducing water waste by 60%' },
+    { icon: Sun, title: 'Solar Energy', description: '30% of factory energy from solar panels' },
+    { icon: Recycle, title: 'Waste Management', description: '95% production waste recycled or upcycled' },
+    { icon: Trees, title: 'Tree Plantation', description: 'Planted 10,000+ trees in local communities' },
+  ];
+
+  // Core Values
+  const values = [
+    { icon: Leaf, title: 'Sustainability First', description: 'Eco-friendly practices in every step' },
+    { icon: Heart, title: 'Ethical Sourcing', description: 'Fair wages and safe working conditions' },
+    { icon: Target, title: 'Quality Excellence', description: 'Premium products with strict quality control' },
+    { icon: Users, title: 'Customer Partnership', description: 'Long-term relationships with global buyers' },
+  ];
+
+  const socialLinks = [
+    { name: 'Facebook', icon: Facebook, url: 'https://facebook.com/JuteCraftify', color: 'hover:bg-[#1877F2]' },
+    { name: 'Instagram', icon: Instagram, url: 'https://instagram.com/jutecraftify5730', color: 'hover:bg-gradient-to-r from-[#833AB4] to-[#E4405F]' },
+    { name: 'Twitter', icon: Twitter, url: 'https://x.com/jutecraftify', color: 'hover:bg-[#000000]' },
+    { name: 'LinkedIn', icon: Linkedin, url: 'https://linkedin.com/company/jutecraftify', color: 'hover:bg-[#0077B5]' },
+    { name: 'YouTube', icon: Youtube, url: 'https://youtube.com/@Juteccraftify', color: 'hover:bg-[#FF0000]' },
+  ];
 
   return (
     <>
-    <Navbar />
-    <div className="min-h-screen bg-white mt-16 overflow-x-hidden" ref={sectionRef}>
-      
-      {/* HERO SECTION - Responsive */}
-      <section className="relative h-[400px] sm:h-[450px] md:h-[400px] overflow-hidden">
-        {/* Background Image */}
-        <div className="absolute inset-0">
-          <img
-            src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=2070"
-            alt="Garment Factory"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent"></div>
-        </div>
-
-        {/* Content */}
-        <div className="relative z-10 h-full flex items-center container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="max-w-xl lg:max-w-2xl"
+      <Navbar />
+      <div className="min-h-screen bg-white mt-6 overflow-x-hidden">
+        
+        {/* HERO SECTION */}
+        <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden">
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{
+              backgroundImage: `url('https://i.ibb.co.com/G4RJnfg0/nuts-glass-autumn-leaves.jpg')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
           >
-            {/* Company Badge */}
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-3 sm:px-4 py-1.5 sm:py-2 mb-4 sm:mb-6 border border-white/20">
-              <MdVerified className="text-blue-400 text-base sm:text-xl" />
-              <span className="text-white font-medium text-xs sm:text-sm">Top Clothing Seller in Bangladesh</span>
-            </div>
-
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-2 sm:mb-4">
-              About{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600">
-                {companyInfo.name}
-              </span>
-            </h1>
-            
-            <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-200 mb-4 sm:mb-6 lg:mb-8">
-              {companyInfo.tagline} - Offering stylish, high-quality apparel for global markets
-            </p>
-
-            {/* Quick Stats - Responsive */}
-            <div className="flex flex-wrap gap-3 sm:gap-6">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-orange-500 rounded-full flex items-center justify-center">
-                  <FaIndustry className="text-white text-sm sm:text-base" />
-                </div>
-                <div>
-                  <p className="text-white font-bold text-sm sm:text-base">Premium Quality</p>
-                  <p className="text-gray-300 text-xs sm:text-sm">Craftsmanship</p>
-                </div>
+            <div className="absolute inset-0 bg-gradient-to-r from-[#6B4F3A]/40 to-[#4A3222]/85" />
+          </div>
+          
+          <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-3xl mx-auto text-center">
+              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-full px-4 py-1.5 mb-4 border border-white/20">
+                <Leaf className="w-4 h-4 text-[#3bc24f]" />
+                <span className="text-[#F5E6D3] text-sm font-medium font-sans">Sustainable Jute Solutions</span>
               </div>
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-orange-500 rounded-full flex items-center justify-center">
-                  <FaGlobe className="text-white text-sm sm:text-base" />
-                </div>
-                <div>
-                  <p className="text-white font-bold text-sm sm:text-base">Global Markets</p>
-                  <p className="text-gray-300 text-xs sm:text-sm">Worldwide Shipping</p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* COMPANY INFO SECTION - Responsive */}
-      <section className="py-12 sm:py-16 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-          <div className="bg-gradient-to-r from-orange-50 to-orange-100/50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12">
-            <div className="grid md:grid-cols-2 gap-6 sm:gap-8 items-start">
-              <div>
-                <span className="bg-orange-500 text-white text-xs sm:text-sm font-semibold px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-3 sm:mb-4 inline-block">
-                  ABOUT US
-                </span>
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">
-                  {companyInfo.name}
-                </h2>
-                <p className="text-sm sm:text-base md:text-lg text-gray-700 leading-relaxed mb-4 sm:mb-6">
-                  {companyInfo.description}
-                </p>
-                <p className="text-xs sm:text-sm text-gray-600">
-                  {companyInfo.category}
-                </p>
-              </div>
-              
-              {/* Contact Cards - Responsive */}
-              <div className="space-y-3 sm:space-y-4">
-                <div className="bg-white p-3 sm:p-4 rounded-xl shadow-md flex items-start gap-3 sm:gap-4">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <FaMapMarkerAlt className="text-orange-500 text-base sm:text-xl" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 text-sm sm:text-base">Visit Us</h4>
-                    <p className="text-xs sm:text-sm text-gray-600 break-words">{companyInfo.address}</p>
-                  </div>
-                </div>
-                
-                <div className="bg-white p-3 sm:p-4 rounded-xl shadow-md flex items-start gap-3 sm:gap-4">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <FaPhone className="text-orange-500 text-base sm:text-xl" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 text-sm sm:text-base">Call Us</h4>
-                    <p className="text-xs sm:text-sm text-gray-600">{companyInfo.phone}</p>
-                  </div>
-                </div>
-                
-                <div className="bg-white p-3 sm:p-4 rounded-xl shadow-md flex items-start gap-3 sm:gap-4">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <FaEnvelope className="text-orange-500 text-base sm:text-xl" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 text-sm sm:text-base">Email Us</h4>
-                    <p className="text-xs sm:text-sm text-gray-600 break-words">{companyInfo.email}</p>
-                  </div>
-                </div>
-
-                {/* Social Links - Responsive */}
-              
-
-{/* Social Links - Updated with all platforms */}
-<div className="flex flex-wrap gap-2 sm:gap-3 mt-2 sm:mt-4">
-  {/* Facebook */}
-  <a 
-    href="https://www.facebook.com/Asianclothify" 
-    target="_blank" 
-    rel="noopener noreferrer" 
-    className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform text-sm sm:text-base hover:shadow-lg"
-    title="Facebook"
-  >
-    <FaFacebook />
-  </a>
-  
-  {/* Instagram */}
-  <a 
-    href="https://www.instagram.com/asian.clothify/" 
-    target="_blank" 
-    rel="noopener noreferrer" 
-    className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform text-sm sm:text-base hover:shadow-lg"
-    title="Instagram"
-  >
-    <FaInstagram />
-  </a>
-  
-  {/* Twitter/X */}
-  <a 
-    href="https://x.com/asianclothify" 
-    target="_blank" 
-    rel="noopener noreferrer" 
-    className="w-8 h-8 sm:w-10 sm:h-10 bg-black text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform text-sm sm:text-base hover:shadow-lg"
-    title="X (Twitter)"
-  >
-    <FaTwitter />
-  </a>
-  
-  {/* YouTube */}
-  <a 
-    href="https://www.youtube.com/@AsianclothifyCo" 
-    target="_blank" 
-    rel="noopener noreferrer" 
-    className="w-8 h-8 sm:w-10 sm:h-10 bg-red-600 text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform text-sm sm:text-base hover:shadow-lg"
-    title="YouTube"
-  >
-    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-    </svg>
-  </a>
-  
-  {/* Pinterest */}
-  <a 
-    href="https://www.pinterest.com/asianclothify/" 
-    target="_blank" 
-    rel="noopener noreferrer" 
-    className="w-8 h-8 sm:w-10 sm:h-10 bg-red-700 text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform text-sm sm:text-base hover:shadow-lg"
-    title="Pinterest"
-  >
-    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.174.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12.017 24c6.603 0 11.954-5.363 11.954-11.987C23.971 5.367 18.618 0 12.017 0z"/>
-    </svg>
-  </a>
-  
-  {/* Gmail/Email */}
-  <a 
-    href="mailto:info@asianclothify.com" 
-    className="w-8 h-8 sm:w-10 sm:h-10 bg-red-500 text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform text-sm sm:text-base hover:shadow-lg"
-    title="Email"
-  >
-    <FaEnvelope />
-  </a>
-</div>
-              </div>
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 font-serif">
+                About <span className="text-[#3bc24f]">Jute Craftify</span>
+              </h1>
+              <p className="text-[#F5E6D3] text-base md:text-lg max-w-2xl mx-auto font-sans">
+                Your trusted partner in premium jute products, serving global businesses with 
+                sustainable, eco-friendly solutions from the heart of Bangladesh.
+              </p>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* STORY SECTION - Responsive */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-gray-50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-          <div className="grid md:grid-cols-2 gap-8 sm:gap-10 lg:gap-12 items-center">
-            {/* Left Column - Image */}
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              className="relative order-2 md:order-1"
-            >
-              <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-xl sm:shadow-2xl">
-                <img
-                  src="https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?q=80&w=2070"
-                  alt="Our Facility"
-                  className="w-full h-[300px] sm:h-[400px] lg:h-[450px] object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
-                
-                {/* Location Badge - Responsive */}
-                <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 bg-white/90 backdrop-blur-sm p-3 sm:p-4 rounded-lg sm:rounded-xl">
-                  <p className="font-semibold text-gray-900 text-sm sm:text-base">📍 Savar, Dhaka</p>
-                  <p className="text-xs sm:text-sm text-gray-600">Bangladesh</p>
-                </div>
-              </div>
-            </motion.div>
+        {/* STATS SECTION WITH COUNT ANIMATION */}
+        <section ref={statsRef} className="py-16 bg-white">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {stats.map((stat, index) => {
+                const Icon = stat.icon;
+                return (
+                  <div key={index} className="text-center group">
+                    <div className="inline-flex items-center justify-center w-14 h-14 bg-[#F5E6D3] rounded-full mb-3 group-hover:bg-[#3bc24f] transition-colors duration-300">
+                      <Icon className="w-7 h-7 text-[#6B4F3A] group-hover:text-white transition-colors duration-300" />
+                    </div>
+                    <div className="text-2xl md:text-3xl font-bold text-[#6B4F3A] font-serif">
+                      {statsInView ? (
+                        <CountUp start={0} end={stat.value} duration={2.5} delay={0.2} />
+                      ) : '0'}
+                      {stat.suffix}
+                    </div>
+                    <div className="text-sm text-gray-600 font-sans">{stat.label}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
 
-            {/* Right Column - Story Text */}
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              className="space-y-4 sm:space-y-6 order-1 md:order-2"
-            >
-              <div className="inline-block">
-                <span className="bg-orange-100 text-orange-600 text-xs sm:text-sm font-semibold px-3 sm:px-4 py-1.5 sm:py-2 rounded-full">
+        {/* WHO WE ARE SECTION */}
+        <section className="py-16 bg-gray-50">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+              >
+                <span className="bg-[#F5E6D3] text-[#3bc24f] text-sm font-semibold px-4 py-1.5 rounded-full inline-block mb-4 font-sans">
                   OUR STORY
                 </span>
+                <h2 className="text-3xl md:text-4xl font-bold text-[#6B4F3A] mb-4 font-serif">
+                  Who We Are
+                </h2>
+                <p className="text-gray-700 mb-4 leading-relaxed font-sans">
+                  Jute Craftify is a premier manufacturer and exporter of high-quality jute products based in Khulna, Bangladesh. 
+                  With over a decade of experience, we have established ourselves as a trusted supplier to clients across the globe.
+                </p>
+                <p className="text-gray-700 mb-6 leading-relaxed font-sans">
+                  Our commitment to sustainability, quality craftsmanship, and customer satisfaction drives everything we do. 
+                  From raw jute fiber to finished products, we maintain the highest standards of eco-friendly production.
+                </p>
+                
+                <div className="flex flex-wrap gap-3">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-[#3bc24f]" />
+                    <span className="text-sm text-gray-700 font-sans">100% Eco-Friendly</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-[#3bc24f]" />
+                    <span className="text-sm text-gray-700 font-sans">B2B Global Export</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-[#3bc24f]" />
+                    <span className="text-sm text-gray-700 font-sans">Custom Manufacturing</span>
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                className="relative"
+              >
+                <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+                  <img
+                    src="https://i.ibb.co.com/7d7RNNCW/668726540-122168849006403420-928130145174392799-n.jpg"
+                    alt="Jute Factory"
+                    className="w-full h-[400px] object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#6B4F3A]/60 to-transparent"></div>
+                </div>
+                <div className="absolute -bottom-6 -right-6 bg-white rounded-xl shadow-xl p-4 max-w-[200px]">
+                  <div className="flex items-center gap-2">
+                    <Leaf className="w-5 h-5 text-[#3bc24f]" />
+                    <span className="font-semibold text-sm font-sans">Made in Bangladesh</span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1 font-sans">Premium quality jute products</p>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* OUR PRODUCT CATEGORIES */}
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-12">
+              <span className="bg-[#F5E6D3] text-[#3bc24f] text-sm font-semibold px-4 py-1.5 rounded-full inline-block mb-4 font-sans">
+                WHAT WE OFFER
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-[#6B4F3A] mb-4 font-serif">
+                Our Product Categories
+              </h2>
+              <p className="text-gray-600 font-sans">
+                We offer a comprehensive range of jute products to meet diverse business needs
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {['Raw Jute Fiber', 'Jute Yarn & Twine', 'Jute Bags', 'Home Decor', 'Industrial Jute'].map((category, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="bg-[#F5E6D3] rounded-xl p-4 text-center hover:bg-[#3bc24f] hover:text-white transition-all duration-300 cursor-pointer group"
+                >
+                  <Package className="w-8 h-8 mx-auto mb-2 text-[#6B4F3A] group-hover:text-white transition-colors" />
+                  <p className="font-semibold text-sm group-hover:text-white font-sans">{category}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* SUSTAINABILITY SECTION */}
+        <section className="py-16 bg-gradient-to-r from-[#6B4F3A] to-[#4A3222] text-white">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-12">
+              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md rounded-full px-4 py-1.5 mb-4">
+                <Leaf className="w-4 h-4" />
+                <span className="text-sm font-medium font-sans">SUSTAINABILITY</span>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 font-serif">
+                Our Commitment to a Greener Planet
+              </h2>
+              <p className="text-[#F5E6D3] font-sans">
+                We believe in creating a sustainable future through eco-friendly practices and responsible manufacturing
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {sustainabilityInitiatives.map((initiative, index) => {
+                const Icon = initiative.icon;
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300"
+                  >
+                    <div className="w-12 h-12 bg-[#3bc24f]/20 rounded-xl flex items-center justify-center mb-4">
+                      <Icon className="w-6 h-6 text-[#3bc24f]" />
+                    </div>
+                    <h3 className="text-lg font-bold mb-2 font-serif">{initiative.title}</h3>
+                    <p className="text-sm text-[#F5E6D3] font-sans">{initiative.description}</p>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Sustainability Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12 pt-8 border-t border-white/20">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-[#3bc24f] font-serif">60%</div>
+                <p className="text-sm text-[#F5E6D3] mt-1 font-sans">Less Water Usage</p>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-[#3bc24f] font-serif">95%</div>
+                <p className="text-sm text-[#F5E6D3] mt-1 font-sans">Waste Recycled</p>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-[#3bc24f] font-serif">30%</div>
+                <p className="text-sm text-[#F5E6D3] mt-1 font-sans">Solar Energy</p>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-[#3bc24f] font-serif">10K+</div>
+                <p className="text-sm text-[#F5E6D3] mt-1 font-sans">Trees Planted</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CERTIFICATIONS SECTION */}
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-12">
+              <span className="bg-[#F5E6D3] text-[#3bc24f] text-sm font-semibold px-4 py-1.5 rounded-full inline-block mb-4 font-sans">
+                CERTIFICATIONS
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-[#6B4F3A] mb-4 font-serif">
+                Our Accreditations
+              </h2>
+              <p className="text-gray-600 font-sans">
+                We are proud to be certified by leading global organizations for quality and sustainability
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {certifications.map((cert, index) => {
+                const Icon = cert.icon;
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    className="bg-gray-50 rounded-xl p-6 text-center hover:shadow-xl transition-all duration-300"
+                  >
+                    <div className="w-16 h-16 bg-[#F5E6D3] rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Icon className="w-8 h-8 text-[#3bc24f]" />
+                    </div>
+                    <h3 className="font-bold text-gray-900 mb-1 font-serif">{cert.name}</h3>
+                    <p className="text-sm text-gray-600 font-sans">{cert.description}</p>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Additional Trust Badges */}
+            <div className="flex flex-wrap justify-center gap-4 mt-10">
+              <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full">
+                <Shield className="w-4 h-4 text-[#3bc24f]" />
+                <span className="text-sm text-gray-700 font-sans">Trade Assurance</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full">
+                <CheckCircle className="w-4 h-4 text-[#3bc24f]" />
+                <span className="text-sm text-gray-700 font-sans">Onsite Checked</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full">
+                <Clock className="w-4 h-4 text-[#3bc24f]" />
+                <span className="text-sm text-gray-700 font-sans">Quick Responder</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CORE VALUES SECTION */}
+        <section className="py-16 bg-gray-50">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-12">
+              <span className="bg-[#F5E6D3] text-[#3bc24f] text-sm font-semibold px-4 py-1.5 rounded-full inline-block mb-4 font-sans">
+                OUR VALUES
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-[#6B4F3A] mb-4 font-serif">
+                What Drives Us
+              </h2>
+              <p className="text-gray-600 font-sans">
+                These core principles guide everything we do at Jute Craftify
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {values.map((value, index) => {
+                const Icon = value.icon;
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    className="bg-white rounded-xl p-6 text-center shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    <div className="w-14 h-14 bg-[#F5E6D3] rounded-xl flex items-center justify-center mx-auto mb-4 text-[#3bc24f]">
+                      <Icon className="w-7 h-7" />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-2 font-serif">{value.title}</h3>
+                    <p className="text-sm text-gray-600 font-sans">{value.description}</p>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* BUSINESS HOURS & SOCIAL LINKS */}
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Business Hours */}
+              <div className="bg-[#F5E6D3] rounded-2xl p-8">
+                <div className="flex items-center gap-3 mb-6">
+                  <Clock className="w-8 h-8 text-[#3bc24f]" />
+                  <h3 className="text-2xl font-bold text-[#6B4F3A] font-serif">Business Hours</h3>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex justify-between py-2 border-b border-[#6B4F3A]/20">
+                    <span className="font-semibold text-[#6B4F3A] font-sans">Monday - Friday</span>
+                    <span className="text-gray-700 font-sans">9:00 AM - 6:00 PM (BST)</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-[#6B4F3A]/20">
+                    <span className="font-semibold text-[#6B4F3A] font-sans">Saturday</span>
+                    <span className="text-gray-700 font-sans">10:00 AM - 4:00 PM (BST)</span>
+                  </div>
+                  <div className="flex justify-between py-2">
+                    <span className="font-semibold text-[#6B4F3A] font-sans">Sunday</span>
+                    <span className="text-red-500 font-semibold font-sans">Closed</span>
+                  </div>
+                </div>
+                <div className="mt-6 p-4 bg-white/50 rounded-lg">
+                  <p className="text-sm text-gray-600 flex items-center gap-2 font-sans">
+                    <Globe className="w-4 h-4" />
+                    Online Support Available 24/7 via WhatsApp & Email
+                  </p>
+                </div>
               </div>
 
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
-                Delivering Elegance & Value{' '}
-                <span className="text-orange-500">Worldwide</span>
+              {/* Social Links */}
+              <div className="bg-gray-50 rounded-2xl p-8">
+                <div className="flex items-center gap-3 mb-6">
+                  <Heart className="w-8 h-8 text-[#3bc24f]" />
+                  <h3 className="text-2xl font-bold text-[#6B4F3A] font-serif">Connect With Us</h3>
+                </div>
+                <p className="text-gray-600 mb-6 font-sans">Follow us on social media for updates and news</p>
+                <div className="flex flex-wrap gap-3">
+                  {socialLinks.map((social, index) => {
+                    const Icon = social.icon;
+                    return (
+                      <a
+                        key={index}
+                        href={social.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`w-12 h-12 bg-white rounded-full flex items-center justify-center text-gray-600 transition-all duration-300 hover:text-white ${social.color} shadow-md`}
+                      >
+                        <Icon className="w-5 h-5" />
+                      </a>
+                    );
+                  })}
+                </div>
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <div className="flex items-center gap-2 text-gray-500">
+                    <Star className="w-4 h-4 fill-gray-300 text-gray-300" />
+                    <span className="text-sm font-sans">Not yet rated (0 reviews)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+    
+
+        {/* MAP SECTION */}
+        <section className="h-96 md:h-[450px] relative">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d471274.6897589161!2d89.24113108950083!3d22.659995139637502!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1s34%2F6%2CMongla%2C%20Khulna%2C%20Bangladesh%2C%20Khulna%2C%20Bangladesh%2C%209100!5e0!3m2!1sen!2sbd!4v1776240603524!5m2!1sen!2sbd"
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title="Jute Craftify Location Map"
+            className="w-full h-full object-cover"
+          ></iframe>
+          
+          {/* Map Overlay Card */}
+          <div className="absolute bottom-6 right-6 bg-white/95 backdrop-blur-md rounded-xl shadow-2xl p-4 max-w-xs">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-[#3bc24f]/10 rounded-lg flex items-center justify-center">
+                <MapPin className="w-5 h-5 text-[#3bc24f]" />
+              </div>
+              <div>
+                <h4 className="font-bold text-gray-900 text-sm font-serif">Our Headquarters</h4>
+                <p className="text-xs text-gray-600 mt-0.5 font-sans">
+                  34/6, Mongla, Khulna, Bangladesh, 9100
+                </p>
+                <a 
+                  href="https://maps.google.com/?q=34/6,Mongla,Khulna,Bangladesh" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-[#3bc24f] text-xs font-semibold mt-2 inline-block hover:underline font-sans"
+                >
+                  Get Directions →
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA SECTION */}
+        <section className="py-16 bg-[#6B4F3A] text-white">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-3xl">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 font-serif">
+                Ready to Partner With Us?
               </h2>
-
-              <p className="text-sm sm:text-base lg:text-lg text-gray-600 leading-relaxed">
-                Based in Savar, Dhaka, {companyInfo.name} has established itself as a premier clothing 
-                seller in Bangladesh, known for offering a wide range of stylish, high-quality apparel 
-                to customers around the globe.
+              <p className="text-[#F5E6D3] text-lg mb-8 font-sans">
+                Join hundreds of satisfied global buyers who trust Jute Craftify for premium jute products
               </p>
-
-              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                With an unwavering focus on craftsmanship, affordability, and modern designs, we take 
-                pride in serving international markets. Every piece we create reflects our commitment 
-                to elegance and value, ensuring our clients receive nothing but the best.
-              </p>
-
-              {/* Features Grid - Responsive */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-2 sm:pt-4">
-                <div className="flex items-start gap-2 sm:gap-3">
-                  <FaCheckCircle className="text-orange-500 text-lg sm:text-xl flex-shrink-0 mt-0.5 sm:mt-1" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900 text-sm sm:text-base">Craftsmanship</h4>
-                    <p className="text-xs sm:text-sm text-gray-600">Attention to detail in every piece</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-2 sm:gap-3">
-                  <FaCheckCircle className="text-orange-500 text-lg sm:text-xl flex-shrink-0 mt-0.5 sm:mt-1" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900 text-sm sm:text-base">Affordability</h4>
-                    <p className="text-xs sm:text-sm text-gray-600">Premium quality, competitive prices</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-2 sm:gap-3">
-                  <FaCheckCircle className="text-orange-500 text-lg sm:text-xl flex-shrink-0 mt-0.5 sm:mt-1" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900 text-sm sm:text-base">Modern Designs</h4>
-                    <p className="text-xs sm:text-sm text-gray-600">Contemporary fashion trends</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-2 sm:gap-3">
-                  <FaCheckCircle className="text-orange-500 text-lg sm:text-xl flex-shrink-0 mt-0.5 sm:mt-1" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900 text-sm sm:text-base">Global Reach</h4>
-                    <p className="text-xs sm:text-sm text-gray-600">Serving international markets</p>
-                  </div>
-                </div>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link
+                  href="/products"
+                  className="px-8 py-3 bg-[#3bc24f] text-white rounded-lg font-semibold hover:bg-[#2da63f] transition-all duration-300 transform hover:scale-105 font-sans"
+                >
+                  Browse Products
+                </Link>
+                <Link
+                  href="/contact"
+                  className="px-8 py-3 border-2 border-white text-white rounded-lg font-semibold hover:bg-white hover:text-[#6B4F3A] transition-all duration-300 font-sans"
+                >
+                  Request a Quote
+                </Link>
+              </div>
+              <div className="flex flex-wrap justify-center gap-4 mt-8 text-sm text-[#F5E6D3] font-sans">
+                <span>✓ Quick Response</span>
+                <span>•</span>
+                <span>✓ Secure Payments</span>
+                <span>•</span>
+                <span>✓ Global Shipping</span>
+                <span>•</span>
+                <span>✓ Quality Guaranteed</span>
               </div>
             </motion.div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* STATS SECTION WITH COUNTING ANIMATION - Updated */}
-      <section className="py-12 sm:py-16 bg-gradient-to-r from-orange-500 to-orange-600" ref={statsRef}>
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
-            {stats.map((stat, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="text-center text-white"
-              >
-                <div className="text-xl sm:text-2xl lg:text-3xl mb-1 sm:mb-2 flex justify-center">
-                  {stat.icon}
-                </div>
-                <div className="text-lg sm:text-xl lg:text-2xl font-bold mb-0.5 sm:mb-1">
-                  {stat.prefix && <span className="mr-0.5">{stat.prefix}</span>}
-                  {statsInView ? (
-                    stat.value === 4.9 ? (
-                      <CountUp
-                        start={0}
-                        end={stat.value}
-                        duration={2.5}
-                        decimals={1}
-                        delay={0.2}
-                      />
-                    ) : (
-                      <CountUp
-                        start={0}
-                        end={stat.value}
-                        duration={2.5}
-                        delay={0.2}
-                      />
-                    )
-                  ) : (
-                    '0'
-                  )}
-                  {stat.suffix && <span className="ml-0.5">{stat.suffix}</span>}
-                </div>
-                <div className="text-xs sm:text-sm text-orange-100">{stat.label}</div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ALIBABA TRUST SECTION - Responsive */}
-    {/* ALIBABA TRUST SECTION - Responsive */}
-<section className="py-12 sm:py-16 lg:py-20 bg-white">
-  <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-    <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-10 lg:mb-12">
-      <span className="bg-orange-100 text-orange-600 text-xs sm:text-sm font-semibold px-3 sm:px-4 py-1.5 sm:py-2 rounded-full">
-        🤝 TRUSTED PARTNER
-      </span>
-      <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mt-4 sm:mt-6 mb-2 sm:mb-4">
-        Verified Alibaba Seller
-      </h2>
-      <p className="text-xs sm:text-sm lg:text-base text-gray-600">
-        We're proud to be a trusted seller on Alibaba.com, serving global buyers with confidence and reliability
-      </p>
-    </div>
-
-    <div className="bg-gradient-to-r from-orange-50 to-orange-100/50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-12 shadow-xl">
-      <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-start">
-        {/* Left Column - Alibaba Info */}
-        <div>
-          {/* Alibaba Badge */}
-          <div className="inline-flex items-center gap-1 sm:gap-2 bg-orange-500 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-4 sm:mb-6">
-            <MdVerified className="text-base sm:text-xl" />
-            <span className="font-semibold text-xs sm:text-sm">Gold Supplier</span>
-          </div>
-
-          <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
-            Trusted Excellence on Alibaba
-          </h3>
-
-          <p className="text-xs sm:text-sm lg:text-base text-gray-600 mb-4 sm:mb-6">
-            Our partnership with Alibaba.com ensures secure transactions, verified quality, 
-            and trusted service for buyers worldwide. We maintain the highest standards of 
-            professionalism and reliability.
-          </p>
-
-          {/* Alibaba Stats Grid - Responsive */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
-            {alibabaStats.map((stat, index) => (
-              <div key={index} className="bg-white p-3 sm:p-4 rounded-lg sm:rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                <div className="text-orange-500 text-lg sm:text-xl mb-1 sm:mb-2">{stat.icon}</div>
-                <div className="font-bold text-gray-900 text-sm sm:text-base">{stat.value}</div>
-                <div className="text-xs text-gray-500">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* Trust Features - Responsive */}
-          <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
-            {[
-              'Trade Assurance - Your payments are protected',
-              'Onsite Checked - Facility verified by Alibaba',
-              'Quick Response - 98% response rate within 2 hours',
-              '15,000+ Successful Transactions',
-              'Gold Supplier Status'
-            ].map((item, index) => (
-              <li key={index} className="flex items-center gap-2 sm:gap-3">
-                <FaCheckCircle className="text-orange-500 text-base sm:text-lg flex-shrink-0" />
-                <span className="text-xs sm:text-sm text-gray-700">{item}</span>
-              </li>
-            ))}
-          </ul>
-
-          <Link
-            href="https://asianclothltd.m.trustpass.alibaba.com/index.html"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-orange-500 text-white rounded-lg sm:rounded-xl font-semibold hover:bg-orange-600 transition-all duration-300 transform hover:scale-105 text-sm sm:text-base"
-          >
-            <span>Visit Our Alibaba Store</span>
-            <span>→</span>
-          </Link>
-        </div>
-
-        {/* Right Column - Featured Products from DB */}
-     {/* Right Column - Featured Products from DB */}
-<div className="relative mt-6 lg:mt-0">
-  <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl sm:shadow-2xl overflow-hidden">
-    {/* Store Header */}
-    <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-4 sm:p-6 text-white">
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-lg flex items-center justify-center">
-            <span className="text-orange-500 font-bold text-base sm:text-xl">AC</span>
-          </div>
-          <div>
-            <h4 className="font-bold text-sm sm:text-lg">Asian Clothify</h4>
-            <p className="text-xs sm:text-sm text-orange-100">Gold Supplier</p>
-          </div>
-        </div>
-        <div className="bg-yellow-400 text-gray-900 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm font-semibold">
-          ⭐ 4.9
-        </div>
+        <Footer />
       </div>
-    </div>
-
-    {/* Store Stats */}
-    <div className="grid grid-cols-3 divide-x divide-gray-200 p-3 sm:p-4">
-      <div className="text-center">
-        <div className="font-bold text-gray-900 text-sm sm:text-base">98%</div>
-        <div className="text-xs text-gray-500">Response Rate</div>
-      </div>
-      <div className="text-center">
-        <div className="font-bold text-gray-900 text-sm sm:text-base">&lt;2h</div>
-        <div className="text-xs text-gray-500">Response Time</div>
-      </div>
-      <div className="text-center">
-        <div className="font-bold text-gray-900 text-sm sm:text-base">15K+</div>
-        <div className="text-xs text-gray-500">Transactions</div>
-      </div>
-    </div>
-
-    {/* ===== REPLACE THIS ENTIRE DIV ===== */}
-    {/* Featured Products from Database */}
-    <div className="p-3 sm:p-4 border-t border-gray-200">
-      <p className="text-xs sm:text-sm font-semibold text-gray-900 mb-2 sm:mb-3">Latest Featured Products</p>
-      
-      {/* INSERT THE NEW CODE HERE - Replace the old placeholder products */}
-      {loadingProducts ? (
-        <div className="flex items-center justify-center py-8">
-          <Loader2 className="w-6 h-6 animate-spin text-orange-500" />
-        </div>
-      ) : featuredProducts.length > 0 ? (
-        <div className="space-y-2">
-          {featuredProducts.map((product) => {
-            // Get first image or placeholder
-            const productImage = product.images?.[0]?.url || 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500';
-            const primaryTag = product.tags?.[0];
-            
-            return (
-              <Link
-                key={product._id}
-                href={`/productDetails?id=${product._id}`}
-                className="flex items-center gap-2 sm:gap-3 p-2 bg-gray-50 rounded-lg hover:bg-orange-50 transition-all duration-300 group"
-              >
-                {/* Product Image */}
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
-                  <img
-                    src={productImage}
-                    alt={product.productName}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500';
-                    }}
-                  />
-                </div>
-                
-                {/* Product Info */}
-                <div className="flex-1 min-w-0">
-                  <h5 className="text-xs sm:text-sm font-medium text-gray-900 truncate">
-                    {product.productName}
-                  </h5>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-xs font-bold text-orange-500">
-                      ${product.pricePerUnit?.toFixed(2)}
-                    </span>
-                    {primaryTag && (
-                      <span className="text-[8px] sm:text-[10px] bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded-full truncate max-w-[60px] sm:max-w-[80px]">
-                        {primaryTag}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                
-                {/* Arrow Icon */}
-                <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-orange-500 transition-colors flex-shrink-0" />
-              </Link>
-            );
-          })}
-        </div>
-      ) : (
-        <div className="flex items-center justify-center py-8 text-center">
-          <p className="text-xs text-gray-500">No featured products available</p>
-        </div>
-      )}
-      
-      {/* View All Link */}
-      <Link
-        href="/#featured-products"
-        className="inline-flex items-center gap-1 text-xs sm:text-sm text-orange-500 hover:text-orange-600 font-medium mt-3 group"
-      >
-        View all featured products
-        <ChevronRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-      </Link>
-    </div>
-    {/* ===== END REPLACEMENT ===== */}
-
-    {/* Badges */}
-    <div className="p-3 sm:p-4 bg-gray-50 border-t border-gray-200 flex flex-wrap gap-1 sm:gap-2">
-      <span className="bg-green-100 text-green-800 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">Trade Assurance</span>
-      <span className="bg-blue-100 text-blue-800 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">Onsite Checked</span>
-      <span className="bg-purple-100 text-purple-800 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">Quick Responder</span>
-    </div>
-  </div>
-
-  {/* Floating Rating Badge */}
-  <motion.div 
-    animate={{ y: [0, -10, 0] }}
-    transition={{ duration: 3, repeat: Infinity }}
-    className="absolute -top-3 sm:-top-4 -right-3 sm:-right-4 bg-white p-2 sm:p-3 rounded-lg sm:rounded-xl shadow-lg"
-  >
-    <div className="flex items-center gap-0.5 sm:gap-1">
-      <FaStar className="text-yellow-400 text-xs sm:text-base" />
-      <FaStar className="text-yellow-400 text-xs sm:text-base" />
-      <FaStar className="text-yellow-400 text-xs sm:text-base" />
-      <FaStar className="text-yellow-400 text-xs sm:text-base" />
-      <FaStar className="text-yellow-400 text-xs sm:text-base" />
-      <span className="font-bold text-gray-900 ml-0.5 sm:ml-1 text-xs sm:text-sm">4.9</span>
-    </div>
-    <p className="text-[8px] sm:text-xs text-gray-500">1,234 reviews</p>
-  </motion.div>
-</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-      {/* VALUES SECTION - Responsive */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-gray-50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 lg:mb-16">
-            <span className="bg-orange-100 text-orange-600 text-xs sm:text-sm font-semibold px-3 sm:px-4 py-1.5 sm:py-2 rounded-full">
-              💎 OUR VALUES
-            </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mt-4 sm:mt-6 mb-2 sm:mb-4">
-              What Drives Us Forward
-            </h2>
-            <p className="text-xs sm:text-sm lg:text-base text-gray-600">
-              These core principles guide every piece we create and every relationship we build
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {values.map((value, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="bg-white p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group"
-              >
-                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-orange-100 rounded-lg sm:rounded-xl flex items-center justify-center text-orange-600 mb-4 sm:mb-6 group-hover:bg-orange-600 group-hover:text-white transition-all duration-300">
-                  {value.icon}
-                </div>
-                <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3">{value.title}</h3>
-                <p className="text-xs sm:text-sm text-gray-600">{value.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ENHANCED LOCATION SECTION - Responsive */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-10 lg:mb-12">
-            <span className="bg-orange-100 text-orange-600 text-xs sm:text-sm font-semibold px-3 sm:px-4 py-1.5 sm:py-2 rounded-full">
-              📍 VISIT OUR FACILITY
-            </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mt-4 sm:mt-6 mb-2 sm:mb-4">
-              Find Us at Savar, Dhaka
-            </h2>
-            <p className="text-xs sm:text-sm lg:text-base text-gray-600">
-              Come visit our manufacturing facility and showroom - we'd love to meet you!
-            </p>
-          </div>
-
-          {/* Main Map Card */}
-          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl overflow-hidden border border-gray-100">
-            {/* Map Header */}
-            <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-4 sm:p-6 text-white">
-              <div className="flex items-center justify-between flex-wrap gap-3 sm:gap-4">
-                <div className="flex items-center gap-3 sm:gap-4">
-                  <div className="w-10 h-10 sm:w-14 sm:h-14 bg-white/20 backdrop-blur-sm rounded-xl sm:rounded-2xl flex items-center justify-center">
-                    <FaMapMarkerAlt className="text-white text-lg sm:text-2xl" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg sm:text-xl lg:text-2xl font-bold">Our Location</h3>
-                    <p className="text-xs sm:text-sm text-orange-100">Come visit our facility</p>
-                  </div>
-                </div>
-                <div className="bg-white/20 backdrop-blur-sm px-3 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm">
-                  <FaClock className="inline mr-1 sm:mr-2 text-xs sm:text-sm" />
-                  Mon-Fri: 9AM - 6PM
-                </div>
-              </div>
-            </div>
-
-            {/* Map and Details Grid */}
-            <div className="grid lg:grid-cols-3">
-              {/* Map - Takes 2 columns */}
-              <div className="lg:col-span-2 h-[300px] sm:h-[350px] lg:h-[450px] relative">
-                <iframe 
-                  src="https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d116763.38334044382!2d90.2138113824893!3d23.859256251368727!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1s49%2F10-C%2C%20Ground%20Floor%20%20Genda%2C%20Savar%20%20Dhaka%2C%20Bangladesh!5e0!3m2!1sen!2sus!4v1771326250091!5m2!1sen!2sus" 
-                  width="100%" 
-                  height="100%" 
-                  style={{ border: 0 }} 
-                  allowFullScreen 
-                  loading="lazy" 
-                  referrerPolicy="no-referrer-when-downgrade"
-                  className="w-full h-full"
-                ></iframe>
-              </div>
-
-              {/* Location Details - Enhanced Design */}
-              <div className="p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-orange-50 to-white">
-                <div className="space-y-4 sm:space-y-6">
-                  {/* Address Card */}
-                  <div className="bg-white p-4 sm:p-5 rounded-lg sm:rounded-xl shadow-md border-l-4 border-orange-500">
-                    <div className="flex items-start gap-2 sm:gap-3">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <FaBuilding className="text-orange-500 text-sm sm:text-lg" />
-                      </div>
-                      <div>
-                        <p className="text-[10px] sm:text-xs text-gray-500 mb-0.5 sm:mb-1">Full Address</p>
-                        <p className="font-semibold text-gray-900 text-xs sm:text-sm">49/10-C, Ground Floor</p>
-                        <p className="text-xs sm:text-sm text-gray-700">Genda, Savar</p>
-                        <p className="text-xs sm:text-sm text-gray-700">Dhaka, Bangladesh</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Contact Card */}
-                  <div className="bg-white p-4 sm:p-5 rounded-lg sm:rounded-xl shadow-md">
-                    <h4 className="font-semibold text-gray-900 text-sm sm:text-base mb-2 sm:mb-3">Need Directions?</h4>
-                    <p className="flex items-center gap-1 sm:gap-2 text-gray-700 mb-2 sm:mb-3 text-xs sm:text-sm">
-                      <FaPhone className="text-orange-500 text-xs sm:text-sm" />
-                      {companyInfo.phone}
-                    </p>
-                    <Link
-                      href={`https://www.google.com/maps/dir/?api=1&destination=49%2F10-C%2C+Genda%2C+Savar%2C+Dhaka%2C+Bangladesh`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block w-full text-center bg-orange-500 text-white py-2 sm:py-3 rounded-lg sm:rounded-xl font-semibold hover:bg-orange-600 transition-all duration-300 transform hover:scale-[1.02] text-xs sm:text-sm"
-                    >
-                      <MdDirections className="inline mr-1 sm:mr-2 text-sm sm:text-lg" />
-                      Get Directions →
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Business Hours Footer - Responsive */}
-            <div className="bg-gray-50 p-4 sm:p-6 border-t border-gray-200">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-                <div className="flex items-center gap-2 sm:gap-3 bg-white p-2 sm:p-3 rounded-lg sm:rounded-xl">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                    <FaClock className="text-orange-500 text-xs sm:text-base" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] sm:text-xs text-gray-500">Weekdays</p>
-                    <p className="font-semibold text-xs sm:text-sm">Mon-Fri: 9AM - 6PM</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 sm:gap-3 bg-white p-2 sm:p-3 rounded-lg sm:rounded-xl">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                    <FaClock className="text-orange-500 text-xs sm:text-base" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] sm:text-xs text-gray-500">Saturday</p>
-                    <p className="font-semibold text-xs sm:text-sm">10AM - 4PM</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 sm:gap-3 bg-white p-2 sm:p-3 rounded-lg sm:rounded-xl">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                    <FaClock className="text-orange-500 text-xs sm:text-base" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] sm:text-xs text-gray-500">Sunday</p>
-                    <p className="font-semibold text-xs sm:text-sm text-red-500">Closed</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA SECTION - Responsive */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-gray-900 text-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-3xl">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6">
-              Ready to Experience{' '}
-              <span className="text-orange-400">Premium Quality?</span>
-            </h2>
-            
-            <p className="text-sm sm:text-base lg:text-xl text-gray-300 mb-6 sm:mb-8">
-              Join hundreds of satisfied clients who trust us for stylish, high-quality apparel
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-              <Link
-                href="/products"
-                className="px-6 sm:px-8 py-3 sm:py-4 bg-orange-500 text-white rounded-lg sm:rounded-xl font-semibold hover:bg-orange-600 transition-all duration-300 transform hover:scale-105 text-sm sm:text-base"
-              >
-                Browse Products
-              </Link>
-              
-             <a
-  href="https://wa.me/8801305785685?text=Hi%20Asian%20Clothify%2C%20I'm%20interested%20in%20your%20wholesale%20products"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="px-6 sm:px-8 py-3 sm:py-4 bg-white text-gray-900 rounded-lg sm:rounded-xl font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 text-sm sm:text-base"
->
-  <FaWhatsapp className="text-green-500 text-lg sm:text-xl" />
-  Chat on WhatsApp
-</a>
-            </div>
-
-            {/* Trust Indicators - Responsive */}
-            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 mt-8 sm:mt-12 text-xs sm:text-sm text-gray-400">
-              <span>⚡ Quick Response</span>
-              <span className="hidden xs:inline">•</span>
-              <span>🔒 Secure Payments</span>
-              <span className="hidden xs:inline">•</span>
-              <span>🌍 Global Shipping</span>
-              <span className="hidden xs:inline">•</span>
-              <span>✓ Quality Guaranteed</span>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Floating WhatsApp Button */}
-      <Link
-        href="https://wa.me/8801305785685?text=Hi%20Asian%20Clothify%2C%20I'm%20interested%20in%20your%20wholesale%20products"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-50 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 hover:scale-110"
-      >
-        <FaWhatsapp className="text-2xl" />
-      </Link>
-    </div>
-    <Footer />
-    <WhatsAppButton />
     </>
   );
 }
