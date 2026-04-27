@@ -3044,7 +3044,7 @@ export default function ModeratorCreateProduct() {
                     {/* Instruction Field */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Instructions / Care Instructions
+                        Packaging / Care Instructions
                       </label>
                       {isMounted && instructionEditor && (
                         <div className="border border-gray-300 rounded-lg overflow-hidden">

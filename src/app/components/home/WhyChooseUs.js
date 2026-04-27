@@ -1,261 +1,292 @@
-
-
-
 'use client';
 
-import React from 'react';
-import Image from 'next/image';
-import { FaCheckCircle, FaShippingFast, FaTag, FaPalette, FaGlobe, FaShieldAlt, FaStar, FaRocket } from 'react-icons/fa';
-import { motion } from 'framer-motion';
-import Link from 'next/link';
+import { motion, useInView } from 'framer-motion';
+import { useRef, useState, useEffect } from 'react';
+import { 
+  Leaf, 
+  Globe, 
+  Factory, 
+  Package, 
+  Clock, 
+  ShieldCheck,
+  Zap,
+  Truck,
+  Medal
+} from 'lucide-react';
 
 export default function WhyChooseUs() {
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: true, amount: 0.3 });
+  const [animatedStats, setAnimatedStats] = useState({
+    eco: 0,
+    countries: 0,
+    delivery: 0
+  });
+
+  // Features for grid - only 3 in a row to keep compact
   const features = [
     {
-      icon: <FaTag className="w-5 h-5" />,
-      title: "Low MOQ",
-      description: "Start with as low as 100 pieces",
-      color: "bg-emerald-500",
-      gradient: "from-emerald-500 to-teal-500"
+      icon: Leaf,
+      title: "100% Eco-Friendly Materials",
+      description: "Premium jute products that are 100% biodegradable and sustainable.",
+      stat: "100%",
+      statLabel: "Biodegradable",
+      color: "#4A7C59"
     },
     {
-      icon: <FaShippingFast className="w-5 h-5" />,
-      title: "Fast Global Shipping",
-      description: "5-7 day delivery worldwide",
-      color: "bg-blue-500",
-      gradient: "from-blue-500 to-cyan-500"
+      icon: Globe,
+      title: "Export to 30+ Countries",
+      description: "Trusted by importers across USA, Europe, Middle East, and Asia.",
+      stat: "30+",
+      statLabel: "Countries",
+      color: "#C6A43B"
     },
     {
-      icon: <FaPalette className="w-5 h-5" />,
-      title: "Custom Branding",
-      description: "Your labels, your tags",
-      color: "bg-amber-500",
-      gradient: "from-amber-500 to-orange-500"
+      icon: Factory,
+      title: "Direct Manufacturer Network",
+      description: "Factory-direct pricing with complete quality control from source to shipping.",
+      stat: "500+",
+      statLabel: "Happy Clients",
+      color: "#6B4F3A"
     },
     {
-      icon: <FaGlobe className="w-5 h-5" />,
-      title: "Worldwide Sourcing",
-      description: "Premium materials globally",
-      color: "bg-green-600",
-      gradient: "from-green-600 to-emerald-600"
+      icon: Package,
+      title: "Bulk Order Capacity",
+      description: "Handle orders from 500 to 500,000+ units with flexible MOQ.",
+      stat: "500K+",
+      statLabel: "Monthly Capacity",
+      color: "#4A7C59"
     },
     {
-      icon: <FaShieldAlt className="w-5 h-5" />,
-      title: "Quality Guaranteed",
-      description: "100% inspection guarantee",
-      color: "bg-red-500",
-      gradient: "from-red-500 to-rose-500"
+      icon: Clock,
+      title: "On-Time Delivery",
+      description: "98% on-time delivery rate with real-time tracking worldwide.",
+      stat: "98%",
+      statLabel: "On-Time Rate",
+      color: "#C6A43B"
     },
     {
-      icon: <FaCheckCircle className="w-5 h-5" />,
-      title: "24/7 Support",
-      description: "Dedicated account manager",
-      color: "bg-blue-600",
-      gradient: "from-blue-600 to-indigo-600"
+      icon: ShieldCheck,
+      title: "Premium Quality Certified",
+      description: "ISO, SGS, and Fair Trade certified products meeting global standards.",
+      stat: "100%",
+      statLabel: "Quality Assured",
+      color: "#6B4F3A"
     }
   ];
 
+  // Stats row - compact
+  const stats = [
+    { icon: Leaf, value: 100, suffix: "%", label: "Eco-Friendly", color: "#4A7C59" },
+    { icon: Globe, value: 30, suffix: "+", label: "Export Countries", color: "#C6A43B" },
+    { icon: Clock, value: 98, suffix: "%", label: "On-Time Delivery", color: "#4A7C59" },
+    { icon: Package, value: 500, suffix: "T+", label: "Monthly Capacity", color: "#C6A43B" },
+  ];
+
+  // Animated counter effect
+  useEffect(() => {
+    if (isInView) {
+      const duration = 1500;
+      const interval = 20;
+      const steps = duration / interval;
+      
+      let currentStep = 0;
+      const timer = setInterval(() => {
+        currentStep++;
+        const progress = currentStep / steps;
+        
+        setAnimatedStats({
+          eco: Math.min(Math.floor(100 * progress), 100),
+          countries: Math.min(Math.floor(30 * progress), 30),
+          delivery: Math.min(Math.floor(98 * progress), 98)
+        });
+        
+        if (currentStep >= steps) {
+          clearInterval(timer);
+        }
+      }, interval);
+      
+      return () => clearInterval(timer);
+    }
+  }, [isInView]);
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+        delayChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.4, ease: "easeOut" }
+    }
+  };
+
   return (
-    <section className="py-20 bg-gradient-to-br from-slate-50 via-white to-orange-50 overflow-hidden">
+    <section ref={sectionRef} className="py-12 md:py-16 bg-gradient-to-b from-white to-[#FAF7F2]">
       <div className="container mx-auto px-4 max-w-7xl">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        {/* Section Header - Compact */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-8 md:mb-10"
+        >
+          <div className="inline-flex items-center gap-2 bg-[#4A7C59]/10 rounded-full px-3 py-1 mb-3">
+            <Zap className="w-3.5 h-3.5 text-[#C6A43B]" />
+            <span className="text-[10px] font-semibold text-[#4A7C59] tracking-wider uppercase">Why Choose Us</span>
+          </div>
           
-          {/* LEFT COLUMN - Text + Features */}
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="space-y-8"
-          >
-            {/* Badge */}
-            <div className="inline-block">
-              <span className="bg-orange-100 text-[#d9884e] text-sm font-semibold px-4 py-2 rounded-full">
-                ⚡ WHY THOUSANDS CHOOSE US
-              </span>
-            </div>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-light text-[#2C2420] mb-2 font-serif">
+            Why Global Importers{' '}
+            <span className="font-semibold bg-gradient-to-r from-[#4A7C59] to-[#C6A43B] bg-clip-text text-transparent">
+              Trust Jute Craftify
+            </span>
+          </h2>
+          
+          <p className="text-gray-500 max-w-2xl mx-auto text-sm font-sans">
+            Your end-to-end sustainable jute supply partner for bulk orders and global export
+          </p>
+        </motion.div>
 
-            {/* Heading */}
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
-              Your Trusted
-              <span className="relative ml-3">
-                <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-[#cd7332] to-[#c98250]">
-                  Wholesale Partner
-                </span>
-                <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 300 12" fill="none">
-                  <path d="M0 0L300 12" stroke="url(#gradient)" strokeWidth="4" strokeDasharray="6 6"/>
-                  <defs>
-                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#d9884e" />
-                      <stop offset="100%" stopColor="#e6a87c" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </span>
-            </h2>
-
-            {/* Description */}
-            <p className="text-xl text-gray-600 max-w-lg">
-              We're not just a supplier – we're your growth partner. Join 500+ retailers who trust us for their wholesale needs.
-            </p>
-
-            {/* Features Grid */}
-            <div className="grid grid-cols-2 gap-4 pt-4">
-              {features.map((feature, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  className="flex items-start space-x-3 group"
+        {/* Stats Row - Compact Banner */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10"
+        >
+          {stats.map((stat, index) => {
+            const Icon = stat.icon;
+            let displayValue = stat.value;
+            if (stat.label === "Eco-Friendly") displayValue = animatedStats.eco;
+            if (stat.label === "Export Countries") displayValue = animatedStats.countries;
+            if (stat.label === "On-Time Delivery") displayValue = animatedStats.delivery;
+            
+            return (
+              <motion.div
+                key={index}
+                variants={statVariants}
+                whileHover={{ y: -2 }}
+                className="bg-white rounded-xl p-3 text-center border border-[#F5E6D3] shadow-sm hover:shadow-md transition-all"
+              >
+                <div 
+                  className="w-8 h-8 rounded-lg flex items-center justify-center mx-auto mb-2"
+                  style={{ backgroundColor: `${stat.color}15` }}
                 >
-                  <div className={`${feature.color} p-2 rounded-lg text-white group-hover:scale-110 transition-transform shadow-lg`}>
-                    {feature.icon}
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">{feature.title}</h4>
-                    <p className="text-sm text-gray-500">{feature.description}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+                  <Icon className="w-4 h-4" style={{ color: stat.color }} />
+                </div>
+                <div className="text-xl md:text-2xl font-bold text-[#2C2420] font-serif">
+                  {displayValue}{stat.suffix}
+                </div>
+                <div className="text-[10px] text-gray-500 font-sans mt-0.5">{stat.label}</div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
 
-   {/* CTA Buttons */}
-<div className="flex flex-row gap-2 sm:gap-4 pt-4">
-  <Link 
-    href="/contact#inquiry-form"
-    className="flex-1 px-2 sm:px-8 py-2.5 sm:py-4 bg-gradient-to-r from-[#d2722d] to-[#e6a87c] text-white rounded-full font-semibold hover:shadow-xl transform hover:scale-105 transition-all duration-300 inline-block text-center text-xs sm:text-base whitespace-nowrap sm:whitespace-normal"
-  >
-    Start Your Inquiry
-  </Link>
-  <Link 
-    href="/reviews"
-    className="flex-1 px-2 sm:px-8 py-2.5 sm:py-4 bg-white text-gray-700 rounded-full font-semibold border-2 border-gray-200 hover:border-[#d9884e] hover:text-[#d9884e] transition-all duration-300 inline-block text-center text-xs sm:text-base whitespace-nowrap sm:whitespace-normal"
-  >
-    View Success Stories →
-  </Link>
-</div>
-
-            {/* Trust indicators */}
-            <div className="flex items-center gap-4 pt-2">
-              <div className="flex -space-x-2">
-                {[1,2,3,4].map((i) => (
-                  <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-[#d9884e] to-[#e6a87c] border-2 border-white"></div>
-                ))}
-              </div>
-              <p className="text-sm text-gray-500">
-                <span className="font-semibold text-gray-700">500+</span> retailers trust us
-              </p>
-            </div>
-          </motion.div>
-
-          {/* RIGHT COLUMN - Image/Animation with Peach/Orange Theme */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="relative"
-          >
-            {/* Main Image Container with Animation */}
-            <div className="relative rounded-3xl overflow-hidden shadow-2xl">
-              {/* Animated background - changed to peach/orange */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#d9884e] to-[#e6a87c] animate-pulse opacity-20"></div>
-              
-              {/* Main Image */}
-             <img
-  src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?q=80&w=2070"
-  alt="Wholesale Clothing"
-  className="w-full h-[300px] sm:h-[400px] md:h-[500px] object-cover"
-/>
-
-              {/* Floating Cards Animation - Adjusted positioning */}
+        {/* Features Grid - 3x2 Layout */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+        >
+          {features.map((feature, index) => {
+            const Icon = feature.icon;
+            return (
               <motion.div
-                animate={{ y: [0, -20, 0] }}
-                transition={{ duration: 4, repeat: Infinity }}
-                className="absolute top-6 left-6 bg-white/90 backdrop-blur-sm p-3 rounded-xl shadow-xl border-l-4 border-[#d9884e] z-20"
+                key={index}
+                variants={itemVariants}
+                whileHover={{ y: -4 }}
+                className="group bg-white rounded-xl p-4 border border-[#F5E6D3] hover:border-[#4A7C59]/30 hover:shadow-lg transition-all duration-300"
               >
-                <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-gradient-to-br from-[#d9884e] to-[#e6a87c] rounded-full flex items-center justify-center text-white shadow-lg flex-shrink-0">
-                    <FaRocket className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500">Orders Shipped</p>
-                    <p className="text-lg font-bold text-gray-900">10k+</p>
+                <div className="flex items-start gap-3">
+                  {/* Icon */}
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                    style={{ backgroundColor: `${feature.color}15` }}
+                  >
+                    <Icon className="w-5 h-5" style={{ color: feature.color }} />
+                  </motion.div>
+                  
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-semibold text-[#2C2420] mb-1 font-serif">
+                      {feature.title}
+                    </h3>
+                    <p className="text-xs text-gray-500 leading-relaxed font-sans">
+                      {feature.description}
+                    </p>
+                    <div className="flex items-center gap-1.5 mt-2">
+                      <span className="text-xs font-bold" style={{ color: feature.color }}>
+                        {feature.stat}
+                      </span>
+                      <span className="text-[10px] text-gray-400">•</span>
+                      <span className="text-[10px] text-gray-400">{feature.statLabel}</span>
+                    </div>
                   </div>
                 </div>
               </motion.div>
+            );
+          })}
+        </motion.div>
 
-              <motion.div
-                animate={{ y: [0, 20, 0] }}
-                transition={{ duration: 5, repeat: Infinity }}
-                className="absolute bottom-16 right-6 bg-white/90 backdrop-blur-sm p-3 rounded-xl shadow-xl border-l-4 border-[#e6a87c] z-20"
-              >
-                <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-gradient-to-br from-[#e6a87c] to-[#d9884e] rounded-full flex items-center justify-center text-white shadow-lg flex-shrink-0">
-                    <FaGlobe className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500">Countries</p>
-                    <p className="text-lg font-bold text-gray-900">50+</p>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Animated Circles - changed to peach/orange shades */}
-              <div className="absolute top-20 right-20 w-32 h-32 bg-[#d9884e] rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
-              <div className="absolute bottom-20 left-20 w-32 h-32 bg-[#e6a87c] rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
-              <div className="absolute top-40 left-40 w-24 h-24 bg-[#f2c1a0] rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
+        {/* Trust Badges - Compact Footer */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.4, duration: 0.4 }}
+          className="mt-8 pt-6 border-t border-[#F5E6D3]"
+        >
+          <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6">
+            <div className="flex items-center gap-2">
+              <Medal className="w-4 h-4 text-[#4A7C59]" />
+              <span className="text-xs text-gray-600 font-sans">ISO Certified</span>
             </div>
-
-            {/* Stats Strip - Updated with peach theme */}
-            <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 w-[90%] bg-white rounded-2xl shadow-xl p-6 grid grid-cols-3 gap-4 border-t-4 border-[#d9884e] z-30">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#d9884e] to-[#e6a87c]">
-                  500+
-                </p>
-                <p className="text-xs text-gray-500">Active Retailers</p>
-              </div>
-              <div className="text-center border-x border-gray-200">
-                <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#e6a87c] to-[#d9884e]">
-                  50+
-                </p>
-                <p className="text-xs text-gray-500">Countries</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#d9884e] to-[#e6a87c]">
-                  100%
-                </p>
-                <p className="text-xs text-gray-500">Satisfaction</p>
-              </div>
+            
+            <div className="w-px h-4 bg-[#E8D5C0]" />
+            
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-[#C6A43B]" />
+              <span className="text-xs text-gray-600 font-sans">SGS Tested</span>
             </div>
-
-            {/* Decorative elements - updated to peach shades */}
-            <div className="absolute -z-10 -top-10 -right-10 w-40 h-40 bg-[#d9884e] rounded-full opacity-20 blur-3xl"></div>
-            <div className="absolute -z-10 -bottom-10 -left-10 w-40 h-40 bg-[#e6a87c] rounded-full opacity-20 blur-3xl"></div>
-          </motion.div>
-        </div>
+            
+            <div className="w-px h-4 bg-[#E8D5C0]" />
+            
+            <div className="flex items-center gap-2">
+              <Truck className="w-4 h-4 text-[#6B4F3A]" />
+              <span className="text-xs text-gray-600 font-sans">Global Shipping</span>
+            </div>
+            
+            <div className="w-px h-4 bg-[#E8D5C0]" />
+            
+            <div className="flex items-center gap-2">
+              <Leaf className="w-4 h-4 text-[#4A7C59]" />
+              <span className="text-xs text-gray-600 font-sans">Fair Trade</span>
+            </div>
+          </div>
+        </motion.div>
       </div>
-
-      {/* Add custom animation keyframes if not already in global CSS */}
-      <style jsx>{`
-        @keyframes blob {
-          0% { transform: translate(0px, 0px) scale(1); }
-          33% { transform: translate(30px, -50px) scale(1.1); }
-          66% { transform: translate(-20px, 20px) scale(0.9); }
-          100% { transform: translate(0px, 0px) scale(1); }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-      `}</style>
     </section>
   );
 }
+
+// Individual stat item animation
+const statVariants = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.3, type: "spring", stiffness: 150 }
+  }
+};

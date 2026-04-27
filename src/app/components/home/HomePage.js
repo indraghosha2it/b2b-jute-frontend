@@ -19,7 +19,7 @@ export default function HomePage() {
      <Navbar />
       <HeroBanner />
 
-      <ScrollingLogos />
+      {/* <ScrollingLogos /> */}
       <Categories />
       <FeaturedProducts />
       <WhyChooseUs />

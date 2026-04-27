@@ -1,266 +1,231 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect, useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
+import { useRef } from 'react';
+import { 
+  Building2, 
+  Clock, 
+  Globe, 
+  Star, 
+  Shield, 
+  Truck, 
+  CheckCircle2,
+  ArrowUpRight,
+  Medal,
+  Users,
+  MessageCircle,
+  Package,
+  TrendingUp,
+  Zap,
+  Crown
+} from 'lucide-react';
 
 export default function AlibabaTrustSection() {
-  const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: true, amount: 0.2 });
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.08 }
     }
+  };
 
-    return () => observer.disconnect();
-  }, []);
-
-  // Stats data
-  const stats = [
-    { label: 'Years on Alibaba', value: '8+', icon: '📅', subtext: 'Gold Supplier' },
-    { label: 'Transactions', value: '15K+', icon: '📦', subtext: 'Successful deals' },
-    { label: 'Response Rate', value: '98%', icon: '⚡', subtext: 'Within 2 hours' },
-    { label: 'Happy Clients', value: '500+', icon: '😊', subtext: 'Worldwide' },
-  ];
-
-  // Featured products
-  const featuredItems = [
-    {
-      id: 1,
-      name: "High Quality Spring Famous Brand Designer Luxury Sweatshirts",
-      price: "$17.89",
-      moq: "10 pcs",
-      image: "https://i.ibb.co.com/PZZ9vvCr/H4d5f244f6765473f8a752284f942313fs.jpg",
-    },
-    {
-      id: 2,
-      name: "Custom Logo Wholesale Sweaters",
-      price: "$4.40 -5.30",
-      moq: "2 pcs",
-      image: "https://i.ibb.co.com/MykjVrB1/He2657cedaf1648b6a43a8d008740bc85g.jpg",
-    },
-    {
-      id: 3,
-      name: "Premium Quality Fashionable T-shirt for Women",
-      price: "$2.86-3.46",
-      moq: "1000 pcs",
-      image: "https://i.ibb.co.com/39vfrscX/Ab2eed3d93e194a909a56591c8c29fe51b.jpg",
-    },
-    {
-      id: 4,
-      name: "Denim Jacket",
-      price: "$12.90",
-      moq: "100 pcs",
-      image: "https://images.unsplash.com/photo-1551537482-f2075a1d41f2?w=300&h=300&fit=crop",
-    }
-  ];
-
-  // Trust badges
-  const badges = [
-    { name: 'Gold Supplier', icon: '⭐', desc: '8+ Years Verified' },
-    { name: 'Trade Assurance', icon: '🛡️', desc: 'Secure payments' },
-    { name: 'Onsite Checked', icon: '✓', desc: 'Verified facility' },
-    { name: 'Fast Response', icon: '⚡', desc: '98% response rate' },
-  ];
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+  };
 
   return (
-    <section ref={sectionRef} className="pt-10 pb-0 bg-white overflow-x-hidden">
-      <div className="container mx-auto px-4 max-w-7xl">
-        {/* Header */}
-        <div className={`text-center mb-12 transition-all duration-700 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-          {/* Partner Badge */}
-          <div className="inline-flex items-center gap-2 bg-gray-100 rounded-full px-4 py-2 mb-6">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-sm font-medium text-gray-700">Verified Alibaba Partner</span>
-          </div>
+    <section ref={sectionRef} className="py-16 md:py-20 bg-white relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-[0.02] pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-[#FF6B12] rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-80 h-80 bg-[#4A7C59] rounded-full blur-3xl" />
+      </div>
 
-          {/* Title */}
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-            Trusted Seller on{' '}
-            <span className="text-orange-500">Alibaba.com</span>
-          </h2>
-          <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
-            8+ years of excellence in wholesale apparel manufacturing
-          </p>
+      <div className="container mx-auto px-4 max-w-6xl relative z-10">
+        {/* Header - Serif Heading */}
+        <div className="text-center mb-10">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 0.4 }}
+            className="inline-flex items-center gap-2 bg-[#4A7C59] text-white rounded-full px-4 py-1.5 mb-5"
+          >
+            <Crown className="w-3.5 h-3.5" />
+            <span className="text-xs font-semibold tracking-wide font-sans">Official Alibaba Partner</span>
+          </motion.div>
+          
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.1, duration: 0.5 }}
+            className="text-3xl sm:text-4xl font-light text-[#1A1A1A] mb-3 font-serif"
+          >
+            <span className="font-semibold text-[#FF6B12]">Alibaba</span> Verified Excellence
+          </motion.h2>
+          
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="text-gray-500 max-w-lg mx-auto text-sm font-sans"
+          >
+            Join 800+ global buyers who trust our verified Alibaba store for premium jute products
+          </motion.p>
         </div>
 
-        {/* Stats Grid */}
-        {/* <div className={`grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12 transition-all duration-700 delay-200 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-          {stats.map((stat, index) => (
-            <div
-              key={index}
-              className="bg-gray-50 rounded-xl p-4 text-center hover:shadow-lg transition-all duration-300 group"
+     
+
+        {/* Two Column Split Layout */}
+        <div className="grid lg:grid-cols-2 gap-8">
+          {/* Left: Alibaba Store Showcase */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            className="space-y-5"
+          >
+            {/* Featured Product Showcase with Background Image */}
+            <motion.div 
+              variants={itemVariants} 
+              className="relative rounded-2xl overflow-hidden"
+              style={{
+                backgroundImage: `url('https://i.ibb.co.com/k2XKP2vv/Hf2a86c0186e2470f94378884ba070de4-U.jpg')`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
             >
-              <div className="text-2xl mb-2 group-hover:scale-110 transition-transform duration-300">
-                {stat.icon}
-              </div>
-              <div className="text-xl font-bold text-gray-900 mb-1">
-                {stat.value}
-              </div>
-              <div className="text-xs font-medium text-gray-700 mb-1">
-                {stat.label}
-              </div>
-              <div className="text-[10px] text-gray-500">
-                {stat.subtext}
-              </div>
-            </div>
-          ))}
-        </div> */}
-
-        {/* Main Content Grid */}
-        <div className="grid lg:grid-cols-2 gap-6">
-          {/* Left Column - Store Preview */}
-          <div className={`space-y-5 transition-all duration-700 delay-400 ${isVisible ? 'translate-x-0 opacity-100' : '-translate-x-10 opacity-0'}`}>
-            {/* Alibaba Store Card */}
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300">
-              {/* Store Header */}
-              <div className="bg-gradient-to-r from-orange-50 to-orange-100/50 p-5 border-b border-gray-200">
-                <div className="flex items-start justify-between">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="bg-orange-500 rounded-lg px-2 py-1 flex-shrink-0">
-                        <span className="text-white font-bold text-xs">Alibaba</span>
-                      </div>
-                      <span className="bg-yellow-100 text-yellow-800 text-[10px] px-2 py-0.5 rounded-full font-medium whitespace-nowrap">
-                        Gold Supplier
-                      </span>
-                    </div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-0.5 truncate">Asian Clothify.</h3>
-                    <p className="text-xs text-gray-600 truncate">Wholesale Apparel Manufacturer</p>
+              {/* Dark Overlay for text readability */}
+              <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/30" />
+              
+              <div className="relative z-10 p-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <Zap className="w-4 h-4 text-[#FF6B12]" />
+                  <span className="text-[#FF6B12] text-xs font-semibold tracking-wide font-sans">BESTSELLER</span>
+                </div>
+                <h3 className="text-white text-xl font-semibold mb-1 font-serif">Premium Jute Shopping Bags</h3>
+                <p className="text-gray-300 text-xs mb-4 font-sans">Eco-friendly | Customizable | Bulk Ready</p>
+                
+                <div className="flex items-center gap-4 mb-4">
+                  <div>
+                    <div className="text-[#FF6B12] text-lg font-bold font-serif">$0.85-1.50</div>
+                    <div className="text-gray-400 text-[9px] font-sans">per piece</div>
                   </div>
-                  <div className="text-right flex-shrink-0 ml-2">
-                    <div className="flex items-center gap-0.5 mb-1">
-                      {[1,2,3,4,5].map(star => (
-                        <svg key={star} className="w-3 h-3 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                          <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                        </svg>
-                      ))}
-                    </div>
-                    <span className="text-[10px] text-gray-600 whitespace-nowrap">4.9 (1.2k reviews)</span>
+                  <div className="w-px h-8 bg-gray-600" />
+                  <div>
+                    <div className="text-white text-sm font-semibold font-sans">500 pcs</div>
+                    <div className="text-gray-400 text-[9px] font-sans">Minimum order</div>
                   </div>
                 </div>
-              </div>
 
-              {/* Store Stats */}
-              <div className="grid grid-cols-3 divide-x divide-gray-200">
-                {[
-                  { label: 'Products', value: '280+' },
-                  { label: 'Response Rate', value: '98%' },
-                  { label: 'Response Time', value: '2h' }
-                ].map((stat, index) => (
-                  <div key={index} className="text-center py-3">
-                    <div className="font-bold text-gray-900 text-sm">{stat.value}</div>
-                    <div className="text-[10px] text-gray-500">{stat.label}</div>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-0.5">
+                    {[1,2,3,4,5].map(i => (
+                      <Star key={i} className="w-3 h-3 fill-[#FF6B12] text-[#FF6B12]" />
+                    ))}
                   </div>
-                ))}
-              </div>
-
-              {/* Action Buttons */}
-              <div className="p-4 border-t border-gray-200 space-y-2">
-                <Link
-                  href="https://asianclothltd.m.trustpass.alibaba.com/index.html"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full text-center bg-orange-500 text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-orange-600 transition-all duration-300"
-                >
-                  Visit Our Alibaba Store →
-                </Link>
-                <Link
-                  href="/contact#inquiry-form"
-                  className="block w-full text-center bg-gray-100 text-gray-700 py-2.5 rounded-lg text-sm font-semibold hover:bg-gray-200 transition-all duration-300"
-                >
-                  Request Sample Order
-                </Link>
-              </div>
-            </div>
-
-            {/* Trust Badges Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {badges.map((badge, index) => (
-                <div key={index} className="bg-gray-50 rounded-lg p-3 text-center">
-                  <div className="text-xl mb-1">{badge.icon}</div>
-                  <div className="font-semibold text-gray-900 text-xs mb-0.5">{badge.name}</div>
-                  <div className="text-[9px] text-gray-500">{badge.desc}</div>
+                  <span className="text-gray-400 text-[10px] font-sans">(2,150+ orders)</span>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Right Column - Featured Products */}
-          <div className={`space-y-5 transition-all duration-700 delay-600 ${isVisible ? 'translate-x-0 opacity-100' : 'translate-x-10 opacity-0'}`}>
-            <div className="bg-gray-50 rounded-xl p-5">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-base font-semibold text-gray-900">🔥 Featured on Alibaba</h3>
-                <Link 
-                  href="https://asianclothltd.m.trustpass.alibaba.com/index.html" 
-                  className="text-xs text-orange-500 font-medium hover:text-orange-600 transition-colors duration-300 flex items-center gap-1 group flex-shrink-0"
-                >
-                  View All 
-                  <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
-                </Link>
               </div>
               
-              <div className="grid grid-cols-2 gap-3">
-                {featuredItems.map((item) => (
-                  <div key={item.id} className="bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
-                    <div className="relative h-24 bg-gray-100">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
+              <div className="relative z-10 h-20 bg-gradient-to-t from-black/60 to-transparent flex items-center justify-end px-6">
+                <Link href="https://jutecraftify.alibaba.com" target="_blank" className="flex items-center gap-2 text-white text-sm font-medium bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full hover:bg-[#FF6B12] hover:bg-opacity-80 transition-all duration-300 font-sans">
+                  View on Alibaba <ArrowUpRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            </motion.div>
+
+            {/* Trust Indicators Row */}
+            <motion.div variants={itemVariants} className="grid grid-cols-2 gap-3">
+              {[
+                { icon: Shield, label: "Trade Assurance", desc: "Payment protected" },
+                { icon: Clock, label: "Fast Response", desc: "Within 2 hours" },
+                { icon: CheckCircle2, label: "Onsite Checked", desc: "Factory verified" },
+                { icon: Truck, label: "Global Shipping", desc: "Sea & Air freight" },
+              ].map((item, idx) => {
+                const Icon = item.icon;
+                return (
+                  <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                    <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm">
+                      <Icon className="w-4 h-4 text-[#FF6B12]" />
                     </div>
-                    <div className="p-2">
-                      <h4 className="font-medium text-gray-900 text-xs mb-1 truncate">{item.name}</h4>
-                      <div className="flex justify-between items-center">
-                        <span className="text-orange-500 font-bold text-xs">{item.price}</span>
-                        <span className="text-[8px] text-gray-500">MOQ: {item.moq}</span>
-                      </div>
+                    <div>
+                      <div className="text-xs font-semibold text-gray-800 font-sans">{item.label}</div>
+                      <div className="text-[9px] text-gray-400 font-sans">{item.desc}</div>
                     </div>
                   </div>
-                ))}
+                );
+              })}
+            </motion.div>
+          </motion.div>
+
+          {/* Right: Product Grid & CTA */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            className="space-y-5"
+          >
+            {/* Product Categories Grid */}
+            <motion.div variants={itemVariants} className="grid grid-cols-2 gap-3">
+              {[
+                { name: "Raw Jute Fiber", price: "$450-550/Ton", icon: "🌾" },
+                { name: "Jute Bags", price: "$0.85-2.50/pc", icon: "🛍️" },
+                { name: "Jute Rugs", price: "$2.50-8.00/pc", icon: "🏠" },
+                { name: "Jute Yarn", price: "$1.20-3.80/kg", icon: "🧵" },
+              ].map((cat, idx) => (
+                <div key={idx} className="bg-white border border-gray-100 rounded-xl p-3 hover:shadow-md transition-shadow">
+                  <div className="text-2xl mb-1">{cat.icon}</div>
+                  <div className="font-semibold text-gray-800 text-sm font-sans">{cat.name}</div>
+                  <div className="text-[#FF6B12] text-xs font-medium mt-1 font-sans">{cat.price}</div>
+                  <div className="text-[9px] text-gray-400 mt-0.5 font-sans">Bulk orders only</div>
+                </div>
+              ))}
+            </motion.div>
+
+            {/* Call to Action Card */}
+            <motion.div variants={itemVariants} className="bg-gradient-to-r from-[#FFA624] to-[#FF6501] rounded-2xl p-5 text-center">
+              <div className="inline-flex items-center gap-1 bg-white/20 rounded-full px-3 py-1 mb-3">
+                <TrendingUp className="w-3 h-3 text-white" />
+                <span className="text-white text-[10px] font-semibold font-sans">BEST PRICE GUARANTEE</span>
               </div>
-            </div>
-
-          
-          </div>
+              <h4 className="text-white font-semibold text-lg mb-1 font-serif">Get Better Price Directly</h4>
+              <p className="text-white/80 text-xs mb-4 font-sans">Skip the platform fees — contact us directly for wholesale rates</p>
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2 bg-white text-[#FF6B12] px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-gray-100 transition-all duration-300 font-sans"
+              >
+                Request Direct Quote
+                <ArrowUpRight className="w-4 h-4" />
+              </Link>
+            </motion.div>
+          </motion.div>
         </div>
 
-        {/* Bottom CTA */}
-        <div className={`mt-8 text-center p-6 bg-gray-50 rounded-xl border border-gray-200 transition-all duration-700 delay-800 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-          <h3 className="text-lg font-bold text-gray-900 mb-2">
-            Ready to start your wholesale order?
-          </h3>
-          <p className="text-sm text-gray-600 mb-4">
-            Contact us directly or browse our complete catalog on Alibaba
-          </p>
-          <div className="flex flex-wrap gap-3 justify-center">
-            <Link
-              href="/products"
-              className="px-5 py-2.5 bg-gray-900 text-white rounded-lg text-sm font-semibold hover:bg-gray-800 transition-all duration-300"
-            >
-              Browse All Products
-            </Link>
-            <Link
-              href="https://asianclothltd.m.trustpass.alibaba.com/index.html"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-5 py-2.5 bg-white text-gray-900 rounded-lg text-sm font-semibold border border-gray-200 hover:border-orange-500 hover:text-orange-500 transition-all duration-300"
-            >
-              View on Alibaba
-            </Link>
+        {/* Bottom Bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.5, duration: 0.4 }}
+          className="mt-10 pt-6 border-t border-gray-100 flex flex-wrap justify-center items-center gap-6 text-center"
+        >
+          <div className="flex items-center gap-2">
+            <Medal className="w-4 h-4 text-[#FF6B12]" />
+            <span className="text-xs text-gray-500 font-sans">ISO 9001 Certified</span>
           </div>
-        </div>
+          <div className="flex items-center gap-2">
+            <Globe className="w-4 h-4 text-[#4A7C59]" />
+            <span className="text-xs text-gray-500 font-sans">30+ Countries Served</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Building2 className="w-4 h-4 text-[#6B4F3A]" />
+            <span className="text-xs text-gray-500 font-sans">Direct from Bangladesh</span>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

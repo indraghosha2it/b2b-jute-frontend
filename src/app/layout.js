@@ -7,7 +7,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import LayoutContent from "./components/layout/LayoutContent";
-import WhatsAppButton from "./components/layout/WhatsAppButton";
+
 import ScrollToTop from "./components/layout/ScrollToTop";
 
 const geistSans = Geist({
@@ -99,7 +99,7 @@ export default function RootLayout({ children }) {
           duration={4000}
           theme="light"
         />
-        {/* <WhatsAppButton /> */}
+      
         <ScrollToTop />
       </body>
     </html>
