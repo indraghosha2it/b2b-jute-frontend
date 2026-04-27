@@ -2,6 +2,7 @@ import React from 'react'
 import HeroBanner from './HeroBanner.js'
 import ScrollingLogos from './ScrollingLogos.js'
 import WhyChooseUs from './WhyChooseUs.js'
+import ManufacturingSupplyChain from './ManufacturingSupplyChain.js'
 import FeaturedProducts from './FeaturedProducts.js'
 import Newsletter from './Newsletter.js'
 import Categories from './Categories.js'
@@ -23,11 +24,12 @@ export default function HomePage() {
       <Categories />
       <FeaturedProducts />
       <WhyChooseUs />
+      <ManufacturingSupplyChain />
       
       
      
            <AlibabaTrustSection /> 
-           <StatsSection/>
+           {/* <StatsSection/> */}
         
             <ReviewsSection />
            <Footer />

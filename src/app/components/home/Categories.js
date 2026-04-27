@@ -504,7 +504,7 @@ export default function Categories() {
               className="mt-3"
             >
               <span className="text-xs text-[#8B7355] bg-[#F5E6D3] px-3 py-1 rounded-full font-sans">
-                {categories.length} Categories Available → Scroll to see more
+             All Categories Available → Scroll to see more
               </span>
             </motion.div>
           )}

@@ -1917,6 +1917,37 @@ export default function ProductDetailsClient() {
     finally { setLoading(false); }
   };
 
+  // Add this to your ProductDetailsClient.js to track recently viewed products
+
+// Add this function
+const addToRecentlyViewed = (product) => {
+  if (typeof window === 'undefined') return;
+  try {
+    const recent = localStorage.getItem('recentlyViewed');
+    let recentIds = recent ? JSON.parse(recent) : [];
+    
+    // Remove if already exists
+    recentIds = recentIds.filter(id => id !== product._id);
+    
+    // Add to beginning
+    recentIds.unshift(product._id);
+    
+    // Keep only last 10
+    recentIds = recentIds.slice(0, 10);
+    
+    localStorage.setItem('recentlyViewed', JSON.stringify(recentIds));
+  } catch (error) {
+    console.error('Error saving to recently viewed:', error);
+  }
+};
+
+// Call this function when you fetch the product
+useEffect(() => {
+  if (product && product._id) {
+    addToRecentlyViewed(product);
+  }
+}, [product]);
+
   const fetchRelatedProducts = async (categoryId, targetedCustomer) => {
     try {
       const params = new URLSearchParams({ limit: 12 });
@@ -2047,7 +2078,7 @@ export default function ProductDetailsClient() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F5E6D3]">
+      <div className="min-h-screen bg-[#eae1d6]">
         <Navbar />
         <div className="container mx-auto px-4 py-8 mt-16">
           <div className="animate-pulse">
