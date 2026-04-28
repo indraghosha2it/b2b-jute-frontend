@@ -1,5 +1,6 @@
 
 
+
 // import jsPDF from 'jspdf';
 
 // // Helper function to format currency
@@ -93,33 +94,108 @@
 //     doc.roundedRect(margin, yPos, contentWidth, 26, 2, 2, 'F');
 
 //     // Logo
-//     const logoSize = 16;
-//     const logoX = margin + 5;
-//     const logoY = yPos + 5;
+//     // const logoSize = 16;
+//     // const logoX = margin + 5;
+//     // const logoY = yPos + 5;
     
-//     if (companyLogoBase64) {
-//       try {
-//         doc.addImage(companyLogoBase64, 'PNG', logoX, logoY, logoSize, logoSize);
-//       } catch (error) {
-//         const companyName = invoice.company?.companyName || 'Asian Clothify';
-//         const initials = getCompanyInitials(companyName);
-//         doc.setFillColor(227, 154, 101);
-//         doc.roundedRect(logoX, logoY, logoSize, logoSize, 2, 2, 'F');
-//         doc.setFontSize(9);
-//         doc.setFont('helvetica', 'bold');
-//         doc.setTextColor(255, 255, 255);
-//         doc.text(initials, logoX + logoSize/2, logoY + logoSize/2 + 1, { align: 'center' });
-//       }
+//     // if (companyLogoBase64) {
+//     //   try {
+//     //     doc.addImage(companyLogoBase64, 'PNG', logoX, logoY, logoSize, logoSize);
+//     //   } catch (error) {
+//     //     const companyName = invoice.company?.companyName || 'Asian Clothify';
+//     //     const initials = getCompanyInitials(companyName);
+//     //     doc.setFillColor(227, 154, 101);
+//     //     doc.roundedRect(logoX, logoY, logoSize, logoSize, 2, 2, 'F');
+//     //     doc.setFontSize(9);
+//     //     doc.setFont('helvetica', 'bold');
+//     //     doc.setTextColor(255, 255, 255);
+//     //     doc.text(initials, logoX + logoSize/2, logoY + logoSize/2 + 1, { align: 'center' });
+//     //   }
+//     // } else {
+//     //   const companyName = invoice.company?.companyName || 'Asian Clothify';
+//     //   const initials = getCompanyInitials(companyName);
+//     //   doc.setFillColor(227, 154, 101);
+//     //   doc.roundedRect(logoX, logoY, logoSize, logoSize, 2, 2, 'F');
+//     //   doc.setFontSize(9);
+//     //   doc.setFont('helvetica', 'bold');
+//     //   doc.setTextColor(255, 255, 255);
+//     //   doc.text(initials, logoX + logoSize/2, logoY + logoSize/2 + 1, { align: 'center' });
+//     // }
+
+//     // Logo - with proper aspect ratio and size constraints
+// const logoSize = 16;
+// const logoMaxWidth = 20;
+// const logoMaxHeight = 16;
+// const logoX = margin + 5;
+// const logoY = yPos + 5;
+
+// if (companyLogoBase64) {
+//   try {
+//     // Get image dimensions
+//     const img = new Image();
+//     img.src = companyLogoBase64;
+    
+//     // Wait for image to load to get dimensions
+//     await new Promise((resolve) => {
+//       img.onload = resolve;
+//     });
+    
+//     // Calculate dimensions maintaining aspect ratio
+//     let imgWidth = img.width;
+//     let imgHeight = img.height;
+//     let finalWidth = logoSize;
+//     let finalHeight = logoSize;
+    
+//     // Calculate aspect ratio
+//     const aspectRatio = imgWidth / imgHeight;
+    
+//     if (aspectRatio > 1) {
+//       // Wider than tall
+//       finalWidth = logoSize;
+//       finalHeight = logoSize / aspectRatio;
 //     } else {
-//       const companyName = invoice.company?.companyName || 'Asian Clothify';
-//       const initials = getCompanyInitials(companyName);
-//       doc.setFillColor(227, 154, 101);
-//       doc.roundedRect(logoX, logoY, logoSize, logoSize, 2, 2, 'F');
-//       doc.setFontSize(9);
-//       doc.setFont('helvetica', 'bold');
-//       doc.setTextColor(255, 255, 255);
-//       doc.text(initials, logoX + logoSize/2, logoY + logoSize/2 + 1, { align: 'center' });
+//       // Taller than wide
+//       finalHeight = logoSize;
+//       finalWidth = logoSize * aspectRatio;
 //     }
+    
+//     // Ensure it doesn't exceed max dimensions
+//     if (finalWidth > logoMaxWidth) {
+//       finalWidth = logoMaxWidth;
+//       finalHeight = finalWidth / aspectRatio;
+//     }
+//     if (finalHeight > logoMaxHeight) {
+//       finalHeight = logoMaxHeight;
+//       finalWidth = finalHeight * aspectRatio;
+//     }
+    
+//     // Center the image within the logo area
+//     const offsetX = (logoSize - finalWidth) / 2;
+//     const offsetY = (logoSize - finalHeight) / 2;
+    
+//     doc.addImage(companyLogoBase64, 'PNG', logoX + offsetX, logoY + offsetY, finalWidth, finalHeight);
+//   } catch (error) {
+//     console.error('Error adding logo image:', error);
+//     // Fallback to initials
+//     const companyName = invoice.company?.companyName || 'Asian Clothify';
+//     const initials = getCompanyInitials(companyName);
+//     doc.setFillColor(227, 154, 101);
+//     doc.roundedRect(logoX, logoY, logoSize, logoSize, 2, 2, 'F');
+//     doc.setFontSize(9);
+//     doc.setFont('helvetica', 'bold');
+//     doc.setTextColor(255, 255, 255);
+//     doc.text(initials, logoX + logoSize/2, logoY + logoSize/2 + 1, { align: 'center' });
+//   }
+// } else {
+//   const companyName = invoice.company?.companyName || 'Asian Clothify';
+//   const initials = getCompanyInitials(companyName);
+//   doc.setFillColor(227, 154, 101);
+//   doc.roundedRect(logoX, logoY, logoSize, logoSize, 2, 2, 'F');
+//   doc.setFontSize(9);
+//   doc.setFont('helvetica', 'bold');
+//   doc.setTextColor(255, 255, 255);
+//   doc.text(initials, logoX + logoSize/2, logoY + logoSize/2 + 1, { align: 'center' });
+// }
 
 //     // Company Info
 //     const companyX = logoX + logoSize + 8;
@@ -294,368 +370,263 @@
     
 //     yPos += colHeight + 10;
 
-//     // // ==================== ITEMS TABLE ====================
-//     // // Updated column positions for better size display
-//     // const colPositions = {
-//     //   item: margin + 3,
-//     //   product: margin + 12,
-//     //   color: margin + 50,
-//     //   sizes: margin + 68,
-//     //   qty: margin + contentWidth - 45,
-//     //   price: margin + contentWidth - 30,
-//     //   total: margin + contentWidth - 10
-//     // };
+//     // ==================== ITEMS TABLE WITH PER-COLOR UNIT PRICE ====================
+//     // Updated column positions for better size display
+//     const colPositions = {
+//       item: margin + 3,
+//       product: margin + 10,
+//       color: margin + 45,
+//       sizes: margin + 60,
+//       qty: margin + contentWidth - 52,
+//       unitPrice: margin + contentWidth - 38,
+//       total: margin + contentWidth - 10
+//     };
 
-//     // // Table Header
-//     // doc.setFillColor(227, 154, 101);
-//     // doc.rect(margin, yPos, contentWidth, 7, 'F');
+//     // Table Header
+//     doc.setFillColor(227, 154, 101);
+//     doc.rect(margin, yPos, contentWidth, 7, 'F');
 
-//     // doc.setFontSize(7);
-//     // doc.setFont('helvetica', 'bold');
-//     // doc.setTextColor(255, 255, 255);
+//     doc.setFontSize(7);
+//     doc.setFont('helvetica', 'bold');
+//     doc.setTextColor(255, 255, 255);
 
-//     // doc.text('#', colPositions.item, yPos + 4.5);
-//     // doc.text('Product', colPositions.product, yPos + 4.5);
-//     // doc.text('Color', colPositions.color, yPos + 4.5);
-//     // doc.text('Sizes (Size:Qty)', colPositions.sizes, yPos + 4.5);
-//     // doc.text('Qty', colPositions.qty, yPos + 4.5, { align: 'right' });
-//     // doc.text('Price', colPositions.price, yPos + 4.5, { align: 'right' });
-//     // doc.text('Total', colPositions.total, yPos + 4.5, { align: 'right' });
+//     doc.text('#', colPositions.item, yPos + 4.5);
+//     doc.text('Product', colPositions.product, yPos + 4.5);
+//     doc.text('Color', colPositions.color, yPos + 4.5);
+//     doc.text('Sizes (Size:Qty)', colPositions.sizes, yPos + 4.5);
+//     doc.text('Qty', colPositions.qty, yPos + 4.5, { align: 'right' });
+//     doc.text('Unit Price', colPositions.unitPrice, yPos + 4.5, { align: 'right' });
+//     doc.text('Total', colPositions.total, yPos + 4.5, { align: 'right' });
 
-//     // yPos += 10;
+//     yPos += 10;
 
-//     // let rowsUsed = 0;
-//     // let itemNumber = 1;
+//     let rowsUsed = 0;
+//     let itemNumber = 1;
     
-//     // if (invoice.items && invoice.items.length > 0) {
-//     //   for (const item of invoice.items) {
-//     //     let firstColor = true;
+//     if (invoice.items && invoice.items.length > 0) {
+//       for (const item of invoice.items) {
+//         let firstColor = true;
         
-//     //     if (item.colors && item.colors.length > 0) {
-//     //       for (const color of item.colors) {
-//     //         const activeSizes = color.sizeQuantities?.filter(sq => sq.quantity > 0) || [];
+//         if (item.colors && item.colors.length > 0) {
+//           // First, calculate all rows and their heights for this product
+//           const colorRows = [];
+          
+//           for (const color of item.colors) {
+//             const activeSizes = color.sizeQuantities?.filter(sq => sq.quantity > 0) || [];
             
-//     //         // Calculate required row height based on number of size lines
-//     //         let requiredRowHeight = 4;
-//     //         let sizeLines = [];
-//     //         if (activeSizes.length > 0) {
-//     //           const sizesText = activeSizes.map(sq => `${sq.size}:${sq.quantity}`).join(', ');
-//     //           doc.setFontSize(5.5);
-//     //           sizeLines = doc.splitTextToSize(sizesText, 45);
-//     //           doc.setFontSize(6);
-//     //           requiredRowHeight = Math.max(4, sizeLines.length * 3.5);
-//     //         }
-//     //         const rowHeight = requiredRowHeight;
+//             // Get per-color unit price (use color.unitPrice, fallback to item.unitPrice)
+//             const colorUnitPrice = color.unitPrice || item.unitPrice || 0;
             
-//     //         // Check page break
-//     //         if (yPos + rowHeight > pageHeight - 55) {
-//     //           doc.addPage();
-//     //           yPos = margin + 10;
-//     //           rowsUsed = 0;
+//             // Format sizes - try to keep on ONE line with smaller font
+//             let sizeLines = [];
+//             if (activeSizes.length > 0) {
+//               // Create a single string of all sizes
+//               const allSizesText = activeSizes.map(sq => `${sq.size}:${sq.quantity}`).join(', ');
               
-//     //           doc.setFillColor(227, 154, 101);
-//     //           doc.rect(margin, yPos, contentWidth, 7, 'F');
-//     //           doc.setFontSize(7);
-//     //           doc.setFont('helvetica', 'bold');
-//     //           doc.setTextColor(255, 255, 255);
-//     //           doc.text('#', colPositions.item, yPos + 4.5);
-//     //           doc.text('Product', colPositions.product, yPos + 4.5);
-//     //           doc.text('Color', colPositions.color, yPos + 4.5);
-//     //           doc.text('Sizes (Size:Qty)', colPositions.sizes, yPos + 4.5);
-//     //           doc.text('Qty', colPositions.qty, yPos + 4.5, { align: 'right' });
-//     //           doc.text('Price', colPositions.price, yPos + 4.5, { align: 'right' });
-//     //           doc.text('Total', colPositions.total, yPos + 4.5, { align: 'right' });
-//     //           yPos += 10;
-//     //         }
-
-//     //         // Draw background
-//     //         if (rowsUsed % 2 === 0) {
-//     //           doc.setFillColor(250, 250, 250);
-//     //           doc.rect(margin, yPos - 2, contentWidth, rowHeight, 'F');
-//     //         }
-
-//     //         doc.setFontSize(6);
-//     //         doc.setFont('helvetica', 'normal');
-//     //         doc.setTextColor(60, 60, 60);
-
-//     //         // Item number
-//     //         if (firstColor) {
-//     //           doc.text(itemNumber.toString(), colPositions.item, yPos);
-//     //         }
-
-//     //         // Product name
-//     //         if (firstColor) {
-//     //           const productName = item.productName || '';
-//     //           const shortName = productName.length > 20 ? productName.substring(0, 17) + '...' : productName;
-//     //           doc.text(shortName, colPositions.product, yPos);
-//     //         }
-
-//     //         // Color circle (centered vertically)
-//     //         const circleY = yPos + (rowHeight / 2) - 1;
-//     //         const colorCode = color.color?.code || '#CCCCCC';
-//     //         drawColorCircle(doc, colPositions.color + 2, circleY, 1.5, colorCode);
-            
-//     //         // Color name
-//     //         let colorName = color.color?.name || color.color?.code || 'Color';
-//     //         if (colorName.startsWith('#')) colorName = 'Color';
-//     //         if (colorName.length > 12) colorName = colorName.substring(0, 10) + '...';
-//     //         doc.text(colorName, colPositions.color + 7, yPos + (rowHeight / 2) - 1.5);
-
-//     //         // Sizes (multi-line with proper alignment)
-//     //         if (activeSizes.length > 0) {
-//     //           doc.setFontSize(5.5);
-//     //           for (let i = 0; i < sizeLines.length; i++) {
-//     //             // Add bullet point for each line to show they belong together
-//     //             const prefix = i === 0 ? '• ' : '  ';
-//     //             doc.text(prefix + sizeLines[i], colPositions.sizes, yPos + (i * 3.5));
-//     //           }
-//     //           doc.setFontSize(6);
-//     //         } else {
-//     //           doc.text('-', colPositions.sizes, yPos);
-//     //         }
-
-//     //         // Quantity
-//     //         const colorQty = color.totalForColor || 
-//     //           color.sizeQuantities?.reduce((sum, sq) => sum + (sq.quantity || 0), 0) || 0;
-//     //         doc.text(colorQty.toString(), colPositions.qty, yPos + (rowHeight / 2) - 1.5, { align: 'right' });
-
-//     //         // Price (only for first color)
-//     //         if (firstColor) {
-//     //           doc.text(formatPrice(item.unitPrice || 0), colPositions.price, yPos + (rowHeight / 2) - 1.5, { align: 'right' });
-//     //         }
-
-//     //         // Total
-//     //         const colorTotal = colorQty * (item.unitPrice || 0);
-//     //         doc.setFont('helvetica', 'bold');
-//     //         doc.text(formatPrice(colorTotal), colPositions.total, yPos + (rowHeight / 2) - 1.5, { align: 'right' });
-//     //         doc.setFont('helvetica', 'normal');
-
-//     //         yPos += rowHeight;
-//     //         rowsUsed++;
-//     //         firstColor = false;
-//     //       }
-//     //     } else {
-//     //       // Simple product (no colors)
-//     //       const rowHeight = 4;
-          
-//     //       if (yPos + rowHeight > pageHeight - 55) {
-//     //         doc.addPage();
-//     //         yPos = margin + 10;
-//     //         rowsUsed = 0;
-            
-//     //         doc.setFillColor(227, 154, 101);
-//     //         doc.rect(margin, yPos, contentWidth, 7, 'F');
-//     //         doc.setFontSize(7);
-//     //         doc.setFont('helvetica', 'bold');
-//     //         doc.setTextColor(255, 255, 255);
-//     //         doc.text('#', colPositions.item, yPos + 4.5);
-//     //         doc.text('Product', colPositions.product, yPos + 4.5);
-//     //         doc.text('Color', colPositions.color, yPos + 4.5);
-//     //         doc.text('Sizes (Size:Qty)', colPositions.sizes, yPos + 4.5);
-//     //         doc.text('Qty', colPositions.qty, yPos + 4.5, { align: 'right' });
-//     //         doc.text('Price', colPositions.price, yPos + 4.5, { align: 'right' });
-//     //         doc.text('Total', colPositions.total, yPos + 4.5, { align: 'right' });
-//     //         yPos += 10;
-//     //       }
-
-//     //       if (rowsUsed % 2 === 0) {
-//     //         doc.setFillColor(250, 250, 250);
-//     //         doc.rect(margin, yPos - 2, contentWidth, rowHeight, 'F');
-//     //       }
-
-//     //       doc.setFontSize(6);
-//     //       doc.setFont('helvetica', 'normal');
-          
-//     //       doc.text(itemNumber.toString(), colPositions.item, yPos);
-          
-//     //       const productName = item.productName || '';
-//     //       const shortName = productName.length > 20 ? productName.substring(0, 17) + '...' : productName;
-//     //       doc.text(shortName, colPositions.product, yPos);
-          
-//     //       drawColorCircle(doc, colPositions.color + 2, yPos - 1, 1.5, '#CCCCCC');
-//     //       doc.text('-', colPositions.sizes, yPos);
-          
-//     //       const totalQty = item.totalQuantity || 0;
-//     //       doc.text(totalQty.toString(), colPositions.qty, yPos, { align: 'right' });
-//     //       doc.text(formatPrice(item.unitPrice || 0), colPositions.price, yPos, { align: 'right' });
-          
-//     //       doc.setFont('helvetica', 'bold');
-//     //       doc.text(formatPrice(item.total || 0), colPositions.total, yPos, { align: 'right' });
-
-//     //       yPos += rowHeight;
-//     //       rowsUsed++;
-//     //     }
-//     //     itemNumber++;
-//     //   }
-//     // }
-
-//     // yPos += 6;
-
-//     // ==================== ITEMS TABLE ====================
-// // ==================== ITEMS TABLE ====================
-// // ==================== ITEMS TABLE ====================
-// // Updated column positions for better size display - INCREASED sizes column width
-// const colPositions = {
-//   item: margin + 3,
-//   product: margin + 10,      // Reduced to give more space to sizes
-//   color: margin + 45,        // Adjusted
-//   sizes: margin + 60,        // INCREASED from 68 to 60 (more space for sizes)
-//   qty: margin + contentWidth - 42,
-//   price: margin + contentWidth - 28,
-//   total: margin + contentWidth - 10
-// };
-
-// // Table Header
-// doc.setFillColor(227, 154, 101);
-// doc.rect(margin, yPos, contentWidth, 7, 'F');
-
-// doc.setFontSize(7);
-// doc.setFont('helvetica', 'bold');
-// doc.setTextColor(255, 255, 255);
-
-// doc.text('#', colPositions.item, yPos + 4.5);
-// doc.text('Product', colPositions.product, yPos + 4.5);
-// doc.text('Color', colPositions.color, yPos + 4.5);
-// doc.text('Sizes (Size:Qty)', colPositions.sizes, yPos + 4.5);
-// doc.text('Qty', colPositions.qty, yPos + 4.5, { align: 'right' });
-// doc.text('Price', colPositions.price, yPos + 4.5, { align: 'right' });
-// doc.text('Total', colPositions.total, yPos + 4.5, { align: 'right' });
-
-// yPos += 10;
-
-// let rowsUsed = 0;
-// let itemNumber = 1;
-
-// if (invoice.items && invoice.items.length > 0) {
-//   for (const item of invoice.items) {
-//     let firstColor = true;
-    
-//     if (item.colors && item.colors.length > 0) {
-//       // First, calculate all rows and their heights for this product
-//       const colorRows = [];
-      
-//       for (const color of item.colors) {
-//         const activeSizes = color.sizeQuantities?.filter(sq => sq.quantity > 0) || [];
-        
-//         // Format sizes - try to keep on ONE line with smaller font
-//         let sizeLines = [];
-//         if (activeSizes.length > 0) {
-//           // Create a single string of all sizes
-//           const allSizesText = activeSizes.map(sq => `${sq.size}:${sq.quantity}`).join(', ');
-          
-//           // Use smaller font to fit more sizes
-//           doc.setFontSize(5.0); // Reduced from 5.5 to 5.0
-//           const maxWidth = 55; // INCREASED from 45 to 55 for more space
-//           const textWidth = doc.getTextWidth(allSizesText);
-          
-//           if (textWidth <= maxWidth) {
-//             // All sizes fit on one line
-//             sizeLines = [allSizesText];
-//           } else {
-//             // Try to fit as many as possible on first line, rest on second line
-//             let currentLine = '';
-//             let remainingSizes = [...activeSizes];
-            
-//             for (let i = 0; i < activeSizes.length; i++) {
-//               const sq = activeSizes[i];
-//               const sizeText = `${sq.size}:${sq.quantity}`;
-//               const testLine = currentLine ? `${currentLine}, ${sizeText}` : sizeText;
-//               const testWidth = doc.getTextWidth(testLine);
+//               // Use smaller font to fit more sizes
+//               doc.setFontSize(5.0);
+//               const maxWidth = 55;
+//               const textWidth = doc.getTextWidth(allSizesText);
               
-//               if (testWidth <= maxWidth) {
-//                 currentLine = testLine;
-//                 remainingSizes.shift();
+//               if (textWidth <= maxWidth) {
+//                 // All sizes fit on one line
+//                 sizeLines = [allSizesText];
 //               } else {
+//                 // Try to fit as many as possible on first line, rest on second line
+//                 let currentLine = '';
+//                 let remainingSizes = [...activeSizes];
+                
+//                 for (let i = 0; i < activeSizes.length; i++) {
+//                   const sq = activeSizes[i];
+//                   const sizeText = `${sq.size}:${sq.quantity}`;
+//                   const testLine = currentLine ? `${currentLine}, ${sizeText}` : sizeText;
+//                   const testWidth = doc.getTextWidth(testLine);
+                  
+//                   if (testWidth <= maxWidth) {
+//                     currentLine = testLine;
+//                     remainingSizes.shift();
+//                   } else {
+//                     if (currentLine) sizeLines.push(currentLine);
+//                     currentLine = sizeText;
+//                   }
+//                 }
 //                 if (currentLine) sizeLines.push(currentLine);
-//                 currentLine = sizeText;
+                
+//                 // If we have more than 2 lines, try to redistribute
+//                 if (sizeLines.length > 2) {
+//                   // Reset and try with even distribution
+//                   sizeLines = [];
+//                   const sizesPerLine = Math.ceil(activeSizes.length / 2);
+//                   for (let i = 0; i < activeSizes.length; i += sizesPerLine) {
+//                     const lineSizes = activeSizes.slice(i, i + sizesPerLine);
+//                     const lineText = lineSizes.map(sq => `${sq.size}:${sq.quantity}`).join(', ');
+//                     sizeLines.push(lineText);
+//                   }
+//                 }
 //               }
+//               doc.setFontSize(6);
+//             } else {
+//               sizeLines = ['-'];
 //             }
-//             if (currentLine) sizeLines.push(currentLine);
             
-//             // If we have more than 2 lines, try to redistribute
-//             if (sizeLines.length > 2) {
-//               // Reset and try with even distribution
-//               sizeLines = [];
-//               const sizesPerLine = Math.ceil(activeSizes.length / 2);
-//               for (let i = 0; i < activeSizes.length; i += sizesPerLine) {
-//                 const lineSizes = activeSizes.slice(i, i + sizesPerLine);
-//                 const lineText = lineSizes.map(sq => `${sq.size}:${sq.quantity}`).join(', ');
-//                 sizeLines.push(lineText);
-//               }
-//             }
+//             // Reduce row height for multi-line sizes
+//             const rowHeight = Math.max(4.5, sizeLines.length * 3.2);
+            
+//             const colorQty = color.totalForColor || 
+//               color.sizeQuantities?.reduce((sum, sq) => sum + (sq.quantity || 0), 0) || 0;
+            
+//             colorRows.push({
+//               color: color,
+//               sizeLines: sizeLines,
+//               rowHeight: rowHeight,
+//               colorQty: colorQty,
+//               colorUnitPrice: colorUnitPrice,
+//               colorTotal: colorQty * colorUnitPrice
+//             });
 //           }
-//           doc.setFontSize(6);
-//         } else {
-//           sizeLines = ['-'];
-//         }
-        
-//         // Reduce row height for multi-line sizes
-//         const rowHeight = Math.max(4.5, sizeLines.length * 3.2);
-        
-//         colorRows.push({
-//           color: color,
-//           sizeLines: sizeLines,
-//           rowHeight: rowHeight,
-//           colorQty: color.totalForColor || 
-//             color.sizeQuantities?.reduce((sum, sq) => sum + (sq.quantity || 0), 0) || 0,
-//           colorTotal: (color.totalForColor || 
-//             color.sizeQuantities?.reduce((sum, sq) => sum + (sq.quantity || 0), 0) || 0) * (item.unitPrice || 0)
-//         });
-//       }
-      
-//       // Now render each color row
-//       for (let colorIndex = 0; colorIndex < colorRows.length; colorIndex++) {
-//         const row = colorRows[colorIndex];
-//         const rowStartY = yPos;
-//         const rowHeight = row.rowHeight;
-        
-//         // Check page break
-//         if (yPos + rowHeight > pageHeight - 55) {
-//           doc.addPage();
-//           yPos = margin + 10;
-//           rowsUsed = 0;
           
-//           doc.setFillColor(227, 154, 101);
-//           doc.rect(margin, yPos, contentWidth, 7, 'F');
-//           doc.setFontSize(7);
-//           doc.setFont('helvetica', 'bold');
-//           doc.setTextColor(255, 255, 255);
-//           doc.text('#', colPositions.item, yPos + 4.5);
-//           doc.text('Product', colPositions.product, yPos + 4.5);
-//           doc.text('Color', colPositions.color, yPos + 4.5);
-//           doc.text('Sizes (Size:Qty)', colPositions.sizes, yPos + 4.5);
-//           doc.text('Qty', colPositions.qty, yPos + 4.5, { align: 'right' });
-//           doc.text('Price', colPositions.price, yPos + 4.5, { align: 'right' });
-//           doc.text('Total', colPositions.total, yPos + 4.5, { align: 'right' });
-//           yPos += 10;
-//         }
+//           // Now render each color row
+//           for (let colorIndex = 0; colorIndex < colorRows.length; colorIndex++) {
+//             const row = colorRows[colorIndex];
+//             const rowStartY = yPos;
+//             const rowHeight = row.rowHeight;
+            
+//             // Check page break
+//             if (yPos + rowHeight > pageHeight - 55) {
+//               doc.addPage();
+//               yPos = margin + 10;
+//               rowsUsed = 0;
+              
+//               doc.setFillColor(227, 154, 101);
+//               doc.rect(margin, yPos, contentWidth, 7, 'F');
+//               doc.setFontSize(7);
+//               doc.setFont('helvetica', 'bold');
+//               doc.setTextColor(255, 255, 255);
+//               doc.text('#', colPositions.item, yPos + 4.5);
+//               doc.text('Product', colPositions.product, yPos + 4.5);
+//               doc.text('Color', colPositions.color, yPos + 4.5);
+//               doc.text('Sizes (Size:Qty)', colPositions.sizes, yPos + 4.5);
+//               doc.text('Qty', colPositions.qty, yPos + 4.5, { align: 'right' });
+//               doc.text('Unit Price', colPositions.unitPrice, yPos + 4.5, { align: 'right' });
+//               doc.text('Total', colPositions.total, yPos + 4.5, { align: 'right' });
+//               yPos += 10;
+//             }
 
-//         // Draw background for this row
-//         if (rowsUsed % 2 === 0) {
-//           doc.setFillColor(250, 250, 250);
-//           doc.rect(margin, rowStartY - 2, contentWidth, rowHeight, 'F');
-//         }
+//             // Draw background for this row
+//             if (rowsUsed % 2 === 0) {
+//               doc.setFillColor(250, 250, 250);
+//               doc.rect(margin, rowStartY - 2, contentWidth, rowHeight, 'F');
+//             }
 
-//         doc.setFontSize(6);
-//         doc.setFont('helvetica', 'normal');
-//         doc.setTextColor(60, 60, 60);
+//             doc.setFontSize(6);
+//             doc.setFont('helvetica', 'normal');
+//             doc.setTextColor(60, 60, 60);
 
-//         // MOVED HIGHER - position elements at the very top of the row
-//         const textY = rowStartY + 1.2;  // Moved higher (was 1.8)
-//         const circleY = rowStartY + 1.5;  // Moved higher (was 2)
-//         const circleRadius = 0.9;
+//             const textY = rowStartY + 1.2;
+//             const circleY = rowStartY + 1.5;
+//             const circleRadius = 0.9;
 
-//         // Item number (only for first color of this product)
-//         if (colorIndex === 0) {
-//           doc.text(itemNumber.toString(), colPositions.item, textY);
-//         }
+//             // Item number (only for first color of this product)
+//             if (colorIndex === 0) {
+//               doc.text(itemNumber.toString(), colPositions.item, textY);
+//             }
 
-//         // Product name (only for first color of this product)
-//         if (colorIndex === 0) {
-//           let productName = item.productName || '';
-//           // Truncate product name to fit
-//           const maxProductWidth = 30;
+//             // Product name (only for first color of this product)
+//             if (colorIndex === 0) {
+//               let productName = item.productName || '';
+//               const maxProductWidth = 30;
+//               doc.setFontSize(5.5);
+//               while (doc.getTextWidth(productName) > maxProductWidth && productName.length > 3) {
+//                 productName = productName.substring(0, productName.length - 1);
+//               }
+//               if (productName !== (item.productName || '')) {
+//                 productName = productName.substring(0, productName.length - 3) + '...';
+//               }
+//               doc.text(productName, colPositions.product, textY);
+//               doc.setFontSize(6);
+//             }
+
+//             // Color circle
+//             const colorCode = row.color.color?.code || '#CCCCCC';
+//             drawColorCircle(doc, colPositions.color + 2, circleY, circleRadius, colorCode);
+            
+//             // Color name
+//             let colorName = row.color.color?.name || row.color.color?.code || 'Color';
+//             if (colorName.startsWith('#')) colorName = '';
+//             if (colorName.length > 8) colorName = colorName.substring(0, 6) + '..';
+//             doc.setFontSize(5.5);
+//             doc.text(colorName, colPositions.color + 6, textY);
+//             doc.setFontSize(6);
+
+//             // Sizes
+//             if (row.sizeLines.length > 0 && row.sizeLines[0] !== '-') {
+//               doc.setFontSize(5.0);
+//               for (let i = 0; i < row.sizeLines.length; i++) {
+//                 doc.text(row.sizeLines[i], colPositions.sizes, textY + (i * 3.2));
+//               }
+//               doc.setFontSize(6);
+//             } else {
+//               doc.text('-', colPositions.sizes, textY);
+//             }
+
+//             // Quantity
+//             doc.setFontSize(5.5);
+//             doc.text(row.colorQty.toString(), colPositions.qty, textY, { align: 'right' });
+
+//             // Unit Price (per-color)
+//             doc.text(formatPrice(row.colorUnitPrice), colPositions.unitPrice, textY, { align: 'right' });
+
+//             // Total
+//             doc.setFont('helvetica', 'bold');
+//             doc.setFontSize(5.5);
+//             doc.text(formatPrice(row.colorTotal), colPositions.total, textY, { align: 'right' });
+//             doc.setFont('helvetica', 'normal');
+//             doc.setFontSize(6);
+
+//             // Move to next row
+//             yPos += rowHeight;
+//             rowsUsed++;
+//           }
+//         } else {
+//           // Simple product (no colors)
+//           const rowHeight = 4.5;
+          
+//           if (yPos + rowHeight > pageHeight - 55) {
+//             doc.addPage();
+//             yPos = margin + 10;
+//             rowsUsed = 0;
+            
+//             doc.setFillColor(227, 154, 101);
+//             doc.rect(margin, yPos, contentWidth, 7, 'F');
+//             doc.setFontSize(7);
+//             doc.setFont('helvetica', 'bold');
+//             doc.setTextColor(255, 255, 255);
+//             doc.text('#', colPositions.item, yPos + 4.5);
+//             doc.text('Product', colPositions.product, yPos + 4.5);
+//             doc.text('Color', colPositions.color, yPos + 4.5);
+//             doc.text('Sizes (Size:Qty)', colPositions.sizes, yPos + 4.5);
+//             doc.text('Qty', colPositions.qty, yPos + 4.5, { align: 'right' });
+//             doc.text('Unit Price', colPositions.unitPrice, yPos + 4.5, { align: 'right' });
+//             doc.text('Total', colPositions.total, yPos + 4.5, { align: 'right' });
+//             yPos += 10;
+//           }
+
+//           if (rowsUsed % 2 === 0) {
+//             doc.setFillColor(250, 250, 250);
+//             doc.rect(margin, yPos - 2, contentWidth, rowHeight, 'F');
+//           }
+
 //           doc.setFontSize(5.5);
+//           doc.setFont('helvetica', 'normal');
+          
+//           const textY = yPos + 1.2;
+//           const circleY = yPos + 1.5;
+//           const circleRadius = 0.9;
+          
+//           doc.text(itemNumber.toString(), colPositions.item, textY);
+          
+//           let productName = item.productName || '';
+//           const maxProductWidth = 30;
 //           while (doc.getTextWidth(productName) > maxProductWidth && productName.length > 3) {
 //             productName = productName.substring(0, productName.length - 1);
 //           }
@@ -663,117 +634,23 @@
 //             productName = productName.substring(0, productName.length - 3) + '...';
 //           }
 //           doc.text(productName, colPositions.product, textY);
-//           doc.setFontSize(6);
-//         }
-
-//         // Color circle - positioned HIGHER to prevent hiding
-//         const colorCode = row.color.color?.code || '#CCCCCC';
-//         drawColorCircle(doc, colPositions.color + 2, circleY, circleRadius, colorCode);
-        
-//         // Color name - positioned HIGHER
-//         let colorName = row.color.color?.name || row.color.color?.code || 'Color';
-//         if (colorName.startsWith('#')) colorName = '';
-//         if (colorName.length > 8) colorName = colorName.substring(0, 6) + '..';
-//         doc.setFontSize(5.5);
-//         doc.text(colorName, colPositions.color + 6, textY);
-//         doc.setFontSize(6);
-
-//         // Sizes - starting from top
-//         if (row.sizeLines.length > 0 && row.sizeLines[0] !== '-') {
-//           doc.setFontSize(5.0);
-//           for (let i = 0; i < row.sizeLines.length; i++) {
-//             doc.text(row.sizeLines[i], colPositions.sizes, textY + (i * 3.2));
-//           }
-//           doc.setFontSize(6);
-//         } else {
+          
+//           drawColorCircle(doc, colPositions.color + 2, circleY, circleRadius, '#CCCCCC');
 //           doc.text('-', colPositions.sizes, textY);
+          
+//           const totalQty = item.totalQuantity || 0;
+//           doc.text(totalQty.toString(), colPositions.qty, textY, { align: 'right' });
+//           doc.text(formatPrice(item.unitPrice || 0), colPositions.unitPrice, textY, { align: 'right' });
+          
+//           doc.setFont('helvetica', 'bold');
+//           doc.text(formatPrice(item.total || 0), colPositions.total, textY, { align: 'right' });
+
+//           yPos += rowHeight;
+//           rowsUsed++;
 //         }
-
-//         // Quantity
-//         doc.setFontSize(5.5);
-//         doc.text(row.colorQty.toString(), colPositions.qty, textY, { align: 'right' });
-
-//         // Price (only for first color)
-//         if (colorIndex === 0) {
-//           doc.text(formatPrice(item.unitPrice || 0), colPositions.price, textY, { align: 'right' });
-//         }
-
-//         // Total
-//         doc.setFont('helvetica', 'bold');
-//         doc.setFontSize(5.5);
-//         doc.text(formatPrice(row.colorTotal), colPositions.total, textY, { align: 'right' });
-//         doc.setFont('helvetica', 'normal');
-//         doc.setFontSize(6);
-
-//         // Move to next row
-//         yPos += rowHeight;
-//         rowsUsed++;
+//         itemNumber++;
 //       }
-//     } else {
-//       // Simple product (no colors)
-//       const rowHeight = 4.5;
-      
-//       if (yPos + rowHeight > pageHeight - 55) {
-//         doc.addPage();
-//         yPos = margin + 10;
-//         rowsUsed = 0;
-        
-//         doc.setFillColor(227, 154, 101);
-//         doc.rect(margin, yPos, contentWidth, 7, 'F');
-//         doc.setFontSize(7);
-//         doc.setFont('helvetica', 'bold');
-//         doc.setTextColor(255, 255, 255);
-//         doc.text('#', colPositions.item, yPos + 4.5);
-//         doc.text('Product', colPositions.product, yPos + 4.5);
-//         doc.text('Color', colPositions.color, yPos + 4.5);
-//         doc.text('Sizes (Size:Qty)', colPositions.sizes, yPos + 4.5);
-//         doc.text('Qty', colPositions.qty, yPos + 4.5, { align: 'right' });
-//         doc.text('Price', colPositions.price, yPos + 4.5, { align: 'right' });
-//         doc.text('Total', colPositions.total, yPos + 4.5, { align: 'right' });
-//         yPos += 10;
-//       }
-
-//       if (rowsUsed % 2 === 0) {
-//         doc.setFillColor(250, 250, 250);
-//         doc.rect(margin, yPos - 2, contentWidth, rowHeight, 'F');
-//       }
-
-//       doc.setFontSize(5.5);
-//       doc.setFont('helvetica', 'normal');
-      
-//       // MOVED HIGHER
-//       const textY = yPos + 1.2;
-//       const circleY = yPos + 1.5;
-//       const circleRadius = 0.9;
-      
-//       doc.text(itemNumber.toString(), colPositions.item, textY);
-      
-//       let productName = item.productName || '';
-//       const maxProductWidth = 30;
-//       while (doc.getTextWidth(productName) > maxProductWidth && productName.length > 3) {
-//         productName = productName.substring(0, productName.length - 1);
-//       }
-//       if (productName !== (item.productName || '')) {
-//         productName = productName.substring(0, productName.length - 3) + '...';
-//       }
-//       doc.text(productName, colPositions.product, textY);
-      
-//       drawColorCircle(doc, colPositions.color + 2, circleY, circleRadius, '#CCCCCC');
-//       doc.text('-', colPositions.sizes, textY);
-      
-//       const totalQty = item.totalQuantity || 0;
-//       doc.text(totalQty.toString(), colPositions.qty, textY, { align: 'right' });
-//       doc.text(formatPrice(item.unitPrice || 0), colPositions.price, textY, { align: 'right' });
-      
-//       doc.setFont('helvetica', 'bold');
-//       doc.text(formatPrice(item.total || 0), colPositions.total, textY, { align: 'right' });
-
-//       yPos += rowHeight;
-//       rowsUsed++;
 //     }
-//     itemNumber++;
-//   }
-// }
 
 //     // ==================== SUMMARY SECTION ====================
 //     const summaryWidth = 85;
@@ -1067,24 +944,25 @@
 //     doc.text(`Invoice #${invoice.invoiceNumber} | Generated ${dateString}`, margin, footerY);
 //     doc.text(invoice.company?.companyName || 'Asian Clothify', pageWidth - margin, footerY, { align: 'right' });
 
-// // Generate and download PDF
-// const pdfBlob = doc.output('blob');
-// const url = URL.createObjectURL(pdfBlob);
-// const link = document.createElement('a');
-// link.href = url;
-// link.download = `Invoice_${invoice.invoiceNumber}.pdf`;
-// document.body.appendChild(link);
-// link.click();
-// document.body.removeChild(link);
-// URL.revokeObjectURL(url);
+//     // Generate and download PDF
+//     const pdfBlob = doc.output('blob');
+//     const url = URL.createObjectURL(pdfBlob);
+//     const link = document.createElement('a');
+//     link.href = url;
+//     link.download = `Invoice_${invoice.invoiceNumber}.pdf`;
+//     document.body.appendChild(link);
+//     link.click();
+//     document.body.removeChild(link);
+//     URL.revokeObjectURL(url);
 
-// return { success: true, fileName: `Invoice_${invoice.invoiceNumber}.pdf` };
+//     return { success: true, fileName: `Invoice_${invoice.invoiceNumber}.pdf` };
     
 //   } catch (error) {
 //     console.error('PDF Generation Error:', error);
 //     throw error;
 //   }
 // };
+
 
 
 import jsPDF from 'jspdf';
@@ -1096,6 +974,15 @@ const formatPrice = (price) => {
     currency: 'USD',
     minimumFractionDigits: 2
   }).format(price || 0);
+};
+
+// Helper function to get unit label
+const getUnitLabel = (orderUnit) => {
+  switch(orderUnit) {
+    case 'kg': return 'kg';
+    case 'ton': return 'MT';
+    default: return 'pcs';
+  }
 };
 
 // Helper function to format date
@@ -1111,9 +998,10 @@ const formatDate = (dateString) => {
 // Helper function to convert image to base64
 const imageToBase64 = async (imageUrl) => {
   try {
-    if (imageUrl.startsWith('data:image')) {
+    if (imageUrl?.startsWith('data:image')) {
       return imageUrl;
     }
+    if (!imageUrl) return null;
     const response = await fetch(imageUrl);
     const blob = await response.blob();
     return new Promise((resolve, reject) => {
@@ -1148,6 +1036,21 @@ const drawColorCircle = (doc, x, y, radius, colorCode) => {
   doc.circle(x, y, radius, 'S');
 };
 
+// Jute Theme Colors
+const COLORS = {
+  primary: '#6B4F3A',      // Earthy Brown
+  secondary: '#F5E6D3',    // Natural Beige
+  accent: '#3A7D44',       // Green
+  neutral: '#FFFFFF',      // White
+  lightGray: '#F9F9F9',
+  border: '#E5E5E5',
+  text: '#333333',
+  textLight: '#666666',
+  paid: '#3A7D44',         // Green for paid
+  unpaid: '#CD5C5C',       // Muted red for unpaid
+  partial: '#E6A017'       // Golden for partial
+};
+
 export const generateInvoicePDF = async (invoice) => {
   try {
     const doc = new jsPDF({
@@ -1173,127 +1076,91 @@ export const generateInvoicePDF = async (invoice) => {
     }
 
     // ==================== HEADER ====================
-    doc.setFillColor(227, 154, 101);
+    // Top header bar with Primary color
+    doc.setFillColor(COLORS.primary);
     doc.rect(0, 0, pageWidth, 32, 'F');
     
-    doc.setFillColor(255, 255, 255);
+    // White rounded rectangle for header content
+    doc.setFillColor(COLORS.neutral);
     doc.roundedRect(margin, yPos, contentWidth, 26, 2, 2, 'F');
 
-    // Logo
-    // const logoSize = 16;
-    // const logoX = margin + 5;
-    // const logoY = yPos + 5;
-    
-    // if (companyLogoBase64) {
-    //   try {
-    //     doc.addImage(companyLogoBase64, 'PNG', logoX, logoY, logoSize, logoSize);
-    //   } catch (error) {
-    //     const companyName = invoice.company?.companyName || 'Asian Clothify';
-    //     const initials = getCompanyInitials(companyName);
-    //     doc.setFillColor(227, 154, 101);
-    //     doc.roundedRect(logoX, logoY, logoSize, logoSize, 2, 2, 'F');
-    //     doc.setFontSize(9);
-    //     doc.setFont('helvetica', 'bold');
-    //     doc.setTextColor(255, 255, 255);
-    //     doc.text(initials, logoX + logoSize/2, logoY + logoSize/2 + 1, { align: 'center' });
-    //   }
-    // } else {
-    //   const companyName = invoice.company?.companyName || 'Asian Clothify';
-    //   const initials = getCompanyInitials(companyName);
-    //   doc.setFillColor(227, 154, 101);
-    //   doc.roundedRect(logoX, logoY, logoSize, logoSize, 2, 2, 'F');
-    //   doc.setFontSize(9);
-    //   doc.setFont('helvetica', 'bold');
-    //   doc.setTextColor(255, 255, 255);
-    //   doc.text(initials, logoX + logoSize/2, logoY + logoSize/2 + 1, { align: 'center' });
-    // }
+    // Logo section
+    const logoSize = 16;
+    const logoMaxWidth = 20;
+    const logoMaxHeight = 16;
+    const logoX = margin + 5;
+    const logoY = yPos + 5;
 
-    // Logo - with proper aspect ratio and size constraints
-const logoSize = 16;
-const logoMaxWidth = 20;
-const logoMaxHeight = 16;
-const logoX = margin + 5;
-const logoY = yPos + 5;
-
-if (companyLogoBase64) {
-  try {
-    // Get image dimensions
-    const img = new Image();
-    img.src = companyLogoBase64;
-    
-    // Wait for image to load to get dimensions
-    await new Promise((resolve) => {
-      img.onload = resolve;
-    });
-    
-    // Calculate dimensions maintaining aspect ratio
-    let imgWidth = img.width;
-    let imgHeight = img.height;
-    let finalWidth = logoSize;
-    let finalHeight = logoSize;
-    
-    // Calculate aspect ratio
-    const aspectRatio = imgWidth / imgHeight;
-    
-    if (aspectRatio > 1) {
-      // Wider than tall
-      finalWidth = logoSize;
-      finalHeight = logoSize / aspectRatio;
+    if (companyLogoBase64) {
+      try {
+        // Get image dimensions
+        const img = new Image();
+        img.src = companyLogoBase64;
+        
+        await new Promise((resolve) => {
+          img.onload = resolve;
+        });
+        
+        let imgWidth = img.width;
+        let imgHeight = img.height;
+        let finalWidth = logoSize;
+        let finalHeight = logoSize;
+        
+        const aspectRatio = imgWidth / imgHeight;
+        
+        if (aspectRatio > 1) {
+          finalWidth = logoSize;
+          finalHeight = logoSize / aspectRatio;
+        } else {
+          finalHeight = logoSize;
+          finalWidth = logoSize * aspectRatio;
+        }
+        
+        if (finalWidth > logoMaxWidth) {
+          finalWidth = logoMaxWidth;
+          finalHeight = finalWidth / aspectRatio;
+        }
+        if (finalHeight > logoMaxHeight) {
+          finalHeight = logoMaxHeight;
+          finalWidth = finalHeight * aspectRatio;
+        }
+        
+        const offsetX = (logoSize - finalWidth) / 2;
+        const offsetY = (logoSize - finalHeight) / 2;
+        
+        doc.addImage(companyLogoBase64, 'PNG', logoX + offsetX, logoY + offsetY, finalWidth, finalHeight);
+      } catch (error) {
+        const companyName = invoice.company?.companyName || 'Asian Clothify';
+        const initials = getCompanyInitials(companyName);
+        doc.setFillColor(COLORS.primary);
+        doc.roundedRect(logoX, logoY, logoSize, logoSize, 2, 2, 'F');
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(COLORS.neutral);
+        doc.text(initials, logoX + logoSize/2, logoY + logoSize/2 + 1, { align: 'center' });
+      }
     } else {
-      // Taller than wide
-      finalHeight = logoSize;
-      finalWidth = logoSize * aspectRatio;
+      const companyName = invoice.company?.companyName || 'Asian Clothify';
+      const initials = getCompanyInitials(companyName);
+      doc.setFillColor(COLORS.primary);
+      doc.roundedRect(logoX, logoY, logoSize, logoSize, 2, 2, 'F');
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(COLORS.neutral);
+      doc.text(initials, logoX + logoSize/2, logoY + logoSize/2 + 1, { align: 'center' });
     }
-    
-    // Ensure it doesn't exceed max dimensions
-    if (finalWidth > logoMaxWidth) {
-      finalWidth = logoMaxWidth;
-      finalHeight = finalWidth / aspectRatio;
-    }
-    if (finalHeight > logoMaxHeight) {
-      finalHeight = logoMaxHeight;
-      finalWidth = finalHeight * aspectRatio;
-    }
-    
-    // Center the image within the logo area
-    const offsetX = (logoSize - finalWidth) / 2;
-    const offsetY = (logoSize - finalHeight) / 2;
-    
-    doc.addImage(companyLogoBase64, 'PNG', logoX + offsetX, logoY + offsetY, finalWidth, finalHeight);
-  } catch (error) {
-    console.error('Error adding logo image:', error);
-    // Fallback to initials
-    const companyName = invoice.company?.companyName || 'Asian Clothify';
-    const initials = getCompanyInitials(companyName);
-    doc.setFillColor(227, 154, 101);
-    doc.roundedRect(logoX, logoY, logoSize, logoSize, 2, 2, 'F');
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(255, 255, 255);
-    doc.text(initials, logoX + logoSize/2, logoY + logoSize/2 + 1, { align: 'center' });
-  }
-} else {
-  const companyName = invoice.company?.companyName || 'Asian Clothify';
-  const initials = getCompanyInitials(companyName);
-  doc.setFillColor(227, 154, 101);
-  doc.roundedRect(logoX, logoY, logoSize, logoSize, 2, 2, 'F');
-  doc.setFontSize(9);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(255, 255, 255);
-  doc.text(initials, logoX + logoSize/2, logoY + logoSize/2 + 1, { align: 'center' });
-}
 
     // Company Info
     const companyX = logoX + logoSize + 8;
     
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(0, 0, 0);
+    doc.setTextColor(COLORS.text);
     doc.text(invoice.company?.companyName || 'Asian Clothify', companyX, logoY + 5);
 
     doc.setFontSize(7);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(80, 80, 80);
+    doc.setTextColor(COLORS.textLight);
     if (invoice.company?.contactPerson) {
       doc.setFont('helvetica', 'bold');
       doc.text('Contact: ', companyX, logoY + 10);
@@ -1322,16 +1189,16 @@ if (companyLogoBase64) {
     
     doc.setFontSize(8);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(227, 154, 101);
+    doc.setTextColor(COLORS.primary);
     const invoiceNoText = `INVOICE NO: `;
     doc.text(invoiceNoText, rightAlignX - doc.getTextWidth(invoiceNoText + (invoice.invoiceNumber || '')), yPos + 8);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(0, 0, 0);
+    doc.setTextColor(COLORS.text);
     doc.text(invoice.invoiceNumber || '', rightAlignX, yPos + 8, { align: 'right' });
 
     doc.setFontSize(6.5);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(100, 100, 100);
+    doc.setTextColor(COLORS.textLight);
     
     const invoiceDate = formatDate(invoice.invoiceDate);
     const dueDate = formatDate(invoice.dueDate);
@@ -1340,7 +1207,15 @@ if (companyLogoBase64) {
     
     doc.text(`Date: ${invoiceDate}`, rightAlignX, yPos + 11.5, { align: 'right' });
     doc.text(`Due: ${dueDate}`, rightAlignX, yPos + 15.5, { align: 'right' });
+    
+    // Status color coding
+    let statusColor = COLORS.unpaid;
+    if (status === 'PAID') statusColor = COLORS.paid;
+    else if (status === 'PARTIAL') statusColor = COLORS.partial;
+    doc.setTextColor(statusColor);
     doc.text(`Status: ${status}`, rightAlignX, yPos + 19.5, { align: 'right' });
+    doc.setTextColor(COLORS.textLight);
+    
     doc.text(`Ref: ${inquiryRef}`, rightAlignX, yPos + 23.5, { align: 'right' });
 
     // ==================== CUSTOMER INFO SECTION ====================
@@ -1380,17 +1255,18 @@ if (companyLogoBase64) {
     const colHeight = Math.max(leftColHeight, rightColHeight);
     
     // Left Column - Customer Info
-    doc.setFillColor(245, 245, 245);
+    doc.setFillColor(COLORS.lightGray);
     doc.roundedRect(margin, yPos, (contentWidth / 2) - 3, colHeight, 2, 2, 'F');
     
     doc.setFontSize(8);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(0, 0, 0);
+    doc.setTextColor(COLORS.primary);
     doc.text('CUSTOMER INFO', margin + 5, yPos + 5);
     
     let leftY = yPos + 10;
     doc.setFontSize(7);
     doc.setFont('helvetica', 'bold');
+    doc.setTextColor(COLORS.text);
     doc.text(invoice.customer?.companyName || 'N/A', margin + 5, leftY);
     leftY += 4.5;
     
@@ -1411,11 +1287,12 @@ if (companyLogoBase64) {
     
     // Right Column - Address
     const addressColX = margin + (contentWidth / 2) + 3;
-    doc.setFillColor(245, 245, 245);
+    doc.setFillColor(COLORS.lightGray);
     doc.roundedRect(addressColX, yPos, (contentWidth / 2) - 3, colHeight, 2, 2, 'F');
     
     doc.setFontSize(8);
     doc.setFont('helvetica', 'bold');
+    doc.setTextColor(COLORS.primary);
     doc.text('ADDRESS', addressColX + 5, yPos + 5);
     
     let rightY = yPos + 10;
@@ -1424,7 +1301,7 @@ if (companyLogoBase64) {
     if (billingAddress) {
       doc.setFontSize(6.5);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(80, 80, 80);
+      doc.setTextColor(COLORS.textLight);
       doc.text('Billing Address:', addressColX + 5, rightY);
       rightY += lineSpacing;
       doc.setFont('helvetica', 'normal');
@@ -1448,7 +1325,7 @@ if (companyLogoBase64) {
     } else if (addressesAreSame && billingAddress) {
       rightY += 1.5;
       doc.setFont('helvetica', 'italic');
-      doc.setTextColor(100, 100, 100);
+      doc.setTextColor(COLORS.textLight);
       doc.text('Shipping Address: Same as billing', addressColX + 5, rightY);
     } else if (!billingAddress) {
       doc.text('N/A', addressColX + 5, rightY);
@@ -1456,30 +1333,29 @@ if (companyLogoBase64) {
     
     yPos += colHeight + 10;
 
-    // ==================== ITEMS TABLE WITH PER-COLOR UNIT PRICE ====================
-    // Updated column positions for better size display
+    // ==================== ITEMS TABLE ====================
     const colPositions = {
       item: margin + 3,
       product: margin + 10,
       color: margin + 45,
-      sizes: margin + 60,
+      details: margin + 60,  // For sizes or weight quantity
       qty: margin + contentWidth - 52,
       unitPrice: margin + contentWidth - 38,
       total: margin + contentWidth - 10
     };
 
     // Table Header
-    doc.setFillColor(227, 154, 101);
+    doc.setFillColor(COLORS.primary);
     doc.rect(margin, yPos, contentWidth, 7, 'F');
 
     doc.setFontSize(7);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(255, 255, 255);
+    doc.setTextColor(COLORS.neutral);
 
     doc.text('#', colPositions.item, yPos + 4.5);
     doc.text('Product', colPositions.product, yPos + 4.5);
     doc.text('Color', colPositions.color, yPos + 4.5);
-    doc.text('Sizes (Size:Qty)', colPositions.sizes, yPos + 4.5);
+    doc.text('Details', colPositions.details, yPos + 4.5);
     doc.text('Qty', colPositions.qty, yPos + 4.5, { align: 'right' });
     doc.text('Unit Price', colPositions.unitPrice, yPos + 4.5, { align: 'right' });
     doc.text('Total', colPositions.total, yPos + 4.5, { align: 'right' });
@@ -1491,79 +1367,77 @@ if (companyLogoBase64) {
     
     if (invoice.items && invoice.items.length > 0) {
       for (const item of invoice.items) {
+        const isWeightBased = item.orderUnit === 'kg' || item.orderUnit === 'ton';
+        const unitLabel = getUnitLabel(item.orderUnit);
+        
         let firstColor = true;
         
         if (item.colors && item.colors.length > 0) {
-          // First, calculate all rows and their heights for this product
           const colorRows = [];
           
           for (const color of item.colors) {
-            const activeSizes = color.sizeQuantities?.filter(sq => sq.quantity > 0) || [];
+            let colorQty = 0;
+            let detailsLines = [];
             
-            // Get per-color unit price (use color.unitPrice, fallback to item.unitPrice)
-            const colorUnitPrice = color.unitPrice || item.unitPrice || 0;
-            
-            // Format sizes - try to keep on ONE line with smaller font
-            let sizeLines = [];
-            if (activeSizes.length > 0) {
-              // Create a single string of all sizes
-              const allSizesText = activeSizes.map(sq => `${sq.size}:${sq.quantity}`).join(', ');
-              
-              // Use smaller font to fit more sizes
-              doc.setFontSize(5.0);
-              const maxWidth = 55;
-              const textWidth = doc.getTextWidth(allSizesText);
-              
-              if (textWidth <= maxWidth) {
-                // All sizes fit on one line
-                sizeLines = [allSizesText];
-              } else {
-                // Try to fit as many as possible on first line, rest on second line
-                let currentLine = '';
-                let remainingSizes = [...activeSizes];
-                
-                for (let i = 0; i < activeSizes.length; i++) {
-                  const sq = activeSizes[i];
-                  const sizeText = `${sq.size}:${sq.quantity}`;
-                  const testLine = currentLine ? `${currentLine}, ${sizeText}` : sizeText;
-                  const testWidth = doc.getTextWidth(testLine);
-                  
-                  if (testWidth <= maxWidth) {
-                    currentLine = testLine;
-                    remainingSizes.shift();
-                  } else {
-                    if (currentLine) sizeLines.push(currentLine);
-                    currentLine = sizeText;
-                  }
-                }
-                if (currentLine) sizeLines.push(currentLine);
-                
-                // If we have more than 2 lines, try to redistribute
-                if (sizeLines.length > 2) {
-                  // Reset and try with even distribution
-                  sizeLines = [];
-                  const sizesPerLine = Math.ceil(activeSizes.length / 2);
-                  for (let i = 0; i < activeSizes.length; i += sizesPerLine) {
-                    const lineSizes = activeSizes.slice(i, i + sizesPerLine);
-                    const lineText = lineSizes.map(sq => `${sq.size}:${sq.quantity}`).join(', ');
-                    sizeLines.push(lineText);
-                  }
-                }
-              }
-              doc.setFontSize(6);
+            if (isWeightBased) {
+              // Weight-based product - show quantity directly
+              colorQty = color.quantity || color.totalQuantity || color.totalForColor || 0;
+              detailsLines = [`${colorQty} ${unitLabel}`];
             } else {
-              sizeLines = ['-'];
+              // Piece-based product - show size breakdown
+              const activeSizes = color.sizeQuantities?.filter(sq => sq.quantity > 0) || [];
+              colorQty = activeSizes.reduce((sum, sq) => sum + (sq.quantity || 0), 0);
+              
+              if (activeSizes.length > 0) {
+                const allSizesText = activeSizes.map(sq => `${sq.size}:${sq.quantity}`).join(', ');
+                doc.setFontSize(5.0);
+                const maxWidth = 55;
+                const textWidth = doc.getTextWidth(allSizesText);
+                
+                if (textWidth <= maxWidth) {
+                  detailsLines = [allSizesText];
+                } else {
+                  let currentLine = '';
+                  let remainingSizes = [...activeSizes];
+                  
+                  for (let i = 0; i < activeSizes.length; i++) {
+                    const sq = activeSizes[i];
+                    const sizeText = `${sq.size}:${sq.quantity}`;
+                    const testLine = currentLine ? `${currentLine}, ${sizeText}` : sizeText;
+                    const testWidth = doc.getTextWidth(testLine);
+                    
+                    if (testWidth <= maxWidth) {
+                      currentLine = testLine;
+                      remainingSizes.shift();
+                    } else {
+                      if (currentLine) detailsLines.push(currentLine);
+                      currentLine = sizeText;
+                    }
+                  }
+                  if (currentLine) detailsLines.push(currentLine);
+                  
+                  if (detailsLines.length > 2) {
+                    detailsLines = [];
+                    const sizesPerLine = Math.ceil(activeSizes.length / 2);
+                    for (let i = 0; i < activeSizes.length; i += sizesPerLine) {
+                      const lineSizes = activeSizes.slice(i, i + sizesPerLine);
+                      const lineText = lineSizes.map(sq => `${sq.size}:${sq.quantity}`).join(', ');
+                      detailsLines.push(lineText);
+                    }
+                  }
+                }
+                doc.setFontSize(6);
+              } else {
+                detailsLines = ['-'];
+              }
             }
             
-            // Reduce row height for multi-line sizes
-            const rowHeight = Math.max(4.5, sizeLines.length * 3.2);
-            
-            const colorQty = color.totalForColor || 
-              color.sizeQuantities?.reduce((sum, sq) => sum + (sq.quantity || 0), 0) || 0;
+            const colorUnitPrice = color.unitPrice || item.unitPrice || 0;
+            const rowHeight = Math.max(4.5, detailsLines.length * 3.2);
             
             colorRows.push({
               color: color,
-              sizeLines: sizeLines,
+              detailsLines: detailsLines,
               rowHeight: rowHeight,
               colorQty: colorQty,
               colorUnitPrice: colorUnitPrice,
@@ -1571,7 +1445,7 @@ if (companyLogoBase64) {
             });
           }
           
-          // Now render each color row
+          // Render each color row
           for (let colorIndex = 0; colorIndex < colorRows.length; colorIndex++) {
             const row = colorRows[colorIndex];
             const rowStartY = yPos;
@@ -1583,41 +1457,41 @@ if (companyLogoBase64) {
               yPos = margin + 10;
               rowsUsed = 0;
               
-              doc.setFillColor(227, 154, 101);
+              doc.setFillColor(COLORS.primary);
               doc.rect(margin, yPos, contentWidth, 7, 'F');
               doc.setFontSize(7);
               doc.setFont('helvetica', 'bold');
-              doc.setTextColor(255, 255, 255);
+              doc.setTextColor(COLORS.neutral);
               doc.text('#', colPositions.item, yPos + 4.5);
               doc.text('Product', colPositions.product, yPos + 4.5);
               doc.text('Color', colPositions.color, yPos + 4.5);
-              doc.text('Sizes (Size:Qty)', colPositions.sizes, yPos + 4.5);
+              doc.text('Details', colPositions.details, yPos + 4.5);
               doc.text('Qty', colPositions.qty, yPos + 4.5, { align: 'right' });
               doc.text('Unit Price', colPositions.unitPrice, yPos + 4.5, { align: 'right' });
               doc.text('Total', colPositions.total, yPos + 4.5, { align: 'right' });
               yPos += 10;
             }
 
-            // Draw background for this row
+            // Background for alternating rows
             if (rowsUsed % 2 === 0) {
-              doc.setFillColor(250, 250, 250);
+              doc.setFillColor(COLORS.lightGray);
               doc.rect(margin, rowStartY - 2, contentWidth, rowHeight, 'F');
             }
 
             doc.setFontSize(6);
             doc.setFont('helvetica', 'normal');
-            doc.setTextColor(60, 60, 60);
+            doc.setTextColor(COLORS.text);
 
             const textY = rowStartY + 1.2;
             const circleY = rowStartY + 1.5;
             const circleRadius = 0.9;
 
-            // Item number (only for first color of this product)
+            // Item number
             if (colorIndex === 0) {
               doc.text(itemNumber.toString(), colPositions.item, textY);
             }
 
-            // Product name (only for first color of this product)
+            // Product name
             if (colorIndex === 0) {
               let productName = item.productName || '';
               const maxProductWidth = 30;
@@ -1632,49 +1506,49 @@ if (companyLogoBase64) {
               doc.setFontSize(6);
             }
 
-            // Color circle
+            // Color circle and name
             const colorCode = row.color.color?.code || '#CCCCCC';
             drawColorCircle(doc, colPositions.color + 2, circleY, circleRadius, colorCode);
             
-            // Color name
             let colorName = row.color.color?.name || row.color.color?.code || 'Color';
             if (colorName.startsWith('#')) colorName = '';
-            if (colorName.length > 8) colorName = colorName.substring(0, 6) + '..';
+            if (colorName.length > 10) colorName = colorName.substring(0, 8) + '..';
             doc.setFontSize(5.5);
             doc.text(colorName, colPositions.color + 6, textY);
             doc.setFontSize(6);
 
-            // Sizes
-            if (row.sizeLines.length > 0 && row.sizeLines[0] !== '-') {
+            // Details (Sizes or Weight)
+            if (row.detailsLines.length > 0 && row.detailsLines[0] !== '-') {
               doc.setFontSize(5.0);
-              for (let i = 0; i < row.sizeLines.length; i++) {
-                doc.text(row.sizeLines[i], colPositions.sizes, textY + (i * 3.2));
+              for (let i = 0; i < row.detailsLines.length; i++) {
+                doc.text(row.detailsLines[i], colPositions.details, textY + (i * 3.2));
               }
               doc.setFontSize(6);
             } else {
-              doc.text('-', colPositions.sizes, textY);
+              doc.text('-', colPositions.details, textY);
             }
 
-            // Quantity
+            // Unit display next to quantity
             doc.setFontSize(5.5);
-            doc.text(row.colorQty.toString(), colPositions.qty, textY, { align: 'right' });
+            doc.text(`${row.colorQty} ${unitLabel}`, colPositions.qty, textY, { align: 'right' });
 
-            // Unit Price (per-color)
+            // Unit Price
             doc.text(formatPrice(row.colorUnitPrice), colPositions.unitPrice, textY, { align: 'right' });
 
             // Total
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(5.5);
+            doc.setTextColor(COLORS.primary);
             doc.text(formatPrice(row.colorTotal), colPositions.total, textY, { align: 'right' });
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(6);
+            doc.setTextColor(COLORS.text);
 
-            // Move to next row
             yPos += rowHeight;
             rowsUsed++;
           }
         } else {
-          // Simple product (no colors)
+          // Simple product
           const rowHeight = 4.5;
           
           if (yPos + rowHeight > pageHeight - 55) {
@@ -1682,15 +1556,15 @@ if (companyLogoBase64) {
             yPos = margin + 10;
             rowsUsed = 0;
             
-            doc.setFillColor(227, 154, 101);
+            doc.setFillColor(COLORS.primary);
             doc.rect(margin, yPos, contentWidth, 7, 'F');
             doc.setFontSize(7);
             doc.setFont('helvetica', 'bold');
-            doc.setTextColor(255, 255, 255);
+            doc.setTextColor(COLORS.neutral);
             doc.text('#', colPositions.item, yPos + 4.5);
             doc.text('Product', colPositions.product, yPos + 4.5);
             doc.text('Color', colPositions.color, yPos + 4.5);
-            doc.text('Sizes (Size:Qty)', colPositions.sizes, yPos + 4.5);
+            doc.text('Details', colPositions.details, yPos + 4.5);
             doc.text('Qty', colPositions.qty, yPos + 4.5, { align: 'right' });
             doc.text('Unit Price', colPositions.unitPrice, yPos + 4.5, { align: 'right' });
             doc.text('Total', colPositions.total, yPos + 4.5, { align: 'right' });
@@ -1698,7 +1572,7 @@ if (companyLogoBase64) {
           }
 
           if (rowsUsed % 2 === 0) {
-            doc.setFillColor(250, 250, 250);
+            doc.setFillColor(COLORS.lightGray);
             doc.rect(margin, yPos - 2, contentWidth, rowHeight, 'F');
           }
 
@@ -1722,13 +1596,15 @@ if (companyLogoBase64) {
           doc.text(productName, colPositions.product, textY);
           
           drawColorCircle(doc, colPositions.color + 2, circleY, circleRadius, '#CCCCCC');
-          doc.text('-', colPositions.sizes, textY);
+          doc.text('-', colPositions.details, textY);
           
           const totalQty = item.totalQuantity || 0;
-          doc.text(totalQty.toString(), colPositions.qty, textY, { align: 'right' });
+          const unitLabel = getUnitLabel(item.orderUnit || 'piece');
+          doc.text(`${totalQty} ${unitLabel}`, colPositions.qty, textY, { align: 'right' });
           doc.text(formatPrice(item.unitPrice || 0), colPositions.unitPrice, textY, { align: 'right' });
           
           doc.setFont('helvetica', 'bold');
+          doc.setTextColor(COLORS.primary);
           doc.text(formatPrice(item.total || 0), colPositions.total, textY, { align: 'right' });
 
           yPos += rowHeight;
@@ -1742,17 +1618,18 @@ if (companyLogoBase64) {
     const summaryWidth = 85;
     const summaryX = pageWidth - margin - summaryWidth;
     
-    doc.setFillColor(245, 245, 245);
+    doc.setFillColor(COLORS.lightGray);
     doc.roundedRect(summaryX, yPos, summaryWidth, 38, 2, 2, 'F');
 
     doc.setFontSize(8);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(0, 0, 0);
+    doc.setTextColor(COLORS.primary);
     doc.text('SUMMARY', summaryX + 3, yPos + 5);
 
     let summaryY = yPos + 9;
     doc.setFontSize(6.5);
     doc.setFont('helvetica', 'normal');
+    doc.setTextColor(COLORS.text);
 
     const subtotal = invoice.subtotal || 0;
     const vatPercentage = invoice.vatPercentage || 0;
@@ -1775,7 +1652,7 @@ if (companyLogoBase64) {
     }
 
     if (discountPercentage > 0) {
-      doc.text(`Disc ${discountPercentage}%:`, summaryX + 3, summaryY);
+      doc.text(`Discount ${discountPercentage}%:`, summaryX + 3, summaryY);
       doc.text(`-${formatPrice(discountAmount)}`, summaryX + summaryWidth - 3, summaryY, { align: 'right' });
       summaryY += 3.5;
     }
@@ -1786,12 +1663,13 @@ if (companyLogoBase64) {
       summaryY += 3.5;
     }
 
-    doc.setDrawColor(200, 200, 200);
+    doc.setDrawColor(COLORS.border);
     doc.line(summaryX + 3, summaryY - 1, summaryX + summaryWidth - 3, summaryY - 1);
     
     summaryY += 2;
     
     doc.setFont('helvetica', 'bold');
+    doc.setTextColor(COLORS.primary);
     doc.text('TOTAL:', summaryX + 3, summaryY);
     doc.text(formatPrice(finalTotal), summaryX + summaryWidth - 3, summaryY, { align: 'right' });
 
@@ -1800,10 +1678,10 @@ if (companyLogoBase64) {
     doc.setFontSize(5.5);
     doc.setFont('helvetica', 'normal');
     
-    doc.setTextColor(34, 197, 94);
+    doc.setTextColor(COLORS.paid);
     doc.text(`Paid: ${formatPrice(amountPaid)} (${finalTotal > 0 ? ((amountPaid / finalTotal) * 100).toFixed(1) : '0'}%)`, summaryX + 3, paymentY);
     
-    doc.setTextColor(dueAmount > 0 ? 239 : 34, dueAmount > 0 ? 68 : 197, dueAmount > 0 ? 68 : 94);
+    doc.setTextColor(COLORS.unpaid);
     doc.text(`Due: ${formatPrice(dueAmount)} (${finalTotal > 0 ? ((dueAmount / finalTotal) * 100).toFixed(1) : '0'}%)`, summaryX + 3, paymentY + 3.5);
 
     // ==================== BANK DETAILS & BANKING TERMS ====================
@@ -1821,12 +1699,12 @@ if (companyLogoBase64) {
     if (invoice.bankDetails && Object.values(invoice.bankDetails).some(v => v)) {
       doc.setFontSize(7);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(0, 0, 0);
+      doc.setTextColor(COLORS.primary);
       doc.text('BANK DETAILS', margin, yPos);
 
       doc.setFontSize(5.5);
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(80, 80, 80);
+      doc.setTextColor(COLORS.textLight);
 
       const bankLines = [];
       if (invoice.bankDetails.bankName) bankLines.push(`Bank: ${invoice.bankDetails.bankName}`);
@@ -1852,12 +1730,12 @@ if (companyLogoBase64) {
       if (invoice.bankingTerms && invoice.bankingTerms.length > 0) {
         doc.setFontSize(7);
         doc.setFont('helvetica', 'bold');
-        doc.setTextColor(0, 0, 0);
+        doc.setTextColor(COLORS.primary);
         doc.text('BANKING TERMS', bankingTermsColX, yPos);
         
         doc.setFontSize(5.5);
         doc.setFont('helvetica', 'normal');
-        doc.setTextColor(80, 80, 80);
+        doc.setTextColor(COLORS.textLight);
         
         let termsY = yPos + 4;
         const bulletPoint = '• ';
@@ -1910,12 +1788,12 @@ if (companyLogoBase64) {
     } else if (invoice.bankingTerms && invoice.bankingTerms.length > 0) {
       doc.setFontSize(7);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(0, 0, 0);
+      doc.setTextColor(COLORS.primary);
       doc.text('BANKING TERMS', bankingTermsColX, yPos);
       
       doc.setFontSize(5.5);
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(80, 80, 80);
+      doc.setTextColor(COLORS.textLight);
       
       let termsY = yPos + 4;
       const bulletPoint = '• ';
@@ -1976,19 +1854,19 @@ if (companyLogoBase64) {
       yPos = margin + 10;
     }
 
-    doc.setDrawColor(200, 200, 200);
+    doc.setDrawColor(COLORS.border);
     doc.line(margin, yPos, pageWidth - margin, yPos);
     yPos += 5;
 
     if (invoice.notes) {
       doc.setFontSize(7);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(0, 0, 0);
+      doc.setTextColor(COLORS.primary);
       doc.text('NOTES:', margin, yPos);
       
       doc.setFontSize(6);
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(80, 80, 80);
+      doc.setTextColor(COLORS.textLight);
       
       const noteLines = doc.splitTextToSize(invoice.notes, contentWidth);
       doc.text(noteLines, margin, yPos + 3.5);
@@ -1998,12 +1876,12 @@ if (companyLogoBase64) {
     if (invoice.terms) {
       doc.setFontSize(7);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(0, 0, 0);
+      doc.setTextColor(COLORS.primary);
       doc.text('TERMS & CONDITIONS:', margin, yPos);
       
       doc.setFontSize(6);
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(80, 80, 80);
+      doc.setTextColor(COLORS.textLight);
       
       const termsLines = doc.splitTextToSize(invoice.terms, contentWidth);
       doc.text(termsLines, margin, yPos + 3.5);
@@ -2012,13 +1890,13 @@ if (companyLogoBase64) {
     // ==================== FOOTER ====================
     const footerY = pageHeight - 5;
     
-    doc.setDrawColor(200, 200, 200);
+    doc.setDrawColor(COLORS.border);
     doc.setLineWidth(0.2);
     doc.line(margin, footerY - 2, pageWidth - margin, footerY - 2);
     
     doc.setFontSize(5);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(150, 150, 150);
+    doc.setTextColor(COLORS.textLight);
     
     const today = new Date();
     const dateString = today.toLocaleDateString('en-US', {

@@ -27,7 +27,10 @@
 //   Star,
 //   Search,
 //   Tag,
-//   FolderTree
+//   FolderTree,
+//   GripVertical,
+//   Scale,
+//   Wrench
 // } from 'lucide-react';
 // import NextLink from 'next/link';
 // import { toast } from 'sonner';
@@ -47,7 +50,7 @@
 //   '#FF0000', '#0000FF', '#00FF00', '#FFFF00', '#FF00FF', '#00FFFF',
 //   '#000000', '#FFFFFF', '#808080', '#800000', '#808000', '#008000',
 //   '#800080', '#008080', '#000080', '#FFA500', '#FFC0CB', '#A52A2A',
-//   '#E39A65', '#4A90E2', '#50C878', '#9B59B6', '#E74C3C', '#F39C12', '#1ABC9C'
+//   '#6B4F3A', '#4A90E2', '#50C878', '#9B59B6', '#E74C3C', '#F39C12', '#1ABC9C'
 // ];
 
 // // Targeted customer options
@@ -59,15 +62,33 @@
 // ];
 
 // // Available tags
+// // const AVAILABLE_TAGS = [
+// //   'Top Ranking',
+// //   'New Arrival',
+// //   'Top Deal',
+// //   'Best Seller',
+// //   'Summer Collection',
+// //   'Winter Collection',
+// //   'Limited Edition',
+// //   'Trending'
+// // ];
+
 // const AVAILABLE_TAGS = [
-//   'Top Ranking',
+//   'Best Seller',
 //   'New Arrival',
 //   'Top Deal',
-//   'Best Seller',
-//   'Summer Collection',
-//   'Winter Collection',
-//   'Limited Edition',
+//   'Eco-Friendly',
+//   'Hot Export Item',
+//   'Customizable',
+//   'Premium Quality',
 //   'Trending'
+// ];
+
+// // Order unit options
+// const ORDER_UNITS = [
+//   { value: 'piece', label: 'Pieces / Units', icon: '📦', description: 'Sell by individual pieces/units', unitLabel: 'pieces' },
+//   { value: 'kg', label: 'Kilogram (KG)', icon: '⚖️', description: 'Sell by weight in kilograms', unitLabel: 'kg' },
+//   { value: 'ton', label: 'Metric Ton (MT)', icon: '🏗️', description: 'Sell by metric ton (1000 kg)', unitLabel: 'metric tons' }
 // ];
 
 // // Cloudinary upload function
@@ -101,7 +122,7 @@
 //   }
 // };
 
-// export default function CreateProduct() {
+// export default function AdminCreateProduct() {
 //   const router = useRouter();
 //   const [isLoading, setIsLoading] = useState(false);
 //   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -114,18 +135,14 @@
 //   const [isMounted, setIsMounted] = useState(false);
 //   const [keywordInput, setKeywordInput] = useState('');
 //   const [showChildSubcategory, setShowChildSubcategory] = useState(false);
-  
+//   const [showTags, setShowTags] = useState(false);
+//   const [showMeta, setShowMeta] = useState(false);
+//   const [orderUnit, setOrderUnit] = useState('piece');
 
 //   const [draggedIndex, setDraggedIndex] = useState(null);
 //   const [dragOverIndex, setDragOverIndex] = useState(null);
-//   // New state for collapsible sections
-//   const [showTags, setShowTags] = useState(false);
-//   const [showMeta, setShowMeta] = useState(false);
-  
-//   // Refs for click outside detection
 //   const colorPickerRef = useRef(null);
   
-//   // Form state with all fields
 //   const [formData, setFormData] = useState({
 //     productName: '',
 //     description: '',
@@ -135,6 +152,8 @@
 //     childSubcategory: '',
 //     targetedCustomer: 'unisex',
 //     fabric: '',
+//     weightPerUnit: '',
+//     orderUnit: 'piece',
 //     moq: 100,
 //     pricePerUnit: 0,
 //     quantityBasedPricing: [
@@ -142,11 +161,12 @@
 //     ],
 //     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
 //     colors: [
-//       { code: '#FF0000' },
-//       { code: '#0000FF' },
-//       { code: '#000000' }
+//       { code: '#6B4F3A' },
+//       { code: '#F5E6D3' },
+//       { code: '#3A7D44' }
 //     ],
 //     additionalInfo: [],
+//     customizationOptions: [],
 //     isFeatured: false,
 //     tags: [],
 //     metaSettings: {
@@ -156,7 +176,7 @@
 //     }
 //   });
 
-//   // Image state - Store preview and upload status (6 images)
+//   // Image state - 6 slots
 //   const [productImages, setProductImages] = useState([
 //     { file: null, preview: null, error: '', url: null, publicId: null, uploading: false },
 //     { file: null, preview: null, error: '', url: null, publicId: null, uploading: false },
@@ -166,23 +186,17 @@
 //     { file: null, preview: null, error: '', url: null, publicId: null, uploading: false }
 //   ]);
 
-//   // File input refs for images
 //   const fileInputRefs = useRef([]);
-
-//   // Errors state
 //   const [errors, setErrors] = useState({});
 
-//   // Allowed file types
 //   const allowedFileTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 //   const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
-//   const maxFileSize = 5 * 1024 * 1024; // 5MB
+//   const maxFileSize = 5 * 1024 * 1024;
 
-//   // Set mounted state
 //   useEffect(() => {
 //     setIsMounted(true);
 //   }, []);
 
-//   // Click outside handler for color picker
 //   useEffect(() => {
 //     const handleClickOutside = (event) => {
 //       if (colorPickerRef.current && !colorPickerRef.current.contains(event.target)) {
@@ -197,25 +211,43 @@
 //     };
 //   }, []);
 
-//   // Initialize TipTap editor for description
+//   // Update pricing range labels when order unit changes
+//   useEffect(() => {
+//     const unit = ORDER_UNITS.find(u => u.value === orderUnit);
+    
+//     if (orderUnit === 'kg') {
+//       setFormData(prev => ({
+//         ...prev,
+//         quantityBasedPricing: [
+//           { range: '100-499', price: 0 }
+//         ]
+//       }));
+//     } else if (orderUnit === 'ton') {
+//       setFormData(prev => ({
+//         ...prev,
+//         quantityBasedPricing: [
+//           { range: '1-4', price: 0 }
+//         ]
+//       }));
+//     } else {
+//       setFormData(prev => ({
+//         ...prev,
+//         quantityBasedPricing: [
+//           { range: '100-299', price: 0 }
+//         ]
+//       }));
+//     }
+//   }, [orderUnit]);
+
 //   const editor = useEditor({
 //     extensions: [
 //       StarterKit.configure({
-//         bulletList: {
-//           keepMarks: true,
-//           keepAttributes: false,
-//         },
-//         orderedList: {
-//           keepMarks: true,
-//           keepAttributes: false,
-//         },
+//         bulletList: { keepMarks: true, keepAttributes: false },
+//         orderedList: { keepMarks: true, keepAttributes: false },
 //       }),
 //       Link.configure({
 //         openOnClick: false,
-//         HTMLAttributes: {
-//           rel: 'noopener noreferrer',
-//           target: '_blank',
-//         },
+//         HTMLAttributes: { rel: 'noopener noreferrer', target: '_blank' },
 //       }),
 //       TextAlign.configure({ types: ['heading', 'paragraph'] }),
 //     ],
@@ -230,21 +262,12 @@
 //   const instructionEditor = useEditor({
 //     extensions: [
 //       StarterKit.configure({
-//         bulletList: {
-//           keepMarks: true,
-//           keepAttributes: false,
-//         },
-//         orderedList: {
-//           keepMarks: true,
-//           keepAttributes: false,
-//         },
+//         bulletList: { keepMarks: true, keepAttributes: false },
+//         orderedList: { keepMarks: true, keepAttributes: false },
 //       }),
 //       Link.configure({
 //         openOnClick: false,
-//         HTMLAttributes: {
-//           rel: 'noopener noreferrer',
-//           target: '_blank',
-//         },
+//         HTMLAttributes: { rel: 'noopener noreferrer', target: '_blank' },
 //       }),
 //       TextAlign.configure({ types: ['heading', 'paragraph'] }),
 //     ],
@@ -256,12 +279,10 @@
 //     editable: true,
 //   });
 
-//   // Fetch categories on mount
 //   useEffect(() => {
 //     fetchCategories();
 //   }, []);
 
-//   // Fetch subcategories when category is selected
 //   useEffect(() => {
 //     if (formData.category) {
 //       fetchSubcategories(formData.category);
@@ -275,7 +296,6 @@
 //     }
 //   }, [formData.category]);
 
-//   // Fetch child subcategories when subcategory is selected
 //   useEffect(() => {
 //     if (formData.category && formData.subcategory) {
 //       fetchChildSubcategories(formData.category, formData.subcategory);
@@ -286,10 +306,9 @@
 //     }
 //   }, [formData.subcategory]);
 
-//   // Check user role
 //   useEffect(() => {
 //     const user = JSON.parse(localStorage.getItem('user') || '{}');
-//     if (user.role !== 'moderator' && user.role !== 'admin') {
+//     if (user.role !== 'admin' && user.role !== 'moderator') {
 //       router.push('/login');
 //     }
 //   }, [router]);
@@ -299,9 +318,7 @@
 //     try {
 //       const token = localStorage.getItem('token');
 //       const response = await fetch('http://localhost:5000/api/categories', {
-//         headers: {
-//           'Authorization': `Bearer ${token}`
-//         }
+//         headers: { 'Authorization': `Bearer ${token}` }
 //       });
       
 //       const data = await response.json();
@@ -361,9 +378,7 @@
 //     try {
 //       const token = localStorage.getItem('token');
 //       const response = await fetch(`http://localhost:5000/api/categories/${categoryId}`, {
-//         headers: {
-//           'Authorization': `Bearer ${token}`
-//         }
+//         headers: { 'Authorization': `Bearer ${token}` }
 //       });
       
 //       const data = await response.json();
@@ -500,14 +515,6 @@
 //       const file = files[i];
 //       const slotIndex = emptySlots[i];
       
-//       const validation = validateImageFile(file);
-//       if (!validation.valid) {
-//         const updatedImages = [...productImages];
-//         updatedImages[slotIndex] = { file: null, preview: null, error: validation.message, url: null, publicId: null, uploading: false };
-//         setProductImages(updatedImages);
-//         continue;
-//       }
-      
 //       try {
 //         const { url, publicId } = await uploadToCloudinary(file);
         
@@ -556,63 +563,60 @@
 //     }
 //   };
 
+//   const moveImage = (fromIndex, toIndex) => {
+//     const updatedImages = [...productImages];
+//     const [movedImage] = updatedImages.splice(fromIndex, 1);
+//     updatedImages.splice(toIndex, 0, movedImage);
+//     setProductImages(updatedImages);
+//   };
 
-//   // Move image function for reordering
-// const moveImage = (fromIndex, toIndex) => {
-//   const updatedImages = [...productImages];
-//   const [movedImage] = updatedImages.splice(fromIndex, 1);
-//   updatedImages.splice(toIndex, 0, movedImage);
-//   setProductImages(updatedImages);
-// };
+//   const handleDragStart = (index) => {
+//     setDraggedIndex(index);
+//   };
 
-// const handleDragStart = (index) => {
-//   setDraggedIndex(index);
-// };
+//   const handleDragOverWithFeedback = (event, index) => {
+//     event.preventDefault();
+//     if (productImages[index].preview) {
+//       setDragOverIndex(index);
+//     }
+//   };
 
-// const handleDragOver = (event) => {
-//   event.preventDefault(); // Required to allow drop
-// };
-
-// const handleDrop = (dropIndex) => {
-//   if (draggedIndex === null || draggedIndex === dropIndex) {
-//     setDraggedIndex(null);
-//     return;
-//   }
-//   moveImage(draggedIndex, dropIndex);
-//   setDraggedIndex(null);
-// };
-
-// const handleDragEnd = () => {
-//   setDraggedIndex(null);
-// };
-
-// const handleDragOverWithFeedback = (event, index) => {
-//   event.preventDefault();
-//   if (productImages[index].preview) {
-//     setDragOverIndex(index);
-//   }
-// };
-
-// const handleDragLeave = () => {
-//   setDragOverIndex(null);
-// };
-
-// const handleDropWithFeedback = (dropIndex) => {
-//   if (draggedIndex === null || draggedIndex === dropIndex) {
+//   const handleDragLeave = () => {
 //     setDragOverIndex(null);
+//   };
+
+//   const handleDropWithFeedback = (dropIndex) => {
+//     if (draggedIndex === null || draggedIndex === dropIndex) {
+//       setDragOverIndex(null);
+//       setDraggedIndex(null);
+//       return;
+//     }
+//     moveImage(draggedIndex, dropIndex);
 //     setDraggedIndex(null);
-//     return;
-//   }
-//   moveImage(draggedIndex, dropIndex);
-//   setDraggedIndex(null);
-//   setDragOverIndex(null);
-// };
+//     setDragOverIndex(null);
+//   };
+
+//   const handleDragEnd = () => {
+//     setDraggedIndex(null);
+//     setDragOverIndex(null);
+//   };
+
 //   const handleChange = (e) => {
 //     const { name, value } = e.target;
 //     setFormData(prev => ({ ...prev, [name]: value }));
 //     if (errors[name]) {
 //       setErrors(prev => ({ ...prev, [name]: null }));
 //     }
+//   };
+
+//   const handleOrderUnitChange = (unit) => {
+//     setOrderUnit(unit);
+//     setFormData(prev => ({ 
+//       ...prev, 
+//       orderUnit: unit,
+//       moq: unit === 'ton' ? 1 : 100,
+//       pricePerUnit: 0
+//     }));
 //   };
 
 //   const handlePricingChange = (index, field, value) => {
@@ -635,11 +639,19 @@
 //   };
 
 //   const addPricingRow = () => {
+//     let newRange = '5000+';
+//     if (orderUnit === 'ton') {
+//       newRange = '50+';
+//     } else if (orderUnit === 'kg') {
+//       newRange = '5000+';
+//     } else {
+//       newRange = '5000+';
+//     }
 //     setFormData(prev => ({
 //       ...prev,
 //       quantityBasedPricing: [
 //         ...prev.quantityBasedPricing,
-//         { range: '', price: '' }
+//         { range: newRange, price: 0 }
 //       ]
 //     }));
 //   };
@@ -686,7 +698,7 @@
 //   const addColor = () => {
 //     setFormData(prev => ({
 //       ...prev,
-//       colors: [...prev.colors, { code: '#000000' }]
+//       colors: [...prev.colors, { code: '#6B4F3A' }]
 //     }));
 //   };
 
@@ -720,6 +732,27 @@
 //   const removeAdditionalInfo = (index) => {
 //     const updatedInfo = formData.additionalInfo.filter((_, i) => i !== index);
 //     setFormData(prev => ({ ...prev, additionalInfo: updatedInfo }));
+//   };
+
+//   const handleCustomizationChange = (index, field, value) => {
+//     const updatedOptions = [...formData.customizationOptions];
+//     updatedOptions[index] = { ...updatedOptions[index], [field]: value };
+//     setFormData(prev => ({ ...prev, customizationOptions: updatedOptions }));
+//   };
+
+//   const addCustomizationOption = () => {
+//     setFormData(prev => ({
+//       ...prev,
+//       customizationOptions: [
+//         ...prev.customizationOptions,
+//         { title: '', value: '' }
+//       ]
+//     }));
+//   };
+
+//   const removeCustomizationOption = (index) => {
+//     const updatedOptions = formData.customizationOptions.filter((_, i) => i !== index);
+//     setFormData(prev => ({ ...prev, customizationOptions: updatedOptions }));
 //   };
 
 //   const handleTagToggle = (tag) => {
@@ -831,11 +864,6 @@
 //       newErrors.images = 'At least one product image is required';
 //     }
 
-//     const validSizes = formData.sizes.filter(s => s.trim() !== '');
-//     if (validSizes.length === 0) {
-//       newErrors.sizes = 'At least one size is required';
-//     }
-
 //     if (formData.colors.length === 0) {
 //       newErrors.colors = 'At least one color is required';
 //     }
@@ -892,6 +920,12 @@
 //         info => info.fieldName.trim() !== '' && info.fieldValue.trim() !== ''
 //       );
 
+//       const processedCustomizationOptions = formData.customizationOptions.filter(
+//         option => option.title.trim() !== '' && option.value.trim() !== ''
+//       );
+
+//       const filteredSizes = formData.sizes.filter(s => s.trim() !== '');
+
 //       const payload = {
 //         productName: formData.productName,
 //         description: formData.description,
@@ -901,19 +935,20 @@
 //         childSubcategory: formData.childSubcategory || '',
 //         targetedCustomer: formData.targetedCustomer,
 //         fabric: formData.fabric,
+//         weightPerUnit: formData.weightPerUnit || '',
+//         orderUnit: orderUnit,
 //         moq: formData.moq,
 //         pricePerUnit: formData.pricePerUnit,
 //         quantityBasedPricing: processedPricing,
-//         sizes: formData.sizes.filter(s => s.trim() !== ''),
+//         sizes: filteredSizes,
 //         colors: formData.colors,
 //         additionalInfo: processedAdditionalInfo,
+//         customizationOptions: processedCustomizationOptions,
 //         images: imageUrls,
 //         isFeatured: formData.isFeatured,
 //         tags: formData.tags,
 //         metaSettings: formData.metaSettings
 //       };
-
-//       console.log('Submitting payload:', payload);
 
 //       const response = await fetch('http://localhost:5000/api/products', {
 //         method: 'POST',
@@ -945,25 +980,36 @@
 //     return customer ? customer.icon : '👤';
 //   };
 
+//   const getCurrentUnitLabel = () => {
+//     const unit = ORDER_UNITS.find(u => u.value === orderUnit);
+//     return unit?.unitLabel || 'pieces';
+//   };
+
+//   const getPricePerLabel = () => {
+//     if (orderUnit === 'piece') return 'Per Piece';
+//     if (orderUnit === 'kg') return 'Per KG';
+//     return 'Per Metric Ton';
+//   };
+
 //   return (
 //     <MantineProvider>
-//       <div className="min-h-screen bg-gray-50">
+//       <div className="min-h-screen" style={{ backgroundColor: '#FAF7F2' }}>
 //         {/* Header */}
-//         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+//         <div className="bg-white border-b shadow-sm sticky top-0 z-10" style={{ borderBottomColor: '#6B4F3A' }}>
 //           <div className="px-6 py-4">
 //             <div className="flex items-center justify-between">
 //               <div className="flex items-center gap-4">
-//                 <NextLink href="/admin/products" className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-//                   <ArrowLeft className="w-5 h-5 text-gray-600" />
+//                 <NextLink href="/admin/all-products" className="p-2 hover:bg-[#F5E6D3] rounded-lg transition-colors">
+//                   <ArrowLeft className="w-5 h-5" style={{ color: '#6B4F3A' }} />
 //                 </NextLink>
 //                 <div>
 //                   <div className="flex items-center gap-2">
-//                     <h1 className="text-2xl font-bold text-gray-900">Create New Product</h1>
-//                     <span className="px-2 py-1 bg-blue-100 text-blue-600 text-xs font-medium rounded-full">
-//                       {typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user') || '{}').role === 'admin' ? 'Admin' : 'Moderator' : ''}
+//                     <h1 className="text-2xl font-bold" style={{ color: '#2A2A2A', fontFamily: 'Playfair Display, serif' }}>Create New Product</h1>
+//                     <span className="px-2 py-1 text-xs font-medium rounded-full" style={{ backgroundColor: '#F5E6D3', color: '#6B4F3A' }}>
+//                       Admin
 //                     </span>
 //                   </div>
-//                   <p className="text-sm text-gray-500 mt-1">Add a new product to your catalog</p>
+//                   <p className="text-sm text-gray-500 mt-1">Add a new jute product to your catalog</p>
 //                 </div>
 //               </div>
 //             </div>
@@ -973,14 +1019,14 @@
 //         {/* Main Content */}
 //         <div className="p-6">
 //           <form onSubmit={handleSubmit}>
-//             {/* Row 1: Basic Details (Left) and Product Images (Right) */}
+//             {/* Row 1: Basic Details and Product Images */}
 //             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-//               {/* Basic Details Card - Left (2/3 width) */}
+//               {/* Basic Details Card */}
 //               <div className="lg:col-span-2">
 //                 <div className="bg-white rounded-xl shadow-sm border border-gray-200">
 //                   <div className="p-5 border-b border-gray-200">
-//                     <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-//                       <Package className="w-5 h-5 text-[#E39A65]" />
+//                     <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+//                       <Package className="w-5 h-5" style={{ color: '#6B4F3A' }} />
 //                       Basic Details
 //                     </h2>
 //                   </div>
@@ -996,10 +1042,10 @@
 //                         name="productName"
 //                         value={formData.productName}
 //                         onChange={handleChange}
-//                         className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition ${
+//                         className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition ${
 //                           errors.productName ? 'border-red-500' : 'border-gray-300'
 //                         }`}
-//                         placeholder="e.g., Premium Cotton T-Shirt"
+//                         placeholder="e.g., Premium Jute Fiber, Jute Shopping Bag"
 //                       />
 //                       {errors.productName && (
 //                         <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
@@ -1024,31 +1070,26 @@
 //                                 <RichTextEditor.Underline />
 //                                 <RichTextEditor.Strikethrough />
 //                               </RichTextEditor.ControlsGroup>
-
 //                               <RichTextEditor.ControlsGroup>
 //                                 <RichTextEditor.H1 />
 //                                 <RichTextEditor.H2 />
 //                                 <RichTextEditor.H3 />
 //                                 <RichTextEditor.H4 />
 //                               </RichTextEditor.ControlsGroup>
-
 //                               <RichTextEditor.ControlsGroup>
 //                                 <RichTextEditor.BulletList />
 //                                 <RichTextEditor.OrderedList />
 //                               </RichTextEditor.ControlsGroup>
-
 //                               <RichTextEditor.ControlsGroup>
 //                                 <RichTextEditor.AlignLeft />
 //                                 <RichTextEditor.AlignCenter />
 //                                 <RichTextEditor.AlignRight />
 //                               </RichTextEditor.ControlsGroup>
-
 //                               <RichTextEditor.ControlsGroup>
 //                                 <RichTextEditor.Link />
 //                                 <RichTextEditor.Unlink />
 //                               </RichTextEditor.ControlsGroup>
 //                             </RichTextEditor.Toolbar>
-
 //                             <RichTextEditor.Content />
 //                           </RichTextEditor>
 //                         </div>
@@ -1058,7 +1099,7 @@
 //                     {/* Instruction Field */}
 //                     <div>
 //                       <label className="block text-sm font-medium text-gray-700 mb-1">
-//                         Instructions / Care Instructions
+//                         Packaging / Care Instructions
 //                       </label>
 //                       {isMounted && instructionEditor && (
 //                         <div className="border border-gray-300 rounded-lg overflow-hidden">
@@ -1070,31 +1111,26 @@
 //                                 <RichTextEditor.Underline />
 //                                 <RichTextEditor.Strikethrough />
 //                               </RichTextEditor.ControlsGroup>
-
 //                               <RichTextEditor.ControlsGroup>
 //                                 <RichTextEditor.H1 />
 //                                 <RichTextEditor.H2 />
 //                                 <RichTextEditor.H3 />
 //                                 <RichTextEditor.H4 />
 //                               </RichTextEditor.ControlsGroup>
-
 //                               <RichTextEditor.ControlsGroup>
 //                                 <RichTextEditor.BulletList />
 //                                 <RichTextEditor.OrderedList />
 //                               </RichTextEditor.ControlsGroup>
-
 //                               <RichTextEditor.ControlsGroup>
 //                                 <RichTextEditor.AlignLeft />
 //                                 <RichTextEditor.AlignCenter />
 //                                 <RichTextEditor.AlignRight />
 //                               </RichTextEditor.ControlsGroup>
-
 //                               <RichTextEditor.ControlsGroup>
 //                                 <RichTextEditor.Link />
 //                                 <RichTextEditor.Unlink />
 //                               </RichTextEditor.ControlsGroup>
 //                             </RichTextEditor.Toolbar>
-
 //                             <RichTextEditor.Content />
 //                           </RichTextEditor>
 //                         </div>
@@ -1104,8 +1140,8 @@
 //                       </p>
 //                     </div>
 
-//                     {/* Category, Subcategory, Child Subcategory, Targeted Customer, Fabric - 5 Column Layout */}
-//                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4">
+//                     {/* Category, Subcategory, Child Subcategory, Targeted Customer, Fabric, Weight */}
+//                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 //                       {/* Category */}
 //                       <div>
 //                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1115,7 +1151,7 @@
 //                           name="category"
 //                           value={formData.category}
 //                           onChange={handleChange}
-//                           className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition ${
+//                           className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition ${
 //                             errors.category ? 'border-red-500' : 'border-gray-300'
 //                           }`}
 //                         >
@@ -1140,23 +1176,21 @@
 //                         <select
 //                           name="subcategory"
 //                           value={formData.subcategory}
-//                           onChange={handleChange}
+//                           onChange={(e) => {
+//                             handleChange(e);
+//                             setFormData(prev => ({ ...prev, childSubcategory: '' }));
+//                           }}
 //                           disabled={!formData.category || subcategories.length === 0}
-//                           className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition disabled:bg-gray-100 disabled:cursor-not-allowed border-gray-300"
+//                           className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition disabled:bg-gray-100 disabled:cursor-not-allowed border-gray-300"
 //                         >
-//                           <option value="">-- Select Subcategory --</option>
+//                           <option value="">-- Select Subcategory (Optional) --</option>
 //                           {subcategories.map(sub => (
 //                             <option key={sub._id} value={sub._id}>{sub.name}</option>
 //                           ))}
 //                         </select>
-//                         {subcategories.length === 0 && formData.category && (
-//                           <p className="text-xs text-gray-500 mt-1">
-//                             No subcategories available for this category
-//                           </p>
-//                         )}
 //                       </div>
 
-//                       {/* Child Subcategory - Only shows when a subcategory with children is selected */}
+//                       {/* Child Subcategory */}
 //                       {showChildSubcategory && (
 //                         <div>
 //                           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1169,9 +1203,9 @@
 //                             name="childSubcategory"
 //                             value={formData.childSubcategory}
 //                             onChange={handleChange}
-//                             className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition border-gray-300"
+//                             className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition border-gray-300"
 //                           >
-//                             <option value="">-- Select Child Subcategory --</option>
+//                             <option value="">-- Select Child Subcategory (Optional) --</option>
 //                             {childSubcategories.map(child => (
 //                               <option key={child._id} value={child._id}>{child.name}</option>
 //                             ))}
@@ -1192,7 +1226,7 @@
 //                             name="targetedCustomer"
 //                             value={formData.targetedCustomer}
 //                             onChange={handleChange}
-//                             className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition appearance-none ${
+//                             className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition appearance-none ${
 //                               errors.targetedCustomer ? 'border-red-500' : 'border-gray-300'
 //                             }`}
 //                           >
@@ -1206,9 +1240,6 @@
 //                             <span className="text-lg">{getSelectedCustomerIcon()}</span>
 //                           </div>
 //                         </div>
-//                         {errors.targetedCustomer && (
-//                           <p className="text-xs text-red-600 mt-1">{errors.targetedCustomer}</p>
-//                         )}
 //                       </div>
 
 //                       {/* Fabric */}
@@ -1221,22 +1252,45 @@
 //                           name="fabric"
 //                           value={formData.fabric}
 //                           onChange={handleChange}
-//                           className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition ${
+//                           className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition ${
 //                             errors.fabric ? 'border-red-500' : 'border-gray-300'
 //                           }`}
-//                           placeholder="e.g., 100% Cotton"
+//                           placeholder="e.g., 100% Natural Jute"
 //                         />
-//                         {errors.fabric && (
-//                           <p className="text-xs text-red-600 mt-1">{errors.fabric}</p>
-//                         )}
+//                       </div>
+
+//                       {/* Weight Per Unit */}
+//                       <div>
+//                         <label className="block text-sm font-medium text-gray-700 mb-1">
+//                           <div className="flex items-center gap-1">
+//                             <Scale className="w-4 h-4" />
+//                             Weight Per Unit <span className="text-gray-400 text-xs font-normal">(Optional)</span>
+//                           </div>
+//                         </label>
+//                         <div className="flex items-center gap-2">
+//                           <input
+//                             type="number"
+//                             name="weightPerUnit"
+//                             value={formData.weightPerUnit}
+//                             onChange={handleChange}
+//                             step="0.01"
+//                             min="0"
+//                             className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition"
+//                             placeholder="e.g., 0.5"
+//                           />
+//                           <span className="text-sm text-gray-500">kg/unit</span>
+//                         </div>
+//                         <p className="text-xs text-gray-500 mt-1">
+//                           Specify weight per piece/unit (helps with shipping calculations)
+//                         </p>
 //                       </div>
 //                     </div>
 
-//                     {/* Category Info Display - Shows all selected levels */}
+//                     {/* Category Info Display */}
 //                     {selectedCategoryDetails && (
-//                       <div className="mt-2 p-3 bg-orange-50 rounded-lg border border-orange-200">
+//                       <div className="mt-2 p-3 rounded-lg border" style={{ backgroundColor: '#F5E6D3', borderColor: '#6B4F3A' }}>
 //                         <div className="flex items-center gap-2">
-//                           <Package className="w-4 h-4 text-[#E39A65]" />
+//                           <Package className="w-4 h-4" style={{ color: '#6B4F3A' }} />
 //                           <div>
 //                             <p className="text-sm font-medium text-gray-900">
 //                               Selected Category: {selectedCategoryDetails.name}
@@ -1259,12 +1313,12 @@
 //                 </div>
 //               </div>
 
-//               {/* Product Images Card - Right (1/3 width) */}
+//               {/* Product Images Card */}
 //               <div className="lg:col-span-1">
 //                 <div className="bg-white rounded-xl shadow-sm border border-gray-200">
 //                   <div className="p-5 border-b border-gray-200">
-//                     <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-//                       <ImageIcon className="w-5 h-5 text-[#E39A65]" />
+//                     <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+//                       <ImageIcon className="w-5 h-5" style={{ color: '#6B4F3A' }} />
 //                       Product Images <span className="text-red-500">*</span>
 //                     </h2>
 //                     <p className="text-xs text-gray-500 mt-1">Upload up to 6 images (JPG, PNG, WebP, max 5MB each)</p>
@@ -1294,7 +1348,8 @@
 //                       <button
 //                         type="button"
 //                         onClick={() => fileInputRefs.current['multiple']?.click()}
-//                         className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-50 text-blue-700 font-medium rounded-lg border-2 border-dashed border-blue-300 hover:bg-blue-100 hover:border-blue-400 transition-colors"
+//                         className="w-full flex items-center justify-center gap-2 px-4 py-3 font-medium rounded-lg border-2 border-dashed transition-colors"
+//                         style={{ backgroundColor: '#F5E6D3', color: '#6B4F3A', borderColor: '#6B4F3A' }}
 //                       >
 //                         <Upload className="w-5 h-5" />
 //                         <span>Select Multiple Images (Up to 6)</span>
@@ -1304,20 +1359,35 @@
 //                       </p>
 //                     </div>
 
-//                     {/* Image Preview Grid */}
-//                     {/* <div className="grid grid-cols-2 gap-4">
+//                     {/* Image Preview Grid with Drag and Drop */}
+//                     <div className="grid grid-cols-2 gap-4">
 //                       {productImages.map((img, index) => (
-//                         <div key={index}>
+//                         <div
+//                           key={index}
+//                           draggable={img.preview !== null}
+//                           onDragStart={() => img.preview && handleDragStart(index)}
+//                           onDragOver={(e) => img.preview && handleDragOverWithFeedback(e, index)}
+//                           onDragLeave={handleDragLeave}
+//                           onDrop={() => img.preview && handleDropWithFeedback(index)}
+//                           onDragEnd={handleDragEnd}
+//                           className={`transition-all duration-200 ${
+//                             draggedIndex === index ? 'opacity-50 scale-95' : ''
+//                           } ${
+//                             dragOverIndex === index && draggedIndex !== index && draggedIndex !== null 
+//                               ? 'ring-2 ring-[#6B4F3A] ring-offset-2 rounded-lg' 
+//                               : ''
+//                           }`}
+//                         >
 //                           {img.preview ? (
-//                             <div className="relative rounded-lg overflow-hidden border border-gray-200 h-32">
+//                             <div className="relative rounded-lg overflow-hidden border-2 border-gray-200 h-32 hover:border-[#6B4F3A] transition-colors cursor-grab active:cursor-grabbing">
+//                               <div className="absolute top-1 left-1 bg-black/50 rounded px-1.5 py-0.5 z-10">
+//                                 <GripVertical className="w-3 h-3 text-white" />
+//                               </div>
+                              
 //                               <img 
 //                                 src={img.preview} 
 //                                 alt={`Product ${index + 1}`} 
 //                                 className="w-full h-full object-cover"
-//                                 onError={(e) => {
-//                                   console.error('Image failed to load:', img.preview);
-//                                   e.target.src = 'https://via.placeholder.com/150?text=Error';
-//                                 }}
 //                               />
                               
 //                               {img.uploading && (
@@ -1335,16 +1405,24 @@
 //                                 <X className="w-3 h-3" />
 //                               </button>
                               
-//                               <span className="absolute bottom-1 left-1 px-1.5 py-0.5 bg-black bg-opacity-60 text-white text-xs rounded">
+//                               <span className="absolute bottom-1 left-1 px-1.5 py-0.5 bg-black bg-opacity-60 text-white text-xs rounded z-10">
 //                                 {index + 1}
 //                               </span>
 //                             </div>
 //                           ) : (
 //                             <div 
-//                               className={`border-2 border-dashed rounded-lg p-4 text-center h-32 flex flex-col items-center justify-center ${
-//                                 img.error ? 'border-red-300 bg-red-50' : 'border-gray-300 bg-gray-50'
+//                               className={`border-2 border-dashed rounded-lg p-4 text-center h-32 flex flex-col items-center justify-center cursor-pointer ${
+//                                 img.error ? 'border-red-300 bg-red-50' : 'border-gray-300 bg-gray-50 hover:border-[#6B4F3A] hover:bg-[#F5E6D3]'
 //                               }`}
+//                               onClick={() => fileInputRefs.current[index]?.click()}
 //                             >
+//                               <input 
+//                                 type="file" 
+//                                 ref={el => fileInputRefs.current[index] = el}
+//                                 className="hidden" 
+//                                 accept="image/jpeg,image/jpg,image/png,image/webp" 
+//                                 onChange={(e) => handleImageChange(e, index)} 
+//                               />
 //                               <ImageIcon className={`w-6 h-6 mx-auto mb-2 ${img.error ? 'text-red-400' : 'text-gray-400'}`} />
 //                               <p className={`text-xs ${img.error ? 'text-red-600' : 'text-gray-600'}`}>
 //                                 Slot {index + 1}
@@ -1356,86 +1434,12 @@
 //                           )}
 //                         </div>
 //                       ))}
-//                     </div> */}
-
-//                     {/* Image Preview Grid with Drag and Drop */}
-// <div className="grid grid-cols-2 gap-4">
-//   {productImages.map((img, index) => (
-//    <div
-//   key={index}
-//   draggable={img.preview !== null}
-//   onDragStart={() => img.preview && handleDragStart(index)}
-//   onDragOver={(e) => img.preview && handleDragOverWithFeedback(e, index)}
-//   onDragLeave={handleDragLeave}
-//   onDrop={() => img.preview && handleDropWithFeedback(index)}
-//   onDragEnd={handleDragEnd}
-//   className={`transition-all duration-200 ${
-//     draggedIndex === index ? 'opacity-50 scale-95' : ''
-//   } ${
-//     dragOverIndex === index && draggedIndex !== index ? 'ring-2 ring-[#E39A65] ring-offset-2 rounded-lg' : ''
-//   }`}
-// >
-//       {img.preview ? (
-//         <div className="relative rounded-lg overflow-hidden border-2 border-gray-200 h-32 hover:border-[#E39A65] transition-colors cursor-grab active:cursor-grabbing">
-//           {/* Drag handle indicator */}
-//           <div className="absolute top-1 left-1 bg-black/50 rounded px-1.5 py-0.5">
-//             <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-//               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
-//             </svg>
-//           </div>
-          
-//           <img 
-//             src={img.preview} 
-//             alt={`Product ${index + 1}`} 
-//             className="w-full h-full object-cover"
-//             onError={(e) => {
-//               console.error('Image failed to load:', img.preview);
-//               e.target.src = 'https://via.placeholder.com/150?text=Error';
-//             }}
-//           />
-          
-//           {img.uploading && (
-//             <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-//               <Loader2 className="w-6 h-6 text-white animate-spin" />
-//             </div>
-//           )}
-          
-//           <button
-//             type="button"
-//             onClick={() => removeImage(index)}
-//             className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-//             disabled={img.uploading}
-//           >
-//             <X className="w-3 h-3" />
-//           </button>
-          
-//           <span className="absolute bottom-1 left-1 px-1.5 py-0.5 bg-black bg-opacity-60 text-white text-xs rounded">
-//             {index + 1}
-//           </span>
-//         </div>
-//       ) : (
-//         <div 
-//           className={`border-2 border-dashed rounded-lg p-4 text-center h-32 flex flex-col items-center justify-center ${
-//             img.error ? 'border-red-300 bg-red-50' : 'border-gray-300 bg-gray-50'
-//           }`}
-//         >
-//           <ImageIcon className={`w-6 h-6 mx-auto mb-2 ${img.error ? 'text-red-400' : 'text-gray-400'}`} />
-//           <p className={`text-xs ${img.error ? 'text-red-600' : 'text-gray-600'}`}>
-//             Slot {index + 1}
-//           </p>
-//           {img.error && (
-//             <p className="text-xs text-red-600 mt-1">{img.error}</p>
-//           )}
-//         </div>
-//       )}
-//     </div>
-//   ))}
-// </div>
+//                     </div>
                     
 //                     {/* Upload Progress Summary */}
 //                     {productImages.some(img => img.uploading) && (
-//                       <div className="mt-4 p-2 bg-blue-50 rounded-lg">
-//                         <p className="text-xs text-blue-600">
+//                       <div className="mt-4 p-2 rounded-lg" style={{ backgroundColor: '#F5E6D3' }}>
+//                         <p className="text-xs" style={{ color: '#6B4F3A' }}>
 //                           Uploading: {productImages.filter(img => img.uploading).length} image(s) remaining...
 //                         </p>
 //                       </div>
@@ -1450,25 +1454,17 @@
 //               </div>
 //             </div>
 
-//             {/* Row 2: Sizes (Left) and Colors (Right) */}
+//             {/* Sizes and Colors */}
 //             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-//               {/* Sizes Card */}
 //               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
 //                 <div className="p-5 border-b border-gray-200">
-//                   <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-//                     <Ruler className="w-5 h-5 text-[#E39A65]" />
-//                     Sizes <span className="text-red-500">*</span>
+//                   <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+//                     <Ruler className="w-5 h-5" style={{ color: '#6B4F3A' }} />
+//                     Sizes <span className="text-gray-400 text-sm font-normal">(Optional)</span>
 //                   </h2>
+//                   <p className="text-xs text-gray-500 mt-1">Add sizes if applicable for this product</p>
 //                 </div>
-                
 //                 <div className="p-5">
-//                   {errors.sizes && (
-//                     <p className="text-xs text-red-600 mb-3 flex items-center gap-1">
-//                       <AlertCircle className="w-3 h-3" />
-//                       {errors.sizes}
-//                     </p>
-//                   )}
-                  
 //                   <div className="space-y-2">
 //                     {formData.sizes.map((size, index) => (
 //                       <div key={index} className="flex items-center gap-2">
@@ -1476,8 +1472,8 @@
 //                           type="text"
 //                           value={size}
 //                           onChange={(e) => handleSizeChange(index, e.target.value)}
-//                           placeholder={`Size ${index + 1}`}
-//                           className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition"
+//                           placeholder={`Size ${index + 1} (optional)`}
+//                           className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition"
 //                         />
 //                         {formData.sizes.length > 1 && (
 //                           <button
@@ -1490,28 +1486,29 @@
 //                         )}
 //                       </div>
 //                     ))}
-                    
 //                     <button
 //                       type="button"
 //                       onClick={addSize}
-//                       className="w-full flex items-center justify-center gap-1 px-3 py-2 mt-2 text-xs font-medium text-[#E39A65] border border-dashed border-[#E39A65] rounded-lg hover:bg-orange-50 transition-colors"
+//                       className="w-full flex items-center justify-center gap-1 px-3 py-2 mt-2 text-xs font-medium border border-dashed rounded-lg transition-colors"
+//                       style={{ color: '#6B4F3A', borderColor: '#6B4F3A' }}
 //                     >
 //                       <Plus className="w-3.5 h-3.5" />
-//                       Add Size
+//                       Add Size (Optional)
 //                     </button>
+//                     <p className="text-xs text-gray-400 text-center mt-2">
+//                       Leave empty if this product doesn't have sizes
+//                     </p>
 //                   </div>
 //                 </div>
 //               </div>
 
-//               {/* Colors Card */}
 //               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
 //                 <div className="p-5 border-b border-gray-200">
-//                   <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-//                     <Palette className="w-5 h-5 text-[#E39A65]" />
+//                   <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+//                     <Palette className="w-5 h-5" style={{ color: '#6B4F3A' }} />
 //                     Colors <span className="text-red-500">*</span>
 //                   </h2>
 //                 </div>
-                
 //                 <div className="p-5">
 //                   {errors.colors && (
 //                     <p className="text-xs text-red-600 mb-3 flex items-center gap-1">
@@ -1519,13 +1516,12 @@
 //                       {errors.colors}
 //                     </p>
 //                   )}
-                  
 //                   <div className="space-y-3">
 //                     {formData.colors.map((color, index) => (
 //                       <div key={index} className="relative">
 //                         <div className="flex items-center gap-2 w-full">
 //                           <div 
-//                             className="flex-1 flex items-center gap-2 bg-gray-50 rounded-lg border border-gray-200 p-1 cursor-pointer hover:border-[#E39A65] transition-colors"
+//                             className="flex-1 flex items-center gap-2 bg-gray-50 rounded-lg border border-gray-200 p-1 cursor-pointer hover:border-[#6B4F3A] transition-colors"
 //                             onClick={(e) => openColorPicker(index, e)}
 //                           >
 //                             <div 
@@ -1537,24 +1533,18 @@
 //                             </div>
 //                             <ChevronDown className="w-4 h-4 text-gray-500 flex-shrink-0" />
 //                           </div>
-                          
 //                           {formData.colors.length > 1 && (
 //                             <button
 //                               type="button"
 //                               onClick={() => removeColor(index)}
 //                               className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
-//                               title="Remove Color"
 //                             >
 //                               <Trash2 className="w-4 h-4" />
 //                             </button>
 //                           )}
 //                         </div>
-
 //                         {showColorPicker && currentColorIndex === index && (
-//                           <div 
-//                             ref={colorPickerRef}
-//                             className="absolute right-0 mt-2 z-50"
-//                           >
+//                           <div ref={colorPickerRef} className="absolute right-0 mt-2 z-50">
 //                             <div className="bg-white rounded-lg shadow-xl border border-gray-200 p-3">
 //                               <SketchPicker
 //                                 color={color.code}
@@ -1566,11 +1556,11 @@
 //                         )}
 //                       </div>
 //                     ))}
-                    
 //                     <button
 //                       type="button"
 //                       onClick={addColor}
-//                       className="w-full flex items-center justify-center gap-1 px-3 py-2 mt-2 text-xs font-medium text-[#E39A65] border border-dashed border-[#E39A65] rounded-lg hover:bg-orange-50 transition-colors"
+//                       className="w-full flex items-center justify-center gap-1 px-3 py-2 mt-2 text-xs font-medium border border-dashed rounded-lg transition-colors"
+//                       style={{ color: '#6B4F3A', borderColor: '#6B4F3A' }}
 //                     >
 //                       <Plus className="w-3.5 h-3.5" />
 //                       Add Color
@@ -1580,130 +1570,316 @@
 //               </div>
 //             </div>
 
-//             {/* Row 3: Additional Information */}
+//             {/* Order Unit Selection */}
 //             <div className="mb-6">
 //               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
 //                 <div className="p-5 border-b border-gray-200">
-//                   <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-//                     <Info className="w-5 h-5 text-[#E39A65]" />
-//                     Additional Information
+//                   <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+//                     <Package className="w-5 h-5" style={{ color: '#6B4F3A' }} />
+//                     Selling Unit
 //                   </h2>
-//                   <p className="text-xs text-gray-500 mt-1">
-//                     Add custom fields for extra product details (e.g., Material Care, Country of Origin, Warranty, etc.)
-//                   </p>
+//                   <p className="text-xs text-gray-500 mt-1">Select how this product is measured and sold</p>
 //                 </div>
-                
 //                 <div className="p-5">
-//                   <div className="space-y-4">
-//                     {formData.additionalInfo.map((info, index) => (
-//                       <div key={index} className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
-//                         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
+//                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+//                     {ORDER_UNITS.map(unit => (
+//                       <button
+//                         key={unit.value}
+//                         type="button"
+//                         onClick={() => handleOrderUnitChange(unit.value)}
+//                         className={`p-4 rounded-lg border-2 transition-all text-left ${
+//                           orderUnit === unit.value 
+//                             ? 'border-[#6B4F3A] bg-[#F5E6D3]' 
+//                             : 'border-gray-200 hover:border-[#6B4F3A]'
+//                         }`}
+//                       >
+//                         <div className="flex items-center gap-3">
+//                           <span className="text-2xl">{unit.icon}</span>
 //                           <div>
-//                             <label className="block text-xs font-medium text-gray-600 mb-1.5">
-//                               <div className="flex items-center gap-1">
-//                                 <Type className="w-3 h-3" />
-//                                 Field Name
-//                               </div>
-//                             </label>
-//                             <input
-//                               type="text"
-//                               value={info.fieldName}
-//                               onChange={(e) => handleAdditionalInfoChange(index, 'fieldName', e.target.value)}
-//                               placeholder="e.g., Material Care, Country, Warranty"
-//                               className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition ${
-//                                 errors[`additionalInfo_${index}_fieldName`] ? 'border-red-500' : 'border-gray-300'
-//                               }`}
-//                             />
-//                             {errors[`additionalInfo_${index}_fieldName`] && (
-//                               <p className="text-xs text-red-600 mt-1">{errors[`additionalInfo_${index}_fieldName`]}</p>
-//                             )}
-//                           </div>
-                          
-//                           <div>
-//                             <label className="block text-xs font-medium text-gray-600 mb-1.5">
-//                               <div className="flex items-center gap-1">
-//                                 <Hash className="w-3 h-3" />
-//                                 Field Value
-//                               </div>
-//                             </label>
-//                             <input
-//                               type="text"
-//                               value={info.fieldValue}
-//                               onChange={(e) => handleAdditionalInfoChange(index, 'fieldValue', e.target.value)}
-//                               placeholder="e.g., Machine Wash, Bangladesh, 2 Years"
-//                               className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition ${
-//                                 errors[`additionalInfo_${index}_fieldValue`] ? 'border-red-500' : 'border-gray-300'
-//                               }`}
-//                             />
-//                             {errors[`additionalInfo_${index}_fieldValue`] && (
-//                               <p className="text-xs text-red-600 mt-1">{errors[`additionalInfo_${index}_fieldValue`]}</p>
-//                             )}
+//                             <p className="font-medium text-gray-900">{unit.label}</p>
+//                             <p className="text-xs text-gray-500">{unit.description}</p>
 //                           </div>
 //                         </div>
-                        
-//                         <button
-//                           type="button"
-//                           onClick={() => removeAdditionalInfo(index)}
-//                           className="mt-6 p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
-//                           title="Remove Field"
-//                         >
-//                           <Trash2 className="w-4 h-4" />
-//                         </button>
-//                       </div>
+//                       </button>
 //                     ))}
-                    
-//                     <button
-//                       type="button"
-//                       onClick={addAdditionalInfo}
-//                       className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-[#E39A65] border-2 border-dashed border-[#E39A65]/30 rounded-lg hover:bg-orange-50 hover:border-[#E39A65] transition-colors"
-//                     >
-//                       <PlusCircle className="w-4 h-4" />
-//                       Add Additional Information
-//                     </button>
-
-//                     {formData.additionalInfo.length === 0 && (
-//                       <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-//                         <p className="text-xs font-medium text-blue-800 mb-2">Suggested fields:</p>
-//                         <div className="flex flex-wrap gap-2">
-//                           {['Care Instructions', 'Country of Origin', 'Warranty', 'Material Composition', 'Season', 'Occasion'].map((suggestion) => (
-//                             <button
-//                               key={suggestion}
-//                               type="button"
-//                               onClick={() => {
-//                                 setFormData(prev => ({
-//                                   ...prev,
-//                                   additionalInfo: [
-//                                     ...prev.additionalInfo,
-//                                     { fieldName: suggestion, fieldValue: '' }
-//                                   ]
-//                                 }));
-//                               }}
-//                               className="px-2 py-1 text-xs bg-white text-blue-700 rounded-full border border-blue-300 hover:bg-blue-100 transition-colors"
-//                             >
-//                               + {suggestion}
-//                             </button>
-//                           ))}
-//                         </div>
-//                       </div>
-//                     )}
 //                   </div>
 //                 </div>
 //               </div>
 //             </div>
 
-//             {/* NEW ROW: Featured & Tags */}
+//             {/* Pricing Section */}
 //             <div className="mb-6">
 //               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
 //                 <div className="p-5 border-b border-gray-200">
-//                   <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-//                     <Star className="w-5 h-5 text-[#E39A65]" />
-//                     Product Promotion
+//                   <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+//                     <DollarSign className="w-5 h-5" style={{ color: '#6B4F3A' }} />
+//                     Pricing & MOQ
+//                   </h2>
+//                 </div>
+//                 <div className="p-5 space-y-4">
+//                   <div className="grid grid-cols-2 gap-4">
+//                     <div>
+//                       <label className="block text-sm font-medium text-gray-700 mb-1">
+//                         Minimum Order Quantity (MOQ) <span className="text-red-500">*</span>
+//                       </label>
+//                       <div className="flex items-center gap-2">
+//                         <input
+//                           type="number"
+//                           name="moq"
+//                           value={formData.moq}
+//                           onChange={handleChange}
+//                           onWheel={(e) => e.target.blur()}
+//                           min="1"
+//                           className="flex-1 px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition"
+//                         />
+//                         <span className="text-sm text-gray-500">
+//                           {getCurrentUnitLabel()}
+//                         </span>
+//                       </div>
+//                       {errors.moq && <p className="text-xs text-red-600 mt-1">{errors.moq}</p>}
+//                     </div>
+//                     <div>
+//                       <label className="block text-sm font-medium text-gray-700 mb-1">
+//                         {getPricePerLabel()} ($) <span className="text-red-500">*</span>
+//                       </label>
+//                       <div className="flex items-center gap-2">
+//                         <input
+//                           type="number"
+//                           name="pricePerUnit"
+//                           value={formData.pricePerUnit}
+//                           onChange={handleChange}
+//                           onWheel={(e) => e.target.blur()}
+//                           min="0"
+//                           step="0.01"
+//                           className="flex-1 px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition"
+//                         />
+//                         <span className="text-sm text-gray-500">$</span>
+//                       </div>
+//                       {errors.pricePerUnit && <p className="text-xs text-red-600 mt-1">{errors.pricePerUnit}</p>}
+//                     </div>
+//                   </div>
+
+//                   <div>
+//                     <div className="flex items-center justify-between mb-4">
+//                       <label className="block text-sm font-medium text-gray-700">
+//                         Bulk Pricing (Quantity in {getCurrentUnitLabel()}):
+//                       </label>
+//                       <button
+//                         type="button"
+//                         onClick={addPricingRow}
+//                         className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors border"
+//                         style={{ color: '#6B4F3A', borderColor: '#6B4F3A' }}
+//                       >
+//                         <PlusCircle className="w-3.5 h-3.5" />
+//                         Add Tier
+//                       </button>
+//                     </div>
+//                     <div className="space-y-4">
+//                       {formData.quantityBasedPricing.map((tier, index) => (
+//                         <div key={index} className="flex items-start gap-3">
+//                           <div className="w-1/2">
+//                             <label className="block text-xs font-medium text-gray-600 mb-1.5">
+//                               Quantity Range ({getCurrentUnitLabel()})
+//                             </label>
+//                             <input
+//                               type="text"
+//                               value={tier.range}
+//                               onChange={(e) => handlePricingChange(index, 'range', e.target.value)}
+//                               placeholder={
+//                                 orderUnit === 'ton' ? "e.g., 1-4 MT" : 
+//                                 orderUnit === 'kg' ? "e.g., 100-499 kg" : 
+//                                 "e.g., 100-299 pcs"
+//                               }
+//                               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition"
+//                             />
+//                           </div>
+//                           <div className="w-1/2">
+//                             <label className="block text-xs font-medium text-gray-600 mb-1.5">
+//                               Price Per {orderUnit === 'ton' ? 'MT ($)' : orderUnit === 'kg' ? 'KG ($)' : 'Unit ($)'}
+//                             </label>
+//                             <input
+//                               type="number"
+//                               value={tier.price}
+//                               onChange={(e) => handlePricingChange(index, 'price', e.target.value)}
+//                               onWheel={(e) => e.target.blur()}
+//                               placeholder="0.00"
+//                               min="0"
+//                               step="0.01"
+//                               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition"
+//                             />
+//                           </div>
+//                           {formData.quantityBasedPricing.length > 1 && (
+//                             <div className="flex items-end h-[62px]">
+//                               <button
+//                                 type="button"
+//                                 onClick={() => removePricingRow(index)}
+//                                 className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+//                               >
+//                                 <MinusCircle className="w-5 h-5" />
+//                               </button>
+//                             </div>
+//                           )}
+//                         </div>
+//                       ))}
+//                     </div>
+//                     <p className="text-xs text-gray-500 mt-2">
+//                       {orderUnit === 'ton' 
+//                         ? 'Set pricing tiers based on order quantity in Metric Tons (1 MT = 1000 kg)' 
+//                         : orderUnit === 'kg'
+//                         ? 'Set pricing tiers based on order weight in kilograms'
+//                         : 'Set pricing tiers based on order quantity in pieces'}
+//                     </p>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+
+//             {/* Customization Options */}
+//             <div className="mb-6">
+//               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+//                 <div className="p-5 border-b border-gray-200">
+//                   <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+//                     <Wrench className="w-5 h-5" style={{ color: '#6B4F3A' }} />
+//                     Customization Options
 //                   </h2>
 //                   <p className="text-xs text-gray-500 mt-1">
-//                     Mark as featured and add tags to highlight your product
+//                     Add customization options available for this product (e.g., Logo Printing, Handle Type, Color Options, etc.)
 //                   </p>
 //                 </div>
-                
+//                 <div className="p-5">
+//                   <div className="space-y-4">
+//                     {formData.customizationOptions.map((option, index) => (
+//                       <div key={index} className="flex items-start gap-3 p-4 rounded-lg border" style={{ backgroundColor: '#FAF7F2', borderColor: '#F5E6D3' }}>
+//                         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
+//                           <div>
+//                             <label className="block text-xs font-medium text-gray-600 mb-1.5">
+//                               <Type className="w-3 h-3 inline mr-1" />
+//                               Customization Title
+//                             </label>
+//                             <input
+//                               type="text"
+//                               value={option.title}
+//                               onChange={(e) => handleCustomizationChange(index, 'title', e.target.value)}
+//                               placeholder="e.g., Logo Printing, Handle Type, Material Finish"
+//                               className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition"
+//                             />
+//                           </div>
+//                           <div>
+//                             <label className="block text-xs font-medium text-gray-600 mb-1.5">
+//                               <Hash className="w-3 h-3 inline mr-1" />
+//                               Options / Details
+//                             </label>
+//                             <input
+//                               type="text"
+//                               value={option.value}
+//                               onChange={(e) => handleCustomizationChange(index, 'value', e.target.value)}
+//                               placeholder="e.g., Custom logo available, Cotton handle, Matte finish"
+//                               className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition"
+//                             />
+//                           </div>
+//                         </div>
+//                         <button
+//                           type="button"
+//                           onClick={() => removeCustomizationOption(index)}
+//                           className="mt-6 p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
+//                         >
+//                           <Trash2 className="w-4 h-4" />
+//                         </button>
+//                       </div>
+//                     ))}
+//                     <button
+//                       type="button"
+//                       onClick={addCustomizationOption}
+//                       className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium border-2 border-dashed rounded-lg transition-colors"
+//                       style={{ color: '#6B4F3A', borderColor: '#6B4F3A' }}
+//                     >
+//                       <PlusCircle className="w-4 h-4" />
+//                       Add Customization Option
+//                     </button>
+//                     <p className="text-xs text-gray-400 text-center mt-2">
+//                       Add as many customization options as needed. Leave empty if not applicable.
+//                     </p>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+
+//             {/* Additional Information */}
+//             <div className="mb-6">
+//               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+//                 <div className="p-5 border-b border-gray-200">
+//                   <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+//                     <Info className="w-5 h-5" style={{ color: '#6B4F3A' }} />
+//                     Additional Information
+//                   </h2>
+//                   <p className="text-xs text-gray-500 mt-1">
+//                     Add custom fields for extra product details (e.g., GSM, tensile strength, etc.)
+//                   </p>
+//                 </div>
+//                 <div className="p-5">
+//                   <div className="space-y-4">
+//                     {formData.additionalInfo.map((info, index) => (
+//                       <div key={index} className="flex items-start gap-3 p-4 rounded-lg border" style={{ backgroundColor: '#FAF7F2', borderColor: '#F5E6D3' }}>
+//                         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
+//                           <div>
+//                             <label className="block text-xs font-medium text-gray-600 mb-1.5">
+//                               <Type className="w-3 h-3 inline mr-1" />
+//                               Field Name
+//                             </label>
+//                             <input
+//                               type="text"
+//                               value={info.fieldName}
+//                               onChange={(e) => handleAdditionalInfoChange(index, 'fieldName', e.target.value)}
+//                               placeholder="e.g., GSM, Tensile Strength"
+//                               className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition"
+//                             />
+//                           </div>
+//                           <div>
+//                             <label className="block text-xs font-medium text-gray-600 mb-1.5">
+//                               <Hash className="w-3 h-3 inline mr-1" />
+//                               Field Value
+//                             </label>
+//                             <input
+//                               type="text"
+//                               value={info.fieldValue}
+//                               onChange={(e) => handleAdditionalInfoChange(index, 'fieldValue', e.target.value)}
+//                               placeholder="e.g., 200 GSM, 50 kg"
+//                               className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition"
+//                             />
+//                           </div>
+//                         </div>
+//                         <button
+//                           type="button"
+//                           onClick={() => removeAdditionalInfo(index)}
+//                           className="mt-6 p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
+//                         >
+//                           <Trash2 className="w-4 h-4" />
+//                         </button>
+//                       </div>
+//                     ))}
+//                     <button
+//                       type="button"
+//                       onClick={addAdditionalInfo}
+//                       className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium border-2 border-dashed rounded-lg transition-colors"
+//                       style={{ color: '#6B4F3A', borderColor: '#6B4F3A' }}
+//                     >
+//                       <PlusCircle className="w-4 h-4" />
+//                       Add Additional Information
+//                     </button>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+
+//             {/* Product Promotion */}
+//             <div className="mb-6">
+//               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+//                 <div className="p-5 border-b border-gray-200">
+//                   <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+//                     <Star className="w-5 h-5" style={{ color: '#6B4F3A' }} />
+//                     Product Promotion
+//                   </h2>
+//                 </div>
 //                 <div className="p-5">
 //                   <div className="mb-4">
 //                     <label className="flex items-center gap-3 cursor-pointer">
@@ -1714,7 +1890,8 @@
 //                           setFormData({ ...formData, isFeatured: e.target.checked });
 //                           setShowTags(e.target.checked);
 //                         }}
-//                         className="w-5 h-5 text-[#E39A65] border-gray-300 rounded focus:ring-[#E39A65]"
+//                         className="w-5 h-5 rounded"
+//                         style={{ accentColor: '#6B4F3A' }}
 //                       />
 //                       <div>
 //                         <span className="text-sm font-medium text-gray-700">Mark as Featured Product</span>
@@ -1729,12 +1906,11 @@
 //                       onClick={() => setShowTags(!showTags)}
 //                     >
 //                       <div className="flex items-center gap-2">
-//                         <Tag className="w-4 h-4 text-[#E39A65]" />
+//                         <Tag className="w-4 h-4" style={{ color: '#6B4F3A' }} />
 //                         <h3 className="text-sm font-medium text-gray-700">Product Tags/Labels</h3>
 //                       </div>
 //                       <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${showTags ? 'rotate-180' : ''}`} />
 //                     </div>
-
 //                     {showTags && (
 //                       <div className="mt-3">
 //                         <p className="text-xs text-gray-500 mb-2">Select one tag (optional)</p>
@@ -1746,25 +1922,22 @@
 //                                 name="productTag"
 //                                 checked={formData.tags.includes(tag)}
 //                                 onChange={() => handleTagToggle(tag)}
-//                                 className="w-4 h-4 text-[#E39A65] border-gray-300 focus:ring-[#E39A65]"
+//                                 className="w-4 h-4"
+//                                 style={{ accentColor: '#6B4F3A' }}
 //                               />
 //                               <span className="text-sm text-gray-600">{tag}</span>
 //                             </label>
 //                           ))}
 //                         </div>
-                        
 //                         {formData.tags.length > 0 && (
 //                           <div className="mt-4 flex flex-wrap gap-2">
 //                             {formData.tags.map(tag => (
-//                               <span
-//                                 key={tag}
-//                                 className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800"
-//                               >
+//                               <span key={tag} className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: '#F5E6D3', color: '#6B4F3A' }}>
 //                                 {tag}
 //                                 <button
 //                                   type="button"
 //                                   onClick={() => handleTagToggle(tag)}
-//                                   className="ml-1.5 text-orange-600 hover:text-orange-800"
+//                                   className="ml-1.5 hover:opacity-70"
 //                                 >
 //                                   <X className="w-3 h-3" />
 //                                 </button>
@@ -1779,7 +1952,7 @@
 //               </div>
 //             </div>
 
-//             {/* NEW ROW: Meta Settings (SEO) */}
+//             {/* Meta Settings */}
 //             <div className="mb-6">
 //               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
 //                 <div className="p-5 border-b border-gray-200">
@@ -1787,95 +1960,62 @@
 //                     className="flex items-center justify-between cursor-pointer"
 //                     onClick={() => setShowMeta(!showMeta)}
 //                   >
-//                     <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-//                       <Search className="w-5 h-5 text-[#E39A65]" />
+//                     <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+//                       <Search className="w-5 h-5" style={{ color: '#6B4F3A' }} />
 //                       Meta Settings (SEO)
 //                     </h2>
 //                     <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${showMeta ? 'rotate-180' : ''}`} />
 //                   </div>
-//                   <p className="text-xs text-gray-500 mt-1">
-//                     Optimize your product for search engines
-//                   </p>
 //                 </div>
-                
 //                 {showMeta && (
 //                   <div className="p-5">
 //                     <div className="space-y-4">
 //                       <div>
-//                         <label className="block text-sm font-medium text-gray-700 mb-1">
-//                           Meta Title
-//                         </label>
+//                         <label className="block text-sm font-medium text-gray-700 mb-1">Meta Title</label>
 //                         <input
 //                           type="text"
 //                           value={formData.metaSettings.metaTitle}
 //                           onChange={(e) => handleMetaChange('metaTitle', e.target.value)}
 //                           maxLength="70"
 //                           placeholder="Enter meta title (max 70 characters)"
-//                           className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition ${
-//                             errors.metaTitle ? 'border-red-500' : 'border-gray-300'
-//                           }`}
+//                           className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition"
 //                         />
 //                         <div className="flex justify-between mt-1">
 //                           <p className="text-xs text-gray-500">Appears in search engine results</p>
-//                           <span className={`text-xs ${formData.metaSettings.metaTitle?.length > 60 ? 'text-orange-600' : 'text-gray-500'}`}>
-//                             {formData.metaSettings.metaTitle?.length || 0}/70
-//                           </span>
+//                           <span className="text-xs text-gray-500">{formData.metaSettings.metaTitle?.length || 0}/70</span>
 //                         </div>
-//                         {errors.metaTitle && (
-//                           <p className="text-xs text-red-600 mt-1">{errors.metaTitle}</p>
-//                         )}
 //                       </div>
 
 //                       <div>
-//                         <label className="block text-sm font-medium text-gray-700 mb-1">
-//                           Meta Description
-//                         </label>
+//                         <label className="block text-sm font-medium text-gray-700 mb-1">Meta Description</label>
 //                         <textarea
 //                           value={formData.metaSettings.metaDescription}
 //                           onChange={(e) => handleMetaChange('metaDescription', e.target.value)}
 //                           maxLength="160"
 //                           placeholder="Enter meta description (max 160 characters)"
 //                           rows="3"
-//                           className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition resize-none ${
-//                             errors.metaDescription ? 'border-red-500' : 'border-gray-300'
-//                           }`}
+//                           className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition resize-none"
 //                         />
 //                         <div className="flex justify-between mt-1">
 //                           <p className="text-xs text-gray-500">Brief description for search results</p>
-//                           <span className={`text-xs ${formData.metaSettings.metaDescription?.length > 150 ? 'text-orange-600' : 'text-gray-500'}`}>
-//                             {formData.metaSettings.metaDescription?.length || 0}/160
-//                           </span>
+//                           <span className="text-xs text-gray-500">{formData.metaSettings.metaDescription?.length || 0}/160</span>
 //                         </div>
-//                         {errors.metaDescription && (
-//                           <p className="text-xs text-red-600 mt-1">{errors.metaDescription}</p>
-//                         )}
 //                       </div>
 
 //                       <div>
-//                         <label className="block text-sm font-medium text-gray-700 mb-1">
-//                           Meta Keywords
-//                         </label>
-                        
+//                         <label className="block text-sm font-medium text-gray-700 mb-1">Meta Keywords</label>
 //                         {formData.metaSettings.metaKeywords?.length > 0 && (
-//                           <div className="flex flex-wrap gap-2 mb-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+//                           <div className="flex flex-wrap gap-2 mb-3 p-3 rounded-lg border" style={{ backgroundColor: '#FAF7F2', borderColor: '#F5E6D3' }}>
 //                             {formData.metaSettings.metaKeywords.map((keyword, index) => (
-//                               <span
-//                                 key={index}
-//                                 className="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-800 rounded-full text-xs font-medium"
-//                               >
+//                               <span key={index} className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium" style={{ backgroundColor: '#F5E6D3', color: '#6B4F3A' }}>
 //                                 {keyword}
-//                                 <button
-//                                   type="button"
-//                                   onClick={() => removeKeyword(index)}
-//                                   className="ml-1.5 text-blue-600 hover:text-blue-800 focus:outline-none"
-//                                 >
+//                                 <button type="button" onClick={() => removeKeyword(index)} className="ml-1.5 hover:opacity-70">
 //                                   <X className="w-3 h-3" />
 //                                 </button>
 //                               </span>
 //                             ))}
 //                           </div>
 //                         )}
-                        
 //                         <div className="relative">
 //                           <input
 //                             type="text"
@@ -1884,163 +2024,23 @@
 //                             onKeyDown={handleKeywordKeyDown}
 //                             onBlur={handleKeywordBlur}
 //                             placeholder="Type a keyword and press Enter or comma to add"
-//                             className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition pr-20"
+//                             className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition pr-20"
 //                           />
 //                           {keywordInput.trim() && (
 //                             <button
 //                               type="button"
 //                               onClick={addKeyword}
-//                               className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 bg-[#E39A65] text-white text-xs font-medium rounded hover:bg-[#d48b54] transition-colors"
+//                               className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 text-white text-xs font-medium rounded transition-colors"
+//                               style={{ backgroundColor: '#6B4F3A' }}
 //                             >
 //                               Add
 //                             </button>
 //                           )}
 //                         </div>
-//                         <p className="text-xs text-gray-500 mt-1">
-//                           Type a keyword and press Enter or comma to add. Keywords appear as chips above.
-//                         </p>
 //                       </div>
-
-//                       {(formData.metaSettings.metaTitle || formData.metaSettings.metaDescription) && (
-//                         <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-//                           <h4 className="text-xs font-medium text-gray-700 mb-2">Search Engine Preview:</h4>
-//                           <div className="space-y-1">
-//                             <div className="text-blue-600 text-sm font-medium truncate">
-//                               {formData.metaSettings.metaTitle || formData.productName || 'Product Title'}
-//                             </div>
-//                             <div className="text-green-600 text-xs">
-//                               {typeof window !== 'undefined' ? `${window.location.origin}/product/${formData.productName?.toLowerCase().replace(/\s+/g, '-') || 'product-slug'}` : ''}
-//                             </div>
-//                             <div className="text-gray-600 text-xs line-clamp-2">
-//                               {formData.metaSettings.metaDescription || formData.description?.replace(/<[^>]*>/g, '').substring(0, 160) || 'Product description will appear here...'}
-//                             </div>
-//                           </div>
-//                         </div>
-//                       )}
 //                     </div>
 //                   </div>
 //                 )}
-//               </div>
-//             </div>
-
-//             {/* Row 4: Bulk Pricing (Full Width) */}
-//             <div className="mb-6">
-//               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-//                 <div className="p-5 border-b border-gray-200">
-//                   <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-//                     <DollarSign className="w-5 h-5 text-[#E39A65]" />
-//                     Bulk Pricing
-//                   </h2>
-//                 </div>
-                
-//                 <div className="p-5 space-y-4">
-//                   <div className="grid grid-cols-2 gap-4">
-//                     <div>
-//                       <label className="block text-sm font-medium text-gray-700 mb-1">
-//                         Minimum Quantity (MOQ) <span className="text-red-500">*</span>
-//                       </label>
-//                       <input
-//                         type="number"
-//                         name="moq"
-//                         value={formData.moq}
-//                         onChange={handleChange}
-//                         onWheel={(e) => e.target.blur()}
-//                         min="1"
-//                         className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition ${
-//                           errors.moq ? 'border-red-500' : 'border-gray-300'
-//                         }`}
-//                       />
-//                       {errors.moq && (
-//                         <p className="text-xs text-red-600 mt-1">{errors.moq}</p>
-//                       )}
-//                     </div>
-
-//                     <div>
-//                       <label className="block text-sm font-medium text-gray-700 mb-1">
-//                         Price Per Unit ($) <span className="text-red-500">*</span>
-//                       </label>
-//                       <input
-//                         type="number"
-//                         name="pricePerUnit"
-//                         value={formData.pricePerUnit}
-//                         onChange={handleChange}
-//                         onWheel={(e) => e.target.blur()}
-//                         min="0"
-//                         step="0.01"
-//                         className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition ${
-//                           errors.pricePerUnit ? 'border-red-500' : 'border-gray-300'
-//                         }`}
-//                       />
-//                       {errors.pricePerUnit && (
-//                         <p className="text-xs text-red-600 mt-1">{errors.pricePerUnit}</p>
-//                       )}
-//                     </div>
-//                   </div>
-
-//                   <div>
-//                     <div className="flex items-center justify-between mb-4">
-//                       <label className="block text-sm font-medium text-gray-700">
-//                         Quantity Based Pricing:
-//                       </label>
-//                       <button
-//                         type="button"
-//                         onClick={addPricingRow}
-//                         className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-[#E39A65] hover:bg-orange-50 rounded-lg transition-colors border border-[#E39A65]/20"
-//                       >
-//                         <PlusCircle className="w-3.5 h-3.5" />
-//                         Add Tier
-//                       </button>
-//                     </div>
-                    
-//                     <div className="space-y-4">
-//                       {formData.quantityBasedPricing.map((tier, index) => (
-//                         <div key={index} className="flex items-start gap-3">
-//                           <div className="w-1/2">
-//                             <label className="block text-xs font-medium text-gray-600 mb-1.5">
-//                               Quantity Range
-//                             </label>
-//                             <input
-//                               type="text"
-//                               value={tier.range}
-//                               onChange={(e) => handlePricingChange(index, 'range', e.target.value)}
-//                               placeholder="e.g., 100-299"
-//                               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition"
-//                             />
-//                           </div>
-                          
-//                           <div className="w-1/2">
-//                             <label className="block text-xs font-medium text-gray-600 mb-1.5">
-//                               Price ($)
-//                             </label>
-//                             <input
-//                               type="number"
-//                               value={tier.price}
-//                               onChange={(e) => handlePricingChange(index, 'price', e.target.value)}
-//                               onWheel={(e) => e.target.blur()}
-//                               placeholder="0.00"
-//                               min="0"
-//                               step="0.01"
-//                               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition"
-//                             />
-//                           </div>
-                          
-//                           {formData.quantityBasedPricing.length > 1 && (
-//                             <div className="flex items-end h-[62px]">
-//                               <button
-//                                 type="button"
-//                                 onClick={() => removePricingRow(index)}
-//                                 className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-//                                 title="Remove Tier"
-//                               >
-//                                 <MinusCircle className="w-5 h-5" />
-//                               </button>
-//                             </div>
-//                           )}
-//                         </div>
-//                       ))}
-//                     </div>
-//                   </div>
-//                 </div>
 //               </div>
 //             </div>
 
@@ -2049,7 +2049,8 @@
 //               <button
 //                 type="submit"
 //                 disabled={isSubmitting}
-//                 className="flex items-center gap-2 px-6 py-3 bg-[#E39A65] text-white font-medium rounded-lg hover:bg-[#d48b54] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+//                 className="flex items-center gap-2 px-6 py-3 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+//                 style={{ backgroundColor: '#6B4F3A' }}
 //               >
 //                 {isSubmitting ? (
 //                   <>
@@ -2070,6 +2071,12 @@
 //     </MantineProvider>
 //   );
 // }
+
+
+
+
+
+
 
 'use client';
 
@@ -2134,14 +2141,25 @@ const TARGETED_CUSTOMERS = [
 ];
 
 // Available tags
+// const AVAILABLE_TAGS = [
+//   'Top Ranking',
+//   'New Arrival',
+//   'Top Deal',
+//   'Best Seller',
+//   'Summer Collection',
+//   'Winter Collection',
+//   'Limited Edition',
+//   'Trending'
+// ];
+
 const AVAILABLE_TAGS = [
-  'Top Ranking',
+  'Best Seller',
   'New Arrival',
   'Top Deal',
-  'Best Seller',
-  'Summer Collection',
-  'Winter Collection',
-  'Limited Edition',
+  'Eco-Friendly',
+  'Hot Export Item',
+  'Customizable',
+  'Premium Quality',
   'Trending'
 ];
 
@@ -2526,90 +2544,210 @@ export default function AdminCreateProduct() {
     }
   };
 
+  // const handleMultipleImageSelect = async (e) => {
+  //   const files = Array.from(e.target.files);
+    
+  //   if (files.length === 0) return;
+    
+  //   const currentImagesCount = productImages.filter(img => img.url !== null || img.uploading).length;
+  //   const availableSlots = 6 - currentImagesCount;
+    
+  //   if (files.length > availableSlots) {
+  //     toast.error(`You can only upload ${availableSlots} more image(s). Maximum 6 images total.`);
+  //     return;
+  //   }
+    
+  //   const emptySlots = [];
+  //   for (let i = 0; i < productImages.length; i++) {
+  //     if (!productImages[i].url && !productImages[i].uploading && !productImages[i].preview) {
+  //       emptySlots.push(i);
+  //     }
+  //   }
+    
+  //   const tempImages = [...productImages];
+    
+  //   for (let i = 0; i < files.length && i < emptySlots.length; i++) {
+  //     const file = files[i];
+  //     const slotIndex = emptySlots[i];
+      
+  //     const validation = validateImageFile(file);
+  //     if (!validation.valid) {
+  //       toast.error(`Image ${i + 1}: ${validation.message}`);
+  //       continue;
+  //     }
+      
+  //     const previewUrl = URL.createObjectURL(file);
+      
+  //     tempImages[slotIndex] = {
+  //       file: file,
+  //       preview: previewUrl,
+  //       error: '',
+  //       uploading: true,
+  //       url: null,
+  //       publicId: null
+  //     };
+  //   }
+    
+  //   setProductImages([...tempImages]);
+    
+  //   for (let i = 0; i < files.length && i < emptySlots.length; i++) {
+  //     const file = files[i];
+  //     const slotIndex = emptySlots[i];
+      
+  //     try {
+  //       const { url, publicId } = await uploadToCloudinary(file);
+        
+  //       setProductImages(prevImages => {
+  //         const updatedImages = [...prevImages];
+  //         updatedImages[slotIndex] = {
+  //           ...updatedImages[slotIndex],
+  //           url: url,
+  //           publicId: publicId,
+  //           uploading: false
+  //         };
+  //         return updatedImages;
+  //       });
+        
+  //       toast.success(`Image ${i + 1} uploaded successfully`);
+  //     } catch (error) {
+  //       console.error('Upload error:', error);
+  //       setProductImages(prevImages => {
+  //         const updatedImages = [...prevImages];
+  //         updatedImages[slotIndex] = {
+  //           ...updatedImages[slotIndex],
+  //           error: 'Failed to upload image',
+  //           uploading: false
+  //         };
+  //         return updatedImages;
+  //       });
+  //       toast.error(`Failed to upload image ${i + 1}`);
+  //     }
+  //   }
+    
+  //   if (fileInputRefs.current['multiple']) {
+  //     fileInputRefs.current['multiple'].value = '';
+  //   }
+  // };
+
+
   const handleMultipleImageSelect = async (e) => {
-    const files = Array.from(e.target.files);
-    
-    if (files.length === 0) return;
-    
-    const currentImagesCount = productImages.filter(img => img.url !== null || img.uploading).length;
-    const availableSlots = 6 - currentImagesCount;
-    
-    if (files.length > availableSlots) {
-      toast.error(`You can only upload ${availableSlots} more image(s). Maximum 6 images total.`);
-      return;
+  const files = Array.from(e.target.files);
+  
+  if (files.length === 0) return;
+  
+  const currentImagesCount = productImages.filter(img => img.url !== null || img.uploading).length;
+  const availableSlots = 6 - currentImagesCount;
+  
+  if (files.length > availableSlots) {
+    toast.error(`You can only upload ${availableSlots} more image(s). Maximum 6 images total.`);
+    return;
+  }
+  
+  // First, validate all files and collect valid ones
+  const validFiles = [];
+  const invalidFiles = [];
+  
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const validation = validateImageFile(file);
+    if (validation.valid) {
+      validFiles.push(file);
+    } else {
+      invalidFiles.push({ index: i, message: validation.message });
+      toast.error(`Image ${i + 1}: ${validation.message}`);
     }
-    
-    const emptySlots = [];
-    for (let i = 0; i < productImages.length; i++) {
-      if (!productImages[i].url && !productImages[i].uploading && !productImages[i].preview) {
-        emptySlots.push(i);
-      }
-    }
-    
-    const tempImages = [...productImages];
-    
-    for (let i = 0; i < files.length && i < emptySlots.length; i++) {
-      const file = files[i];
-      const slotIndex = emptySlots[i];
-      
-      const validation = validateImageFile(file);
-      if (!validation.valid) {
-        toast.error(`Image ${i + 1}: ${validation.message}`);
-        continue;
-      }
-      
-      const previewUrl = URL.createObjectURL(file);
-      
-      tempImages[slotIndex] = {
-        file: file,
-        preview: previewUrl,
-        error: '',
-        uploading: true,
-        url: null,
-        publicId: null
-      };
-    }
-    
-    setProductImages([...tempImages]);
-    
-    for (let i = 0; i < files.length && i < emptySlots.length; i++) {
-      const file = files[i];
-      const slotIndex = emptySlots[i];
-      
-      try {
-        const { url, publicId } = await uploadToCloudinary(file);
-        
-        setProductImages(prevImages => {
-          const updatedImages = [...prevImages];
-          updatedImages[slotIndex] = {
-            ...updatedImages[slotIndex],
-            url: url,
-            publicId: publicId,
-            uploading: false
-          };
-          return updatedImages;
-        });
-        
-        toast.success(`Image ${i + 1} uploaded successfully`);
-      } catch (error) {
-        console.error('Upload error:', error);
-        setProductImages(prevImages => {
-          const updatedImages = [...prevImages];
-          updatedImages[slotIndex] = {
-            ...updatedImages[slotIndex],
-            error: 'Failed to upload image',
-            uploading: false
-          };
-          return updatedImages;
-        });
-        toast.error(`Failed to upload image ${i + 1}`);
-      }
-    }
-    
+  }
+  
+  // If no valid files, return early
+  if (validFiles.length === 0) {
+    toast.error('No valid images to upload');
     if (fileInputRefs.current['multiple']) {
       fileInputRefs.current['multiple'].value = '';
     }
-  };
+    return;
+  }
+  
+  // Find empty slots in productImages
+  const emptySlots = [];
+  for (let i = 0; i < productImages.length; i++) {
+    if (!productImages[i].url && !productImages[i].uploading && !productImages[i].preview) {
+      emptySlots.push(i);
+    }
+  }
+  
+  // Check if we have enough empty slots for valid files
+  if (validFiles.length > emptySlots.length) {
+    toast.error(`Only ${emptySlots.length} slots available. Please remove some images first.`);
+    return;
+  }
+  
+  // Create temporary state for uploading
+  const tempImages = [...productImages];
+  
+  for (let i = 0; i < validFiles.length && i < emptySlots.length; i++) {
+    const file = validFiles[i];
+    const slotIndex = emptySlots[i];
+    const previewUrl = URL.createObjectURL(file);
+    
+    tempImages[slotIndex] = {
+      file: file,
+      preview: previewUrl,
+      error: '',
+      uploading: true,
+      url: null,
+      publicId: null
+    };
+  }
+  
+  setProductImages([...tempImages]);
+  
+  // Upload each valid file individually
+  for (let i = 0; i < validFiles.length && i < emptySlots.length; i++) {
+    const file = validFiles[i];
+    const slotIndex = emptySlots[i];
+    
+    try {
+      const { url, publicId } = await uploadToCloudinary(file);
+      
+      setProductImages(prevImages => {
+        const updatedImages = [...prevImages];
+        updatedImages[slotIndex] = {
+          ...updatedImages[slotIndex],
+          url: url,
+          publicId: publicId,
+          uploading: false
+        };
+        return updatedImages;
+      });
+      
+      toast.success(`Image uploaded successfully`);
+    } catch (error) {
+      console.error('Upload error:', error);
+      setProductImages(prevImages => {
+        const updatedImages = [...prevImages];
+        updatedImages[slotIndex] = {
+          ...updatedImages[slotIndex],
+          error: 'Failed to upload image',
+          uploading: false,
+          preview: null,
+          file: null
+        };
+        return updatedImages;
+      });
+      toast.error(`Failed to upload one image`);
+    }
+  }
+  
+  // Show summary of skipped invalid files
+  if (invalidFiles.length > 0) {
+    toast.warning(`${invalidFiles.length} image(s) skipped due to validation errors`);
+  }
+  
+  // Clear the file input
+  if (fileInputRefs.current['multiple']) {
+    fileInputRefs.current['multiple'].value = '';
+  }
+};
 
   const removeImage = (index) => {
     if (productImages[index].preview && productImages[index].preview.startsWith('blob:')) {

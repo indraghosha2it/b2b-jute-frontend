@@ -38,7 +38,9 @@
 //   Award,
 //   TrendingUp,
 //   Sparkles,
-//   Tag
+//   Tag,
+//   BookOpen, // Added for instruction tab
+//   FolderTree
 // } from 'lucide-react';
 // import { toast } from 'sonner';
 
@@ -76,6 +78,18 @@
 //   return text.substring(0, limit) + '...';
 // };
 
+// // Rich Text Content Renderer Component
+// const RichTextContent = ({ content, className = '' }) => {
+//   if (!content) return <p className="text-gray-500 italic">No content available.</p>;
+
+//   return (
+//     <div 
+//       className={`prose prose-sm sm:prose lg:prose-lg max-w-none rich-text-content ${className}`}
+//       dangerouslySetInnerHTML={{ __html: content }}
+//     />
+//   );
+// };
+
 // // Loading Skeleton Component
 // const ProductDetailsSkeleton = () => (
 //   <div className="min-h-screen bg-gray-50">
@@ -105,11 +119,13 @@
 //   </div>
 // );
 
-// // Image Gallery Component
+// // Image Gallery Component - Optimized with all images
 // const ImageGallery = ({ images = [], productName }) => {
 //   const [mainImage, setMainImage] = useState(0);
 //   const [isFullscreen, setIsFullscreen] = useState(false);
 //   const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
+//   const [imageLoaded, setImageLoaded] = useState({});
+//   const [isTransitioning, setIsTransitioning] = useState(false);
 
 //   const handleMouseMove = (e) => {
 //     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
@@ -118,9 +134,47 @@
 //     setZoomPosition({ x, y });
 //   };
 
+//   // Preload images on hover
+//   const preloadImage = (src) => {
+//     const img = new Image();
+//     img.src = src;
+//   };
+
+//   // Preload adjacent images
+//   useEffect(() => {
+//     if (images.length > 0) {
+//       const nextIndex = (mainImage + 1) % images.length;
+//       const prevIndex = (mainImage - 1 + images.length) % images.length;
+      
+//       if (images[nextIndex]?.url) preloadImage(images[nextIndex].url);
+//       if (images[prevIndex]?.url) preloadImage(images[prevIndex].url);
+//     }
+//   }, [mainImage, images]);
+
+//   const handleImageChange = (idx) => {
+//     if (idx === mainImage) return;
+    
+//     setIsTransitioning(true);
+//     setMainImage(idx);
+//     setImageLoaded(prev => ({ ...prev, [idx]: false }));
+//   };
+
+//   const handleImageLoad = (idx) => {
+//     setImageLoaded(prev => ({ ...prev, [idx]: true }));
+//     setTimeout(() => setIsTransitioning(false), 100);
+//   };
+
+//   // Calculate thumbnail size based on number of images
+//   const getThumbnailSize = () => {
+//     const count = images.length;
+//     if (count <= 4) return 'w-16 h-16 sm:w-20 sm:h-20';
+//     if (count <= 6) return 'w-14 h-14 sm:w-16 sm:h-16';
+//     return 'w-12 h-12 sm:w-14 sm:h-14';
+//   };
+
 //   if (!images || images.length === 0) {
 //     return (
-//       <div className="bg-gray-100 rounded-2xl h-[500px] flex items-center justify-center">
+//       <div className="bg-gray-100 rounded-2xl h-[400px] flex items-center justify-center">
 //         <div className="text-center">
 //           <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-3" />
 //           <p className="text-gray-500">No images available</p>
@@ -130,86 +184,133 @@
 //   }
 
 //   return (
-//     <div className="flex gap-3">
-//       <div className="w-20 space-y-2">
-//         {images.slice(0, 4).map((image, idx) => (
-//           <button
-//             key={idx}
-//             onClick={() => setMainImage(idx)}
-//             onMouseEnter={() => setMainImage(idx)}
-//             className={`relative w-full h-20 rounded-lg overflow-hidden border-2 transition-all ${
-//               mainImage === idx 
-//                 ? 'border-[#E39A65] shadow-md' 
-//                 : 'border-gray-200 hover:border-gray-300'
-//             }`}
-//           >
-//             <img
-//               src={image.url}
-//               alt={`${productName} - Thumbnail ${idx + 1}`}
-//               className="w-full h-full object-cover"
-//             />
-//             {mainImage === idx && (
-//               <div className="absolute inset-0 bg-[#E39A65]/10 flex items-center justify-center">
-//                 <Check className="w-3 h-3 text-[#E39A65]" />
-//               </div>
-//             )}
-//           </button>
-//         ))}
-//         {images.length > 4 && (
-//           <div className="w-full h-20 rounded-lg bg-gray-100 flex items-center justify-center text-xs text-gray-500">
-//             +{images.length - 4}
-//           </div>
-//         )}
+//     <div className="flex flex-col sm:flex-row gap-4">
+//       {/* Thumbnails - All images visible */}
+//       <div className="flex sm:flex-col gap-2 order-2 sm:order-1 overflow-x-auto sm:overflow-x-visible pb-2 sm:pb-0">
+//         <div className="flex sm:flex-col gap-2">
+//           {images.map((image, idx) => (
+//             <button
+//               key={idx}
+//               onClick={() => handleImageChange(idx)}
+//               onMouseEnter={() => {
+//                 preloadImage(image.url);
+//                 handleImageChange(idx);
+//               }}
+//               className={`relative flex-shrink-0 ${getThumbnailSize()} rounded-lg overflow-hidden border-2 transition-all ${
+//                 mainImage === idx 
+//                   ? 'border-[#E39A65] shadow-md ring-2 ring-[#E39A65]/20' 
+//                   : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+//               }`}
+//             >
+//               <img
+//                 src={image.url}
+//                 alt={`${productName} - Thumbnail ${idx + 1}`}
+//                 className="w-full h-full object-cover"
+//                 loading="lazy"
+//                 onError={(e) => {
+//                   e.target.onerror = null;
+//                   e.target.src = 'https://via.placeholder.com/100x100?text=No+Image';
+//                 }}
+//               />
+//               {mainImage === idx && (
+//                 <div className="absolute inset-0 bg-[#E39A65]/10 flex items-center justify-center">
+//                   <Check className="w-4 h-4 text-[#E39A65]" />
+//                 </div>
+//               )}
+//             </button>
+//           ))}
+//         </div>
 //       </div>
 
+//       {/* Main Image */}
 //       <div 
-//         className="flex-1 relative bg-gray-100 rounded-2xl overflow-hidden group cursor-zoom-in"
+//         className="flex-1 relative bg-gray-100 rounded-2xl overflow-hidden group cursor-zoom-in order-1 sm:order-2 flex items-center justify-center min-h-[400px]"
 //         onMouseMove={handleMouseMove}
 //       >
-//         <img
-//           src={images[mainImage]?.url || images[0]?.url}
-//           alt={`${productName} - Main view`}
-//           className="w-full h-[400px] object-cover transition-transform duration-500 group-hover:scale-150"
-//           style={{
-//             transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`
-//           }}
-//         />
+//         {/* Loading skeleton */}
+//         {(isTransitioning || !imageLoaded[mainImage]) && (
+//           <div className="absolute inset-0 bg-gray-200 animate-pulse z-10">
+//             <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-shimmer"></div>
+//           </div>
+//         )}
+        
+//         <div className="relative w-full h-full flex items-center justify-center">
+//           <img
+//             key={mainImage}
+//             src={images[mainImage]?.url || images[0]?.url}
+//             alt={`${productName} - Main view`}
+//             className={`w-full h-auto max-h-[400px] object-contain transition-all duration-300 ${
+//               imageLoaded[mainImage] ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+//             }`}
+//             style={{
+//               objectPosition: 'center',
+//             }}
+//             onLoad={() => handleImageLoad(mainImage)}
+//             loading="eager"
+//             fetchPriority="high"
+//             decoding="async"
+//             onError={(e) => {
+//               e.target.onerror = null;
+//               e.target.src = 'https://via.placeholder.com/800x800?text=Image+Not+Available';
+//               handleImageLoad(mainImage);
+//             }}
+//           />
+//         </div>
         
 //         <button
 //           onClick={() => setIsFullscreen(true)}
-//           className="absolute top-4 right-4 p-2 bg-white rounded-lg shadow-lg hover:bg-gray-100 transition-colors opacity-0 group-hover:opacity-100"
+//           className="absolute top-4 right-4 p-2 bg-white rounded-lg shadow-lg hover:bg-gray-100 transition-colors opacity-0 group-hover:opacity-100 hover:scale-110 transition-all duration-300 z-20"
 //         >
 //           <Maximize2 className="w-5 h-5 text-gray-700" />
 //         </button>
+
+//         {/* Image counter badge */}
+//         <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full z-20">
+//           {mainImage + 1} / {images.length}
+//         </div>
 //       </div>
 
+//       {/* Fullscreen Modal */}
 //       {isFullscreen && (
-//         <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center">
+//         <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center">
 //           <button
 //             onClick={() => setIsFullscreen(false)}
-//             className="absolute top-4 right-4 p-2 bg-white rounded-full hover:bg-gray-100 transition-colors"
+//             className="absolute top-4 right-4 p-2 bg-white rounded-full hover:bg-gray-100 transition-colors z-10"
 //           >
 //             <X className="w-6 h-6 text-gray-900" />
 //           </button>
-//           <button
-//             onClick={() => setMainImage(prev => Math.max(0, prev - 1))}
-//             disabled={mainImage === 0}
-//             className="absolute left-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-//           >
-//             <ChevronLeft className="w-6 h-6 text-white" />
-//           </button>
+          
+//           {/* Fullscreen navigation */}
+//           {images.length > 1 && (
+//             <>
+//               <button
+//                 onClick={() => {
+//                   const newIndex = mainImage > 0 ? mainImage - 1 : images.length - 1;
+//                   handleImageChange(newIndex);
+//                 }}
+//                 className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-white/20 hover:bg-white/40 rounded-full transition-colors"
+//               >
+//                 <ChevronLeft className="w-6 h-6 text-white" />
+//               </button>
+              
+//               <button
+//                 onClick={() => {
+//                   const newIndex = mainImage < images.length - 1 ? mainImage + 1 : 0;
+//                   handleImageChange(newIndex);
+//                 }}
+//                 className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-white/20 hover:bg-white/40 rounded-full transition-colors"
+//               >
+//                 <ChevronRight className="w-6 h-6 text-white" />
+//               </button>
+//             </>
+//           )}
+          
 //           <img
-//             src={images[mainImage]?.url}
+//             src={images[mainImage]?.url || images[0]?.url}
 //             alt={productName}
 //             className="max-w-[90vw] max-h-[90vh] object-contain"
 //           />
-//           <button
-//             onClick={() => setMainImage(prev => Math.min(images.length - 1, prev + 1))}
-//             disabled={mainImage === images.length - 1}
-//             className="absolute right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-//           >
-//             <ChevronRight className="w-6 h-6 text-white" />
-//           </button>
+          
 //           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-full text-sm">
 //             {mainImage + 1} / {images.length}
 //           </div>
@@ -218,7 +319,6 @@
 //     </div>
 //   );
 // };
-
 // // Bulk Pricing Table Component
 // const BulkPricingTable = ({ pricing = [], unitPrice, moq }) => {
 //   const pricingData = pricing.length > 0 ? pricing : [{ range: `${moq}+`, price: unitPrice }];
@@ -323,7 +423,7 @@
 //   );
 // };
 
-// // NEW: Featured & Tags Display Component
+// // Featured & Tags Display Component
 // const FeaturedTagsDisplay = ({ isFeatured, tags }) => {
 //   if (!isFeatured && (!tags || tags.length === 0)) {
 //     return null;
@@ -396,7 +496,7 @@
 //   );
 // };
 
-// // NEW: Meta Settings Display Component
+// // Meta Settings Display Component
 // const MetaSettingsDisplay = ({ metaSettings }) => {
 //   if (!metaSettings || (!metaSettings.metaTitle && !metaSettings.metaDescription && (!metaSettings.metaKeywords || metaSettings.metaKeywords.length === 0))) {
 //     return null;
@@ -446,24 +546,6 @@
 //               </div>
 //             </div>
 //           )}
-
-//           {/* SEO Preview */}
-//           {/* {(metaSettings.metaTitle || metaSettings.metaDescription) && (
-//             <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-//               <p className="text-xs font-medium text-gray-700 mb-2">Search Engine Preview:</p>
-//               <div className="space-y-1">
-//                 <div className="text-blue-600 text-sm font-medium truncate">
-//                   {metaSettings.metaTitle || 'Product Title'}
-//                 </div>
-//                 <div className="text-green-600 text-xs">
-//                   {typeof window !== 'undefined' ? window.location.origin : ''}/product/...
-//                 </div>
-//                 <div className="text-gray-600 text-xs line-clamp-2">
-//                   {metaSettings.metaDescription || 'Product description will appear here...'}
-//                 </div>
-//               </div>
-//             </div>
-//           )} */}
 //         </div>
 //       </div>
 //     </div>
@@ -491,20 +573,70 @@
 //   </span>
 // );
 
-// // Key Attributes Component - Updated to include new fields
+// // Key Attributes Component
+// // const KeyAttributes = ({ product }) => {
+// //   const attributes = [
+// //     { label: 'MOQ', value: `${product.moq} pieces` },
+// //     { label: 'Fabric', value: product.fabric || 'Standard' },
+// //     { label: 'Target Audience', value: capitalizeFirst(product.targetedCustomer || 'Unisex') },
+// //     { label: 'Category', value: product.category?.name || 'Uncategorized' },
+  
+// //     ...(product.additionalInfo || []).map(info => ({
+// //       label: info.fieldName,
+// //       value: info.fieldValue
+// //     }))
+// //   ];
+
+// //   // Add featured to attributes if true
+// //   if (product.isFeatured) {
+// //     attributes.push({ label: 'Featured', value: 'Yes' });
+// //   }
+
+// //   return (
+// //     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+// //       <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+// //         <h3 className="text-lg font-semibold text-gray-900">Key Attributes</h3>
+// //       </div>
+// //       <div className="p-6">
+// //         <div className="grid grid-cols-2 gap-4">
+// //           {attributes.map((attr, index) => (
+// //             <div key={index} className="border-b border-gray-100 pb-3 last:border-0">
+// //               <p className="text-sm text-gray-500 mb-1">{attr.label}</p>
+// //               <p className="text-sm font-medium text-gray-900">{attr.value}</p>
+// //             </div>
+// //           ))}
+// //         </div>
+// //       </div>
+// //     </div>
+// //   );
+// // };
 // const KeyAttributes = ({ product }) => {
 //   const attributes = [
 //     { label: 'MOQ', value: `${product.moq} pieces` },
 //     { label: 'Fabric', value: product.fabric || 'Standard' },
 //     { label: 'Target Audience', value: capitalizeFirst(product.targetedCustomer || 'Unisex') },
 //     { label: 'Category', value: product.category?.name || 'Uncategorized' },
-//     { label: 'Views', value: product.views || 0 },
-
-//     ...(product.additionalInfo || []).map(info => ({
-//       label: info.fieldName,
-//       value: info.fieldValue
-//     }))
 //   ];
+
+//   // Add subcategory if exists
+//   if (product.subcategoryName) {
+//     attributes.push({ label: 'Subcategory', value: product.subcategoryName });
+//   }
+
+//     // NEW: Add child subcategory if exists
+//   if (product.childSubcategoryName) {
+//     attributes.push({ label: 'Child Subcategory', value: product.childSubcategoryName });
+//   }
+
+//   // Add additional info attributes
+//   if (product.additionalInfo && product.additionalInfo.length > 0) {
+//     product.additionalInfo.forEach(info => {
+//       attributes.push({
+//         label: info.fieldName,
+//         value: info.fieldValue
+//       });
+//     });
+//   }
 
 //   // Add featured to attributes if true
 //   if (product.isFeatured) {
@@ -535,15 +667,46 @@
 //   return (
 //     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
 //       <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
-//         <h3 className="text-lg font-semibold text-gray-900">Product Description</h3>
+//         <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+//           <Package className="w-5 h-5 text-[#E39A65]" />
+//           Product Description
+//         </h3>
 //       </div>
 //       <div className="p-6">
-//         <div 
-//           className="prose prose-sm sm:prose lg:prose-lg max-w-none text-gray-600 leading-relaxed"
-//           dangerouslySetInnerHTML={{ 
-//             __html: product.description || 'No description available.' 
-//           }}
-//         />
+//         <RichTextContent content={product.description} />
+//       </div>
+//     </div>
+//   );
+// };
+
+// // NEW: Instructions Component
+// const Instructions = ({ product }) => {
+//   if (!product.instruction) {
+//     return (
+//       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+//         <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+//           <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+//             <BookOpen className="w-5 h-5 text-[#E39A65]" />
+//             Care Instructions
+//           </h3>
+//         </div>
+//         <div className="p-6">
+//           <p className="text-gray-500 italic">No care instructions available.</p>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+//       <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+//         <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+//           <BookOpen className="w-5 h-5 text-[#E39A65]" />
+//           Care Instructions
+//         </h3>
+//       </div>
+//       <div className="p-6">
+//         <RichTextContent content={product.instruction} />
 //       </div>
 //     </div>
 //   );
@@ -625,7 +788,7 @@
 //         setProduct(data.data);
 //       } else {
 //         toast.error('Product not found');
-//         router.push('/moderator/allProducts');
+//         router.push('/moderator/all-products');
 //       }
 //     } catch (error) {
 //       console.error('Error fetching product:', error);
@@ -658,7 +821,7 @@
 //           <h2 className="text-2xl font-bold text-gray-900 mb-2">Product Not Found</h2>
 //           <p className="text-gray-600 mb-6">The product you're looking for doesn't exist or has been removed.</p>
 //           <Link
-//             href="/moderator/allProducts"
+//             href="/moderator/all-products"
 //             className="inline-flex items-center gap-2 px-6 py-3 bg-[#E39A65] text-white rounded-lg hover:bg-[#d48b54] transition-colors"
 //           >
 //             <ChevronLeft className="w-4 h-4" />
@@ -676,7 +839,7 @@
 //         <div className="px-6 py-4">
 //           <div className="flex items-center justify-between">
 //             <div className="flex items-center gap-4">
-//               <Link href="/moderator/allProducts" className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+//               <Link href="/moderator/all-products" className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
 //                 <ChevronLeft className="w-5 h-5 text-gray-600" />
 //               </Link>
 //               <div>
@@ -726,13 +889,35 @@
 
 //       {/* Main Content */}
 //       <div className="container mx-auto px-4 max-w-7xl py-8">
-//         {/* Breadcrumb */}
-//        <div className="mb-6">
-//   <div className="flex items-center gap-2 text-sm text-gray-600">
+      
+//       {/* Breadcrumb */}
+// <div className="mb-6">
+//   <div className="flex items-center gap-2 text-sm text-gray-600 flex-wrap">
 //     <Link href="/moderator/dashboard" className="hover:text-[#E39A65] transition-colors">Dashboard</Link>
 //     <span>/</span>
-//     <Link href="/moderator/allProducts" className="hover:text-[#E39A65] transition-colors">All Products</Link>
+//     <Link href="/moderator/all-products" className="hover:text-[#E39A65] transition-colors">All Products</Link>
 //     <span>/</span>
+//     {product.category?.name && (
+//       <>
+//         <Link href={`/moderator/all-products?category=${product.category?._id}`} className="hover:text-[#E39A65] transition-colors">
+//           {product.category.name}
+//         </Link>
+//         <span>/</span>
+//       </>
+//     )}
+//     {product.subcategoryName && (
+//       <>
+//         <span className="text-gray-500">{product.subcategoryName}</span>
+//         <span>/</span>
+//       </>
+//     )}
+//     {/* NEW: Child Subcategory in Breadcrumb */}
+//     {product.childSubcategoryName && (
+//       <>
+//         <span className="text-gray-500">{product.childSubcategoryName}</span>
+//         <span>/</span>
+//       </>
+//     )}
 //     <span className="text-gray-900 font-medium max-w-[200px] truncate" title={product.productName}>
 //       {product.productName}
 //     </span>
@@ -778,6 +963,21 @@
 //                   <span className="px-3 py-1 bg-[#E39A65] text-white text-sm rounded-full">
 //                     {product.category?.name || 'Uncategorized'}
 //                   </span>
+//                   {/* NEW: Subcategory Badge - Show if product has subcategory */}
+//       {product.subcategoryName && (
+//         <span className="px-3 py-1 bg-purple-100 text-purple-700 text-sm rounded-full flex items-center gap-1">
+//           <FolderTree className="w-3.5 h-3.5" />
+//           {product.subcategoryName}
+//         </span>
+//       )}
+
+//       {product.childSubcategoryName && (
+//       <span className="px-3 py-1 bg-indigo-100 text-indigo-700 text-sm rounded-full flex items-center gap-1">
+//         <FolderTree className="w-3.5 h-3.5" />
+//         {product.childSubcategoryName}
+//       </span>
+//     )}
+      
 //                   {product.targetedCustomer && product.targetedCustomer !== 'unisex' && (
 //                     <span className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">
 //                       {capitalizeFirst(product.targetedCustomer)}
@@ -790,12 +990,14 @@
 //                   {product.productName}
 //                 </h1>
                 
-//                 {/* Product Description */}
+//                 {/* Product Description - Preview */}
 //                 {product.description && (
 //                   <div 
-//                     className="text-gray-600 text-sm mb-4 prose prose-sm max-w-none"
+//                     className="text-gray-600 text-sm mb-4 prose prose-sm max-w-none rich-text-preview"
 //                     dangerouslySetInnerHTML={{ 
-//                       __html: product.description || 'No description available.' 
+//                       __html: product.description.length > 200 
+//                         ? product.description.substring(0, 200) + '...' 
+//                         : product.description
 //                     }}
 //                   />
 //                 )}
@@ -822,17 +1024,7 @@
 //                 </div>
 //               )}
 
-//               {/* Views and Inquiry Count */}
-//               <div className="mt-4 grid grid-cols-1 gap-4">
-//                 <div className="p-3 bg-gray-50 rounded-lg">
-//                   <div className="flex items-center gap-2 text-xs text-gray-500 mb-1">
-//                     <Eye className="w-3.5 h-3.5" />
-//                     Views
-//                   </div>
-//                   <p className="text-sm font-medium text-gray-900">{product.views || 0}</p>
-//                 </div>
              
-//               </div>
 
 //               {/* Timestamps */}
 //               <div className="mt-4 grid grid-cols-2 gap-4">
@@ -853,15 +1045,12 @@
 //               </div>
 //             </div>
 
-//             {/* NEW: Featured & Tags Display */}
+//             {/* Featured & Tags Display */}
 //             {(product.isFeatured || (product.tags && product.tags.length > 0)) && (
 //               <FeaturedTagsDisplay isFeatured={product.isFeatured} tags={product.tags} />
 //             )}
 
-//             {/* NEW: Meta Settings Display */}
-//             {product.metaSettings && (
-//               <MetaSettingsDisplay metaSettings={product.metaSettings} />
-//             )}
+           
 
 //             {/* Bulk Pricing */}
 //             <BulkPricingTable 
@@ -869,6 +1058,11 @@
 //               unitPrice={product.pricePerUnit}
 //               moq={product.moq}
 //             />
+
+//              {/* Meta Settings Display */}
+//             {product.metaSettings && (
+//               <MetaSettingsDisplay metaSettings={product.metaSettings} />
+//             )}
 
 //             {/* Additional Information */}
 //             {product.additionalInfo && product.additionalInfo.length > 0 && (
@@ -887,10 +1081,10 @@
 //         <div className="mt-8">
 //           {/* Tab Navigation */}
 //           <div className="border-b border-gray-200">
-//             <nav className="flex gap-8">
+//             <nav className="flex gap-8 overflow-x-auto pb-1">
 //               <button
 //                 onClick={() => setActiveTab('attributes')}
-//                 className={`pb-4 px-1 text-sm font-medium border-b-2 transition-colors ${
+//                 className={`pb-4 px-1 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
 //                   activeTab === 'attributes'
 //                     ? 'border-[#E39A65] text-[#E39A65]'
 //                     : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -900,7 +1094,7 @@
 //               </button>
 //               <button
 //                 onClick={() => setActiveTab('description')}
-//                 className={`pb-4 px-1 text-sm font-medium border-b-2 transition-colors ${
+//                 className={`pb-4 px-1 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
 //                   activeTab === 'description'
 //                     ? 'border-[#E39A65] text-[#E39A65]'
 //                     : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -908,9 +1102,20 @@
 //               >
 //                 Description
 //               </button>
+//               {/* NEW: Instructions Tab */}
+//               <button
+//                 onClick={() => setActiveTab('instructions')}
+//                 className={`pb-4 px-1 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+//                   activeTab === 'instructions'
+//                     ? 'border-[#E39A65] text-[#E39A65]'
+//                     : 'border-transparent text-gray-500 hover:text-gray-700'
+//                 }`}
+//               >
+//                 Care Instructions
+//               </button>
 //               <button
 //                 onClick={() => setActiveTab('pricing')}
-//                 className={`pb-4 px-1 text-sm font-medium border-b-2 transition-colors ${
+//                 className={`pb-4 px-1 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
 //                   activeTab === 'pricing'
 //                     ? 'border-[#E39A65] text-[#E39A65]'
 //                     : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -920,7 +1125,7 @@
 //               </button>
 //               <button
 //                 onClick={() => setActiveTab('shipping')}
-//                 className={`pb-4 px-1 text-sm font-medium border-b-2 transition-colors ${
+//                 className={`pb-4 px-1 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
 //                   activeTab === 'shipping'
 //                     ? 'border-[#E39A65] text-[#E39A65]'
 //                     : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -935,6 +1140,8 @@
 //           <div className="mt-6">
 //             {activeTab === 'attributes' && <KeyAttributes product={product} />}
 //             {activeTab === 'description' && <Description product={product} />}
+//             {/* NEW: Instructions Tab Content */}
+//             {activeTab === 'instructions' && <Instructions product={product} />}
 //             {activeTab === 'pricing' && (
 //               <BulkPricingTable 
 //                 pricing={product.quantityBasedPricing} 
@@ -946,6 +1153,131 @@
 //           </div>
 //         </div>
 //       </div>
+
+//       {/* Add global styles for rich text content */}
+//       <style jsx global>{`
+//         .rich-text-content {
+//           color: #374151;
+//           line-height: 1.6;
+//         }
+        
+//         .rich-text-content h1 {
+//           font-size: 2em;
+//           margin: 0.5em 0;
+//           font-weight: 600;
+//           color: #111827;
+//         }
+        
+//         .rich-text-content h2 {
+//           font-size: 1.5em;
+//           margin: 0.5em 0;
+//           font-weight: 600;
+//           color: #111827;
+//         }
+        
+//         .rich-text-content h3 {
+//           font-size: 1.17em;
+//           margin: 0.5em 0;
+//           font-weight: 600;
+//           color: #111827;
+//         }
+        
+//         .rich-text-content h4 {
+//           font-size: 1em;
+//           margin: 0.5em 0;
+//           font-weight: 600;
+//           color: #111827;
+//         }
+        
+//         .rich-text-content p {
+//           margin: 0.75em 0;
+//         }
+        
+//         .rich-text-content ul {
+//           list-style-type: disc;
+//           padding-left: 1.5em;
+//           margin: 0.5em 0;
+//         }
+        
+//         .rich-text-content ol {
+//           list-style-type: decimal;
+//           padding-left: 1.5em;
+//           margin: 0.5em 0;
+//         }
+        
+//         .rich-text-content li {
+//           margin: 0.25em 0;
+//         }
+        
+//         .rich-text-content a {
+//           color: #2563eb;
+//           text-decoration: none;
+//           font-weight: 500;
+//         }
+        
+//         .rich-text-content a:hover {
+//           text-decoration: underline;
+//           color: #1d4ed8;
+//         }
+        
+//         .rich-text-content strong {
+//           font-weight: 600;
+//           color: #111827;
+//         }
+        
+//         .rich-text-content em {
+//           font-style: italic;
+//         }
+        
+//         .rich-text-content blockquote {
+//           border-left: 4px solid #e5e7eb;
+//           padding-left: 1em;
+//           margin: 1em 0;
+//           color: #6b7280;
+//         }
+        
+//         .rich-text-content code {
+//           background-color: #f3f4f6;
+//           padding: 0.2em 0.4em;
+//           border-radius: 0.25em;
+//           font-family: monospace;
+//           font-size: 0.875em;
+//         }
+        
+//         .rich-text-content pre {
+//           background-color: #f3f4f6;
+//           padding: 1em;
+//           border-radius: 0.5em;
+//           overflow-x: auto;
+//           font-family: monospace;
+//           font-size: 0.875em;
+//         }
+        
+//         .rich-text-preview {
+//           color: #6b7280;
+//           line-height: 1.5;
+//         }
+        
+//         .rich-text-preview p {
+//           margin: 0.5em 0;
+//         }
+        
+//         .rich-text-preview a {
+//           color: #2563eb;
+//         }
+//           @keyframes shimmer {
+//     0% {
+//       transform: translateX(-100%);
+//     }
+//     100% {
+//       transform: translateX(100%);
+//     }
+//   }
+  
+//   .animate-shimmer {
+//     animation: shimmer 1.5s infinite;
+//   }
+//       `}</style>
 //     </div>
 //   );
 // }
@@ -989,8 +1321,10 @@ import {
   TrendingUp,
   Sparkles,
   Tag,
-  BookOpen, // Added for instruction tab
-  FolderTree
+  BookOpen,
+  FolderTree,
+  Scale,
+  Wrench
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -1028,6 +1362,23 @@ const truncateText = (text, limit = 30) => {
   return text.substring(0, limit) + '...';
 };
 
+// Helper function to get unit label
+const getUnitLabel = (orderUnit) => {
+  switch(orderUnit) {
+    case 'kg': return 'kg';
+    case 'ton': return 'MT';
+    default: return 'pcs';
+  }
+};
+
+const getUnitFullLabel = (orderUnit) => {
+  switch(orderUnit) {
+    case 'kg': return 'Kilograms';
+    case 'ton': return 'Metric Tons';
+    default: return 'Pieces';
+  }
+};
+
 // Rich Text Content Renderer Component
 const RichTextContent = ({ content, className = '' }) => {
   if (!content) return <p className="text-gray-500 italic">No content available.</p>;
@@ -1042,7 +1393,7 @@ const RichTextContent = ({ content, className = '' }) => {
 
 // Loading Skeleton Component
 const ProductDetailsSkeleton = () => (
-  <div className="min-h-screen bg-gray-50">
+  <div className="min-h-screen bg-[#FAF7F2]">
     <div className="container mx-auto px-4 max-w-7xl py-8">
       <div className="h-4 bg-gray-200 rounded w-48 mb-6 animate-pulse"></div>
       
@@ -1069,20 +1420,14 @@ const ProductDetailsSkeleton = () => (
   </div>
 );
 
-// Image Gallery Component - Optimized with all images
+// Image Gallery Component with zoom and fullscreen
 const ImageGallery = ({ images = [], productName }) => {
   const [mainImage, setMainImage] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
+  const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
   const [imageLoaded, setImageLoaded] = useState({});
   const [isTransitioning, setIsTransitioning] = useState(false);
-
-  const handleMouseMove = (e) => {
-    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - left) / width) * 100;
-    const y = ((e.clientY - top) / height) * 100;
-    setZoomPosition({ x, y });
-  };
+  const [isZoomed, setIsZoomed] = useState(false);
 
   // Preload images on hover
   const preloadImage = (src) => {
@@ -1105,6 +1450,7 @@ const ImageGallery = ({ images = [], productName }) => {
     if (idx === mainImage) return;
     
     setIsTransitioning(true);
+    setIsZoomed(false);
     setMainImage(idx);
     setImageLoaded(prev => ({ ...prev, [idx]: false }));
   };
@@ -1114,12 +1460,17 @@ const ImageGallery = ({ images = [], productName }) => {
     setTimeout(() => setIsTransitioning(false), 100);
   };
 
-  // Calculate thumbnail size based on number of images
-  const getThumbnailSize = () => {
-    const count = images.length;
-    if (count <= 4) return 'w-16 h-16 sm:w-20 sm:h-20';
-    if (count <= 6) return 'w-14 h-14 sm:w-16 sm:h-16';
-    return 'w-12 h-12 sm:w-14 sm:h-14';
+  const handleMouseMove = (e) => {
+    if (!isZoomed) return;
+    
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    
+    setZoomPosition({
+      x: Math.min(Math.max(x, 0), 100),
+      y: Math.min(Math.max(y, 0), 100)
+    });
   };
 
   if (!images || images.length === 0) {
@@ -1134,66 +1485,68 @@ const ImageGallery = ({ images = [], productName }) => {
   }
 
   return (
-    <div className="flex flex-col sm:flex-row gap-4">
-      {/* Thumbnails - All images visible */}
-      <div className="flex sm:flex-col gap-2 order-2 sm:order-1 overflow-x-auto sm:overflow-x-visible pb-2 sm:pb-0">
-        <div className="flex sm:flex-col gap-2">
-          {images.map((image, idx) => (
-            <button
-              key={idx}
-              onClick={() => handleImageChange(idx)}
-              onMouseEnter={() => {
-                preloadImage(image.url);
-                handleImageChange(idx);
+    <div className="flex flex-row gap-4">
+      {/* Thumbnails - Left Side */}
+      <div className="flex flex-col gap-2 overflow-y-auto max-h-[480px] w-20 flex-shrink-0">
+        {images.map((image, idx) => (
+          <button
+            key={idx}
+            onClick={() => handleImageChange(idx)}
+            onMouseEnter={() => {
+              preloadImage(image.url);
+              handleImageChange(idx);
+            }}
+            className={`relative w-16 h-16 rounded-lg overflow-hidden border-2 transition-all flex-shrink-0 ${
+              mainImage === idx 
+                ? 'border-[#6B4F3A] shadow-md ring-2 ring-[#6B4F3A]/20' 
+                : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+            }`}
+          >
+            <img
+              src={image.url}
+              alt={`${productName} - Thumbnail ${idx + 1}`}
+              className="w-full h-full object-cover"
+              loading="lazy"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = 'https://via.placeholder.com/100x100?text=No+Image';
               }}
-              className={`relative flex-shrink-0 ${getThumbnailSize()} rounded-lg overflow-hidden border-2 transition-all ${
-                mainImage === idx 
-                  ? 'border-[#E39A65] shadow-md ring-2 ring-[#E39A65]/20' 
-                  : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
-              }`}
-            >
-              <img
-                src={image.url}
-                alt={`${productName} - Thumbnail ${idx + 1}`}
-                className="w-full h-full object-cover"
-                loading="lazy"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = 'https://via.placeholder.com/100x100?text=No+Image';
-                }}
-              />
-              {mainImage === idx && (
-                <div className="absolute inset-0 bg-[#E39A65]/10 flex items-center justify-center">
-                  <Check className="w-4 h-4 text-[#E39A65]" />
-                </div>
-              )}
-            </button>
-          ))}
-        </div>
+            />
+            {mainImage === idx && (
+              <div className="absolute inset-0 bg-[#6B4F3A]/10 flex items-center justify-center">
+                <Check className="w-4 h-4 text-[#6B4F3A]" />
+              </div>
+            )}
+          </button>
+        ))}
       </div>
 
-      {/* Main Image */}
+      {/* Main Image with Zoom */}
       <div 
-        className="flex-1 relative bg-gray-100 rounded-2xl overflow-hidden group cursor-zoom-in order-1 sm:order-2 flex items-center justify-center min-h-[400px]"
+        className="flex-1 relative bg-gray-100 rounded-2xl overflow-hidden cursor-crosshair group"
+        style={{ height: '480px' }}
+        onMouseEnter={() => setIsZoomed(true)}
+        onMouseLeave={() => setIsZoomed(false)}
         onMouseMove={handleMouseMove}
       >
-        {/* Loading skeleton */}
         {(isTransitioning || !imageLoaded[mainImage]) && (
           <div className="absolute inset-0 bg-gray-200 animate-pulse z-10">
-            <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-shimmer"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-shimmer" />
           </div>
         )}
         
-        <div className="relative w-full h-full flex items-center justify-center">
+        <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
           <img
             key={mainImage}
             src={images[mainImage]?.url || images[0]?.url}
             alt={`${productName} - Main view`}
-            className={`w-full h-auto max-h-[400px] object-contain transition-all duration-300 ${
-              imageLoaded[mainImage] ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+            className={`w-full h-full object-contain transition-all duration-300 ${
+              imageLoaded[mainImage] ? 'opacity-100' : 'opacity-0'
             }`}
             style={{
-              objectPosition: 'center',
+              transform: isZoomed ? 'scale(2.2)' : 'scale(1)',
+              transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
+              transition: 'transform 0.15s ease-out'
             }}
             onLoad={() => handleImageLoad(mainImage)}
             loading="eager"
@@ -1206,6 +1559,17 @@ const ImageGallery = ({ images = [], productName }) => {
             }}
           />
         </div>
+
+        {!isZoomed && (
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-all duration-300 flex items-center justify-center pointer-events-none">
+            <div className="bg-black/60 backdrop-blur-sm text-white text-xs px-3 py-1.5 rounded-full flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+              </svg>
+              <span>Hover to zoom</span>
+            </div>
+          </div>
+        )}
         
         <button
           onClick={() => setIsFullscreen(true)}
@@ -1214,7 +1578,6 @@ const ImageGallery = ({ images = [], productName }) => {
           <Maximize2 className="w-5 h-5 text-gray-700" />
         </button>
 
-        {/* Image counter badge */}
         <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full z-20">
           {mainImage + 1} / {images.length}
         </div>
@@ -1230,7 +1593,6 @@ const ImageGallery = ({ images = [], productName }) => {
             <X className="w-6 h-6 text-gray-900" />
           </button>
           
-          {/* Fullscreen navigation */}
           {images.length > 1 && (
             <>
               <button
@@ -1269,38 +1631,122 @@ const ImageGallery = ({ images = [], productName }) => {
     </div>
   );
 };
-// Bulk Pricing Table Component
-const BulkPricingTable = ({ pricing = [], unitPrice, moq }) => {
+
+// Bulk Pricing Table Component with Savings Column
+const BulkPricingTable = ({ pricing = [], unitPrice, moq, orderUnit = 'piece' }) => {
+  const [showAllTiers, setShowAllTiers] = useState(false);
+  const unitLabel = getUnitLabel(orderUnit);
+  const unitFullLabel = getUnitFullLabel(orderUnit);
+  
   const pricingData = pricing.length > 0 ? pricing : [{ range: `${moq}+`, price: unitPrice }];
+  const displayedTiers = showAllTiers ? pricingData : pricingData.slice(0, 3);
+  const hasMoreTiers = pricingData.length > 3;
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900">Bulk Pricing</h3>
+    <div className="bg-white rounded-xl border border-[#E8D5C0] overflow-hidden w-full">
+      <div className="px-3 py-2.5 bg-[#6B4F3A]">
+        <h3 className="text-white font-semibold text-xs sm:text-sm flex items-center gap-2">
+          <Package className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          <span className="truncate">Bulk Pricing - {unitFullLabel}</span>
+        </h3>
       </div>
-      <div className="p-6">
+      <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50">
+          <thead className="bg-[#F5E6D3]">
             <tr>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Quantity Range</th>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Price Per Unit</th>
+              <th className="text-left py-2 px-2 text-[10px] sm:text-xs font-semibold text-[#6B4F3A]">Qty ({unitLabel})</th>
+              <th className="text-left py-2 px-2 text-[10px] sm:text-xs font-semibold text-[#6B4F3A]">Price</th>
+              <th className="text-left py-2 px-2 text-[10px] sm:text-xs font-semibold text-[#6B4F3A]">Savings</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {pricingData.map((tier, index) => {
+            {displayedTiers.map((tier, index) => {
               const tierPrice = tier.price || unitPrice;
+              const savings = unitPrice - tierPrice;
+              const savingsPercent = unitPrice > 0 ? ((savings / unitPrice) * 100).toFixed(0) : 0;
+              const isBestValue = index === pricingData.length - 1 && pricingData.length > 1;
 
               return (
-                <tr key={index} className="hover:bg-gray-50">
-                  <td className="py-3 px-4 text-gray-900">{tier.range || `${moq}+`}</td>
-                  <td className="py-3 px-4">
-                    <span className="font-semibold text-[#E39A65]">{formatPrice(tierPrice)}</span>
+                <tr key={index} className={`${isBestValue ? 'bg-[#F5E6D3]' : 'hover:bg-gray-50'} transition-colors`}>
+                  <td className="py-2 px-2">
+                    <div className="flex items-center gap-1 flex-wrap">
+                      <span className="text-xs sm:text-sm font-medium text-gray-900">
+                        {tier.range || `${moq}+`}
+                      </span>
+                      {isBestValue && (
+                        <span className="px-1 py-0.5 bg-[#3A7D44] text-white text-[8px] sm:text-[10px] font-medium rounded-full whitespace-nowrap">
+                          Best
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="py-2 px-2">
+                    <span className="font-semibold text-[#6B4F3A] text-xs sm:text-sm">
+                      {formatPrice(tierPrice)}
+                    </span>
+                  </td>
+                  <td className="py-2 px-2">
+                    {savings > 0 ? (
+                      <div className="flex items-center gap-0.5">
+                        <span className="text-[#3A7D44] text-[10px] sm:text-xs font-medium">
+                          {formatPrice(savings)}
+                        </span>
+                        <span className="text-[#3A7D44] text-[8px] sm:text-[10px]">
+                          ({savingsPercent}%)
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-gray-400 text-[9px]">—</span>
+                    )}
                   </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
+      </div>
+      {hasMoreTiers && (
+        <div className="p-1 border-t border-gray-100">
+          <button 
+            onClick={() => setShowAllTiers(!showAllTiers)} 
+            className="text-[9px] text-[#6B4F3A] hover:underline w-full text-center py-1 flex items-center justify-center gap-1"
+          >
+            {showAllTiers ? (
+              <>Show Less ↑</>
+            ) : (
+              <>Show {pricingData.length - 3} more ↓</>
+            )}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Customization Options Component
+const CustomizationOptions = ({ options }) => {
+  if (!options || options.length === 0) return null;
+  
+  return (
+    <div className="bg-[#F5E6D3] rounded-xl border border-[#6B4F3A]/20 overflow-hidden">
+      <div className="px-3 py-2 bg-[#6B4F3A]/10 border-b border-[#6B4F3A]/20">
+        <h3 className="font-semibold text-[#6B4F3A] flex items-center gap-2 text-xs sm:text-sm">
+          <Wrench className="w-3.5 h-3.5 text-[#6B4F3A]" />
+          Customization Options
+        </h3>
+      </div>
+      <div className="p-3 space-y-2">
+        {options.map((option, idx) => (
+          <div key={idx} className="flex items-start gap-2 p-2 bg-white rounded-lg shadow-sm border border-gray-100">
+            <div className="w-6 h-6 rounded-lg bg-[#6B4F3A]/10 flex items-center justify-center flex-shrink-0">
+              <Wrench className="w-3 h-3 text-[#6B4F3A]" />
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-gray-900">{option.title}</p>
+              <p className="text-[11px] text-gray-600">{option.value}</p>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -1324,7 +1770,7 @@ const ColorsDisplay = ({ colors }) => {
             className="w-10 h-10 rounded-full border-2 border-white shadow-md cursor-pointer transition-transform hover:scale-110"
             style={{ backgroundColor: color.code }}
           />
-          <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+          <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-[#6B4F3A] text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
             {color.name || color.code}
           </span>
         </div>
@@ -1346,7 +1792,7 @@ const SizesDisplay = ({ sizes }) => {
       {validSizes.map((size, index) => (
         <span
           key={index}
-          className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium border border-gray-200"
+          className="px-4 py-2 bg-[#F5E6D3] text-[#6B4F3A] rounded-lg text-sm font-medium border border-[#E8D5C0]"
         >
           {size}
         </span>
@@ -1364,7 +1810,7 @@ const AdditionalInfoDisplay = ({ additionalInfo }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {additionalInfo.map((info, index) => (
-        <div key={index} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+        <div key={index} className="bg-[#FAF7F2] p-4 rounded-lg border border-[#E8D5C0]">
           <p className="text-xs text-gray-500 mb-1">{info.fieldName}</p>
           <p className="text-sm font-medium text-gray-900">{info.fieldValue}</p>
         </div>
@@ -1379,17 +1825,30 @@ const FeaturedTagsDisplay = ({ isFeatured, tags }) => {
     return null;
   }
 
+  const getTagColor = (tag) => {
+    const colors = {
+      'Best Seller': 'bg-[#3A7D44]',
+      'Hot Export Item': 'bg-[#6B4F3A]',
+      'Eco-Friendly': 'bg-green-600',
+      'Export Ready': 'bg-blue-600',
+      'OEM Available': 'bg-purple-600',
+      'Customizable': 'bg-amber-600',
+      'Bulk Discount': 'bg-red-600',
+      'Premium Quality': 'bg-indigo-600'
+    };
+    return colors[tag] || 'bg-gray-500';
+  };
+
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <div className="px-6 py-4 bg-gradient-to-r from-purple-50 to-orange-50 border-b border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-[#E39A65]" />
+    <div className="bg-white rounded-xl border border-[#E8D5C0] overflow-hidden">
+      <div className="px-6 py-4 bg-[#F5E6D3] border-b border-[#E8D5C0]">
+        <h3 className="text-lg font-semibold text-[#6B4F3A] flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-[#3A7D44]" />
           Product Promotion
         </h3>
       </div>
       <div className="p-6">
         <div className="space-y-4">
-          {/* Featured Status */}
           {isFeatured && (
             <div className="flex items-center gap-3 p-3 bg-amber-50 rounded-lg border border-amber-200">
               <Star className="w-5 h-5 text-amber-500" />
@@ -1399,41 +1858,18 @@ const FeaturedTagsDisplay = ({ isFeatured, tags }) => {
               </div>
             </div>
           )}
-
-          {/* Tags */}
           {tags && tags.length > 0 && (
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <Tag className="w-4 h-4 text-[#E39A65]" />
+                <Tag className="w-4 h-4 text-[#6B4F3A]" />
                 <h4 className="text-sm font-medium text-gray-700">Product Tags/Labels</h4>
               </div>
               <div className="flex flex-wrap gap-2">
                 {tags.map((tag, index) => (
                   <span
                     key={index}
-                    className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium"
-                    style={{
-                      backgroundColor: 
-                        tag.includes('Top') ? '#FEF3C7' :
-                        tag.includes('New') ? '#DBEAFE' :
-                        tag.includes('Best') ? '#FCE7F3' :
-                        tag.includes('Summer') ? '#FEF9C3' :
-                        tag.includes('Winter') ? '#E0F2FE' :
-                        tag.includes('Limited') ? '#FEE2E2' :
-                        '#F3E8FF',
-                      color:
-                        tag.includes('Top') ? '#92400E' :
-                        tag.includes('New') ? '#1E40AF' :
-                        tag.includes('Best') ? '#9D174D' :
-                        tag.includes('Summer') ? '#854D0E' :
-                        tag.includes('Winter') ? '#0369A1' :
-                        tag.includes('Limited') ? '#991B1B' :
-                        '#5B21B6'
-                    }}
+                    className={`inline-flex items-center px-3 py-1.5 ${getTagColor(tag)} text-white text-xs font-medium rounded-full`}
                   >
-                    {tag === 'Top Ranking' && <TrendingUp className="w-3 h-3 mr-1" />}
-                    {tag === 'Best Seller' && <Award className="w-3 h-3 mr-1" />}
-                    {tag === 'New Arrival' && <Sparkles className="w-3 h-3 mr-1" />}
                     {tag}
                   </span>
                 ))}
@@ -1453,16 +1889,15 @@ const MetaSettingsDisplay = ({ metaSettings }) => {
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-          <Search className="w-5 h-5 text-[#E39A65]" />
+    <div className="bg-white rounded-xl border border-[#E8D5C0] overflow-hidden">
+      <div className="px-6 py-4 bg-[#F5E6D3] border-b border-[#E8D5C0]">
+        <h3 className="text-lg font-semibold text-[#6B4F3A] flex items-center gap-2">
+          <Search className="w-5 h-5 text-[#3A7D44]" />
           SEO Settings
         </h3>
       </div>
       <div className="p-6">
         <div className="space-y-4">
-          {/* Meta Title */}
           {metaSettings.metaTitle && (
             <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
               <p className="text-xs font-medium text-blue-800 mb-1">Meta Title</p>
@@ -1470,8 +1905,6 @@ const MetaSettingsDisplay = ({ metaSettings }) => {
               <p className="text-xs text-blue-600 mt-1">{metaSettings.metaTitle?.length || 0}/70 characters</p>
             </div>
           )}
-
-          {/* Meta Description */}
           {metaSettings.metaDescription && (
             <div className="p-3 bg-green-50 rounded-lg border border-green-200">
               <p className="text-xs font-medium text-green-800 mb-1">Meta Description</p>
@@ -1479,8 +1912,6 @@ const MetaSettingsDisplay = ({ metaSettings }) => {
               <p className="text-xs text-green-600 mt-1">{metaSettings.metaDescription?.length || 0}/160 characters</p>
             </div>
           )}
-
-          {/* Meta Keywords */}
           {metaSettings.metaKeywords && metaSettings.metaKeywords.length > 0 && (
             <div>
               <p className="text-xs font-medium text-gray-500 mb-2">Meta Keywords</p>
@@ -1488,7 +1919,7 @@ const MetaSettingsDisplay = ({ metaSettings }) => {
                 {metaSettings.metaKeywords.map((keyword, index) => (
                   <span
                     key={index}
-                    className="px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-xs"
+                    className="px-2 py-1 bg-[#F5E6D3] text-[#6B4F3A] rounded-md text-xs"
                   >
                     {keyword}
                   </span>
@@ -1523,62 +1954,27 @@ const StatusBadge = ({ isActive }) => (
   </span>
 );
 
-// Key Attributes Component
-// const KeyAttributes = ({ product }) => {
-//   const attributes = [
-//     { label: 'MOQ', value: `${product.moq} pieces` },
-//     { label: 'Fabric', value: product.fabric || 'Standard' },
-//     { label: 'Target Audience', value: capitalizeFirst(product.targetedCustomer || 'Unisex') },
-//     { label: 'Category', value: product.category?.name || 'Uncategorized' },
-  
-//     ...(product.additionalInfo || []).map(info => ({
-//       label: info.fieldName,
-//       value: info.fieldValue
-//     }))
-//   ];
-
-//   // Add featured to attributes if true
-//   if (product.isFeatured) {
-//     attributes.push({ label: 'Featured', value: 'Yes' });
-//   }
-
-//   return (
-//     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-//       <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
-//         <h3 className="text-lg font-semibold text-gray-900">Key Attributes</h3>
-//       </div>
-//       <div className="p-6">
-//         <div className="grid grid-cols-2 gap-4">
-//           {attributes.map((attr, index) => (
-//             <div key={index} className="border-b border-gray-100 pb-3 last:border-0">
-//               <p className="text-sm text-gray-500 mb-1">{attr.label}</p>
-//               <p className="text-sm font-medium text-gray-900">{attr.value}</p>
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
+// Key Attributes Component with Units
 const KeyAttributes = ({ product }) => {
+  const unitLabel = getUnitLabel(product.orderUnit);
+  
   const attributes = [
-    { label: 'MOQ', value: `${product.moq} pieces` },
+    { label: `MOQ (Per Color)`, value: `${product.moq} ${unitLabel}` },
     { label: 'Fabric', value: product.fabric || 'Standard' },
     { label: 'Target Audience', value: capitalizeFirst(product.targetedCustomer || 'Unisex') },
+    { label: 'Selling Unit', value: getUnitFullLabel(product.orderUnit) },
+    ...(product.weightPerUnit ? [{ label: 'Weight Per Unit', value: `${product.weightPerUnit} kg` }] : []),
     { label: 'Category', value: product.category?.name || 'Uncategorized' },
   ];
 
-  // Add subcategory if exists
   if (product.subcategoryName) {
     attributes.push({ label: 'Subcategory', value: product.subcategoryName });
   }
 
-    // NEW: Add child subcategory if exists
   if (product.childSubcategoryName) {
     attributes.push({ label: 'Child Subcategory', value: product.childSubcategoryName });
   }
 
-  // Add additional info attributes
   if (product.additionalInfo && product.additionalInfo.length > 0) {
     product.additionalInfo.forEach(info => {
       attributes.push({
@@ -1588,15 +1984,14 @@ const KeyAttributes = ({ product }) => {
     });
   }
 
-  // Add featured to attributes if true
   if (product.isFeatured) {
     attributes.push({ label: 'Featured', value: 'Yes' });
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900">Key Attributes</h3>
+    <div className="bg-white rounded-xl border border-[#E8D5C0] overflow-hidden">
+      <div className="px-6 py-4 bg-[#F5E6D3] border-b border-[#E8D5C0]">
+        <h3 className="text-lg font-semibold text-[#6B4F3A]">Key Attributes</h3>
       </div>
       <div className="p-6">
         <div className="grid grid-cols-2 gap-4">
@@ -1615,10 +2010,10 @@ const KeyAttributes = ({ product }) => {
 // Description Component
 const Description = ({ product }) => {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-          <Package className="w-5 h-5 text-[#E39A65]" />
+    <div className="bg-white rounded-xl border border-[#E8D5C0] overflow-hidden">
+      <div className="px-6 py-4 bg-[#F5E6D3] border-b border-[#E8D5C0]">
+        <h3 className="text-lg font-semibold text-[#6B4F3A] flex items-center gap-2">
+          <Package className="w-5 h-5 text-[#3A7D44]" />
           Product Description
         </h3>
       </div>
@@ -1629,14 +2024,14 @@ const Description = ({ product }) => {
   );
 };
 
-// NEW: Instructions Component
+// Instructions Component
 const Instructions = ({ product }) => {
   if (!product.instruction) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-[#E39A65]" />
+      <div className="bg-white rounded-xl border border-[#E8D5C0] overflow-hidden">
+        <div className="px-6 py-4 bg-[#F5E6D3] border-b border-[#E8D5C0]">
+          <h3 className="text-lg font-semibold text-[#6B4F3A] flex items-center gap-2">
+            <BookOpen className="w-5 h-5 text-[#3A7D44]" />
             Care Instructions
           </h3>
         </div>
@@ -1648,10 +2043,10 @@ const Instructions = ({ product }) => {
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-          <BookOpen className="w-5 h-5 text-[#E39A65]" />
+    <div className="bg-white rounded-xl border border-[#E8D5C0] overflow-hidden">
+      <div className="px-6 py-4 bg-[#F5E6D3] border-b border-[#E8D5C0]">
+        <h3 className="text-lg font-semibold text-[#6B4F3A] flex items-center gap-2">
+          <BookOpen className="w-5 h-5 text-[#3A7D44]" />
           Care Instructions
         </h3>
       </div>
@@ -1665,14 +2060,14 @@ const Instructions = ({ product }) => {
 // Shipping Info Component
 const ShippingInfo = () => {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900">Shipping Information</h3>
+    <div className="bg-white rounded-xl border border-[#E8D5C0] overflow-hidden">
+      <div className="px-6 py-4 bg-[#F5E6D3] border-b border-[#E8D5C0]">
+        <h3 className="text-lg font-semibold text-[#6B4F3A]">Shipping Information</h3>
       </div>
       <div className="p-6">
         <div className="space-y-4">
-          <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
-            <Truck className="w-6 h-6 text-[#E39A65] flex-shrink-0" />
+          <div className="flex items-start gap-4 p-4 bg-[#FAF7F2] rounded-lg">
+            <Truck className="w-6 h-6 text-[#3A7D44] flex-shrink-0" />
             <div>
               <h4 className="font-medium text-gray-900 mb-1">Global Shipping Available</h4>
               <p className="text-sm text-gray-600">
@@ -1680,8 +2075,8 @@ const ShippingInfo = () => {
               </p>
             </div>
           </div>
-          <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
-            <Clock className="w-6 h-6 text-[#E39A65] flex-shrink-0" />
+          <div className="flex items-start gap-4 p-4 bg-[#FAF7F2] rounded-lg">
+            <Clock className="w-6 h-6 text-[#3A7D44] flex-shrink-0" />
             <div>
               <h4 className="font-medium text-gray-900 mb-1">Estimated Delivery Time</h4>
               <p className="text-sm text-gray-600">
@@ -1690,8 +2085,8 @@ const ShippingInfo = () => {
               </p>
             </div>
           </div>
-          <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
-            <Package className="w-6 h-6 text-[#E39A65] flex-shrink-0" />
+          <div className="flex items-start gap-4 p-4 bg-[#FAF7F2] rounded-lg">
+            <Package className="w-6 h-6 text-[#3A7D44] flex-shrink-0" />
             <div>
               <h4 className="font-medium text-gray-900 mb-1">Bulk Order Shipping</h4>
               <p className="text-sm text-gray-600">
@@ -1765,14 +2160,14 @@ export default function ModeratorProductDetails() {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Product Not Found</h2>
           <p className="text-gray-600 mb-6">The product you're looking for doesn't exist or has been removed.</p>
           <Link
             href="/moderator/all-products"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-[#E39A65] text-white rounded-lg hover:bg-[#d48b54] transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#6B4F3A] text-white rounded-lg hover:bg-[#8B6B51] transition-colors"
           >
             <ChevronLeft className="w-4 h-4" />
             Back to All Products
@@ -1782,20 +2177,23 @@ export default function ModeratorProductDetails() {
     );
   }
 
+  const unitLabel = getUnitLabel(product.orderUnit);
+  const hasCustomization = product.customizationOptions && product.customizationOptions.length > 0;
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#FAF7F2]">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <div className="bg-white border-b border-[#E8D5C0] sticky top-0 z-10 shadow-sm">
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Link href="/moderator/all-products" className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                <ChevronLeft className="w-5 h-5 text-gray-600" />
+              <Link href="/moderator/all-products" className="p-2 hover:bg-[#F5E6D3] rounded-lg transition-colors">
+                <ChevronLeft className="w-5 h-5 text-[#6B4F3A]" />
               </Link>
               <div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-wrap">
                   <h1 className="text-2xl font-bold text-gray-900" title={product.productName}>
-                    {truncateText(product.productName, 30)}
+                    {truncateText(product.productName, 40)}
                   </h1>
                   <StatusBadge isActive={product.isActive} />
                   {product.isFeatured && (
@@ -1827,7 +2225,7 @@ export default function ModeratorProductDetails() {
             <div className="flex items-center gap-3">
               <button
                 onClick={handleEdit}
-                className="flex items-center gap-2 px-4 py-2 bg-[#E39A65] text-white rounded-lg hover:bg-[#e78d4d] transition-colors text-sm font-medium"
+                className="flex items-center gap-2 px-4 py-2 bg-[#6B4F3A] text-white rounded-lg hover:bg-[#8B6B51] transition-colors text-sm font-medium"
               >
                 <Edit className="w-4 h-4" />
                 Update Product
@@ -1841,38 +2239,38 @@ export default function ModeratorProductDetails() {
       <div className="container mx-auto px-4 max-w-7xl py-8">
       
       {/* Breadcrumb */}
-<div className="mb-6">
-  <div className="flex items-center gap-2 text-sm text-gray-600 flex-wrap">
-    <Link href="/moderator/dashboard" className="hover:text-[#E39A65] transition-colors">Dashboard</Link>
-    <span>/</span>
-    <Link href="/moderator/all-products" className="hover:text-[#E39A65] transition-colors">All Products</Link>
-    <span>/</span>
-    {product.category?.name && (
-      <>
-        <Link href={`/moderator/all-products?category=${product.category?._id}`} className="hover:text-[#E39A65] transition-colors">
-          {product.category.name}
-        </Link>
-        <span>/</span>
-      </>
-    )}
-    {product.subcategoryName && (
-      <>
-        <span className="text-gray-500">{product.subcategoryName}</span>
-        <span>/</span>
-      </>
-    )}
-    {/* NEW: Child Subcategory in Breadcrumb */}
-    {product.childSubcategoryName && (
-      <>
-        <span className="text-gray-500">{product.childSubcategoryName}</span>
-        <span>/</span>
-      </>
-    )}
-    <span className="text-gray-900 font-medium max-w-[200px] truncate" title={product.productName}>
-      {product.productName}
-    </span>
-  </div>
-</div>
+      <div className="mb-6">
+        <div className="flex items-center gap-2 text-sm text-gray-600 flex-wrap">
+          <Link href="/moderator/dashboard" className="hover:text-[#6B4F3A] transition-colors">Dashboard</Link>
+          <span>/</span>
+          <Link href="/moderator/all-products" className="hover:text-[#6B4F3A] transition-colors">All Products</Link>
+          <span>/</span>
+          {product.category?.name && (
+            <>
+              <Link href={`/moderator/all-products?category=${product.category?._id}`} className="hover:text-[#6B4F3A] transition-colors">
+                {product.category.name}
+              </Link>
+              <span>/</span>
+            </>
+          )}
+          {product.subcategoryName && (
+            <>
+              <span className="text-gray-500">{product.subcategoryName}</span>
+              <span>/</span>
+            </>
+          )}
+          {product.childSubcategoryName && (
+            <>
+              <span className="text-gray-500">{product.childSubcategoryName}</span>
+              <span>/</span>
+            </>
+          )}
+          <span className="text-gray-900 font-medium max-w-[200px] truncate" title={product.productName}>
+            {product.productName}
+          </span>
+          <span className="text-gray-400 text-xs">({getUnitFullLabel(product.orderUnit)})</span>
+        </div>
+      </div>
 
         {/* Two Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -1884,22 +2282,29 @@ export default function ModeratorProductDetails() {
               {/* Colors and Sizes directly below image */}
               <div className="mt-6 space-y-6">
                 {/* Colors */}
-                <div className="bg-white rounded-xl border border-gray-200 p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <Palette className="w-5 h-5 text-[#E39A65]" />
+                <div className="bg-white rounded-xl border border-[#E8D5C0] p-6">
+                  <h3 className="text-lg font-semibold text-[#6B4F3A] mb-4 flex items-center gap-2">
+                    <Palette className="w-5 h-5 text-[#3A7D44]" />
                     Colors
                   </h3>
                   <ColorsDisplay colors={product.colors} />
                 </div>
 
                 {/* Sizes */}
-                <div className="bg-white rounded-xl border border-gray-200 p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <Ruler className="w-5 h-5 text-[#E39A65]" />
-                    Sizes
-                  </h3>
-                  <SizesDisplay sizes={product.sizes} />
-                </div>
+                {product.sizes?.filter(s => s.trim()).length > 0 && (
+                  <div className="bg-white rounded-xl border border-[#E8D5C0] p-6">
+                    <h3 className="text-lg font-semibold text-[#6B4F3A] mb-4 flex items-center gap-2">
+                      <Ruler className="w-5 h-5 text-[#3A7D44]" />
+                      Sizes
+                    </h3>
+                    <SizesDisplay sizes={product.sizes} />
+                  </div>
+                )}
+
+                {/* Customization Options */}
+                {hasCustomization && (
+                  <CustomizationOptions options={product.customizationOptions} />
+                )}
               </div>
             </div>
           </div>
@@ -1907,40 +2312,39 @@ export default function ModeratorProductDetails() {
           {/* Right Column - Product Details */}
           <div className="lg:col-span-7 space-y-6">
             {/* Product Info Card */}
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <div className="bg-white rounded-xl border border-[#E8D5C0] p-6 shadow-sm">
               <div className="mb-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="px-3 py-1 bg-[#E39A65] text-white text-sm rounded-full">
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <span className="px-3 py-1 bg-[#6B4F3A] text-white text-sm rounded-full">
                     {product.category?.name || 'Uncategorized'}
                   </span>
-                  {/* NEW: Subcategory Badge - Show if product has subcategory */}
-      {product.subcategoryName && (
-        <span className="px-3 py-1 bg-purple-100 text-purple-700 text-sm rounded-full flex items-center gap-1">
-          <FolderTree className="w-3.5 h-3.5" />
-          {product.subcategoryName}
-        </span>
-      )}
-
-      {product.childSubcategoryName && (
-      <span className="px-3 py-1 bg-indigo-100 text-indigo-700 text-sm rounded-full flex items-center gap-1">
-        <FolderTree className="w-3.5 h-3.5" />
-        {product.childSubcategoryName}
-      </span>
-    )}
-      
+                  {product.subcategoryName && (
+                    <span className="px-3 py-1 bg-purple-100 text-purple-700 text-sm rounded-full flex items-center gap-1">
+                      <FolderTree className="w-3.5 h-3.5" />
+                      {product.subcategoryName}
+                    </span>
+                  )}
+                  {product.childSubcategoryName && (
+                    <span className="px-3 py-1 bg-indigo-100 text-indigo-700 text-sm rounded-full flex items-center gap-1">
+                      <FolderTree className="w-3.5 h-3.5" />
+                      {product.childSubcategoryName}
+                    </span>
+                  )}
                   {product.targetedCustomer && product.targetedCustomer !== 'unisex' && (
                     <span className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">
                       {capitalizeFirst(product.targetedCustomer)}
                     </span>
                   )}
+                  <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full flex items-center gap-1">
+                    <Package className="w-3.5 h-3.5" />
+                    {getUnitFullLabel(product.orderUnit)}
+                  </span>
                 </div>
                 
-                {/* Full Product Name */}
                 <h1 className="text-2xl font-bold text-gray-900 mb-3" title={product.productName}>
                   {product.productName}
                 </h1>
                 
-                {/* Product Description - Preview */}
                 {product.description && (
                   <div 
                     className="text-gray-600 text-sm mb-4 prose prose-sm max-w-none rich-text-preview"
@@ -1953,39 +2357,44 @@ export default function ModeratorProductDetails() {
                 )}
               </div>
 
-              <div className="flex items-baseline justify-between p-4 bg-orange-50 rounded-lg">
+              <div className="flex items-baseline justify-between p-4 bg-[#F5E6D3] rounded-lg mb-4">
                 <div>
-                  <span className="text-sm text-gray-600">Price Per Unit</span>
-                  <div className="text-3xl font-bold text-[#E39A65]">
+                  <span className="text-sm text-gray-600">Price Per {unitLabel === 'pcs' ? 'Unit' : unitLabel.toUpperCase()}</span>
+                  <div className="text-3xl font-bold text-[#6B4F3A]">
                     {formatPrice(product.pricePerUnit)}
                   </div>
                 </div>
                 <div className="text-right">
                   <span className="text-sm text-gray-600">MOQ</span>
-                  <div className="text-xl font-semibold text-gray-900">{product.moq} pieces</div>
+                  <div className="text-xl font-semibold text-gray-900">{product.moq} {unitLabel}</div>
                 </div>
               </div>
 
-              {/* Fabric Detail */}
               {product.fabric && (
-                <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                <div className="mt-4 p-3 bg-[#FAF7F2] rounded-lg">
                   <span className="text-sm font-medium text-gray-700">Fabric: </span>
                   <span className="text-sm text-gray-600">{product.fabric}</span>
                 </div>
               )}
 
-             
+              {product.weightPerUnit && (
+                <div className="mt-2 p-3 bg-[#FAF7F2] rounded-lg">
+                  <span className="text-sm font-medium text-gray-700 flex items-center gap-1">
+                    <Scale className="w-4 h-4" /> Weight Per Unit: 
+                  </span>
+                  <span className="text-sm text-gray-600">{product.weightPerUnit} kg/{unitLabel === 'pcs' ? 'piece' : unitLabel}</span>
+                </div>
+              )}
 
-              {/* Timestamps */}
               <div className="mt-4 grid grid-cols-2 gap-4">
-                <div className="p-3 bg-gray-50 rounded-lg">
+                <div className="p-3 bg-[#FAF7F2] rounded-lg">
                   <div className="flex items-center gap-2 text-xs text-gray-500 mb-1">
                     <Calendar className="w-3.5 h-3.5" />
                     Created
                   </div>
                   <p className="text-sm font-medium text-gray-900">{formatDate(product.createdAt)}</p>
                 </div>
-                <div className="p-3 bg-gray-50 rounded-lg">
+                <div className="p-3 bg-[#FAF7F2] rounded-lg">
                   <div className="flex items-center gap-2 text-xs text-gray-500 mb-1">
                     <Clock className="w-3.5 h-3.5" />
                     Last Updated
@@ -2000,25 +2409,24 @@ export default function ModeratorProductDetails() {
               <FeaturedTagsDisplay isFeatured={product.isFeatured} tags={product.tags} />
             )}
 
-           
-
             {/* Bulk Pricing */}
             <BulkPricingTable 
               pricing={product.quantityBasedPricing} 
               unitPrice={product.pricePerUnit}
               moq={product.moq}
+              orderUnit={product.orderUnit}
             />
 
-             {/* Meta Settings Display */}
+            {/* Meta Settings Display */}
             {product.metaSettings && (
               <MetaSettingsDisplay metaSettings={product.metaSettings} />
             )}
 
             {/* Additional Information */}
             {product.additionalInfo && product.additionalInfo.length > 0 && (
-              <div className="bg-white rounded-xl border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <Info className="w-5 h-5 text-[#E39A65]" />
+              <div className="bg-white rounded-xl border border-[#E8D5C0] p-6">
+                <h3 className="text-lg font-semibold text-[#6B4F3A] mb-4 flex items-center gap-2">
+                  <Info className="w-5 h-5 text-[#3A7D44]" />
                   Additional Information
                 </h3>
                 <AdditionalInfoDisplay additionalInfo={product.additionalInfo} />
@@ -2028,205 +2436,141 @@ export default function ModeratorProductDetails() {
         </div>
 
         {/* Tabs Section at Bottom */}
-        <div className="mt-8">
-          {/* Tab Navigation */}
-          <div className="border-b border-gray-200">
-            <nav className="flex gap-8 overflow-x-auto pb-1">
-              <button
-                onClick={() => setActiveTab('attributes')}
-                className={`pb-4 px-1 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-                  activeTab === 'attributes'
-                    ? 'border-[#E39A65] text-[#E39A65]'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                Key Attributes
-              </button>
-              <button
-                onClick={() => setActiveTab('description')}
-                className={`pb-4 px-1 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-                  activeTab === 'description'
-                    ? 'border-[#E39A65] text-[#E39A65]'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                Description
-              </button>
-              {/* NEW: Instructions Tab */}
-              <button
-                onClick={() => setActiveTab('instructions')}
-                className={`pb-4 px-1 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-                  activeTab === 'instructions'
-                    ? 'border-[#E39A65] text-[#E39A65]'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                Care Instructions
-              </button>
-              <button
-                onClick={() => setActiveTab('pricing')}
-                className={`pb-4 px-1 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-                  activeTab === 'pricing'
-                    ? 'border-[#E39A65] text-[#E39A65]'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                Bulk Pricing
-              </button>
-              <button
-                onClick={() => setActiveTab('shipping')}
-                className={`pb-4 px-1 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-                  activeTab === 'shipping'
-                    ? 'border-[#E39A65] text-[#E39A65]'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                Shipping Info
-              </button>
-            </nav>
-          </div>
-
-          {/* Tab Content */}
-          <div className="mt-6">
-            {activeTab === 'attributes' && <KeyAttributes product={product} />}
-            {activeTab === 'description' && <Description product={product} />}
-            {/* NEW: Instructions Tab Content */}
-            {activeTab === 'instructions' && <Instructions product={product} />}
-            {activeTab === 'pricing' && (
-              <BulkPricingTable 
-                pricing={product.quantityBasedPricing} 
-                unitPrice={product.pricePerUnit}
-                moq={product.moq}
-              />
-            )}
-            {activeTab === 'shipping' && <ShippingInfo />}
-          </div>
+        {/* Tabs Section at Bottom */}
+<div className="mt-8">
+  <div className="border-b border-[#E8D5C0] bg-white rounded-t-xl">
+    <nav className="flex gap-8 overflow-x-auto px-6">
+      <button
+        onClick={() => setActiveTab('attributes')}
+        className={`py-3 text-sm font-medium border-b-2 transition whitespace-nowrap ${
+          activeTab === 'attributes'
+            ? 'border-[#6B4F3A] text-[#6B4F3A]'
+            : 'border-transparent text-gray-500 hover:text-gray-700'
+        }`}
+      >
+        Key Attributes
+      </button>
+      <button
+        onClick={() => setActiveTab('description')}
+        className={`py-3 text-sm font-medium border-b-2 transition whitespace-nowrap ${
+          activeTab === 'description'
+            ? 'border-[#6B4F3A] text-[#6B4F3A]'
+            : 'border-transparent text-gray-500 hover:text-gray-700'
+        }`}
+      >
+        Description
+      </button>
+      <button
+        onClick={() => setActiveTab('customization')}
+        className={`py-3 text-sm font-medium border-b-2 transition whitespace-nowrap ${
+          activeTab === 'customization'
+            ? 'border-[#6B4F3A] text-[#6B4F3A]'
+            : 'border-transparent text-gray-500 hover:text-gray-700'
+        }`}
+      >
+        Customization
+      </button>
+      <button
+        onClick={() => setActiveTab('instructions')}
+        className={`py-3 text-sm font-medium border-b-2 transition whitespace-nowrap ${
+          activeTab === 'instructions'
+            ? 'border-[#6B4F3A] text-[#6B4F3A]'
+            : 'border-transparent text-gray-500 hover:text-gray-700'
+        }`}
+      >
+        Care Instructions
+      </button>
+      <button
+        onClick={() => setActiveTab('pricing')}
+        className={`py-3 text-sm font-medium border-b-2 transition whitespace-nowrap ${
+          activeTab === 'pricing'
+            ? 'border-[#6B4F3A] text-[#6B4F3A]'
+            : 'border-transparent text-gray-500 hover:text-gray-700'
+        }`}
+      >
+        Bulk Pricing
+      </button>
+      <button
+        onClick={() => setActiveTab('shipping')}
+        className={`py-3 text-sm font-medium border-b-2 transition whitespace-nowrap ${
+          activeTab === 'shipping'
+            ? 'border-[#6B4F3A] text-[#6B4F3A]'
+            : 'border-transparent text-gray-500 hover:text-gray-700'
+        }`}
+      >
+        Shipping Info
+      </button>
+    </nav>
+  </div>
+  <div className="bg-white rounded-b-xl p-6">
+    {activeTab === 'attributes' && <KeyAttributes product={product} />}
+    {activeTab === 'description' && <Description product={product} />}
+    {activeTab === 'customization' && (
+      product.customizationOptions && product.customizationOptions.length > 0 ? (
+        <CustomizationOptions options={product.customizationOptions} />
+      ) : (
+        <div className="text-center py-8">
+          <Wrench className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+          <p className="text-gray-500">No customization options available</p>
         </div>
+      )
+    )}
+    {activeTab === 'instructions' && <Instructions product={product} />}
+    {activeTab === 'pricing' && (
+      <BulkPricingTable 
+        pricing={product.quantityBasedPricing} 
+        unitPrice={product.pricePerUnit}
+        moq={product.moq}
+        orderUnit={product.orderUnit}
+      />
+    )}
+    {activeTab === 'shipping' && <ShippingInfo />}
+  </div>
+</div>
       </div>
 
-      {/* Add global styles for rich text content */}
       <style jsx global>{`
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        
+        .animate-shimmer {
+          animation: shimmer 1.5s infinite;
+        }
+        
         .rich-text-content {
           color: #374151;
           line-height: 1.6;
         }
         
-        .rich-text-content h1 {
-          font-size: 2em;
-          margin: 0.5em 0;
-          font-weight: 600;
-          color: #111827;
-        }
-        
-        .rich-text-content h2 {
-          font-size: 1.5em;
-          margin: 0.5em 0;
-          font-weight: 600;
-          color: #111827;
-        }
-        
-        .rich-text-content h3 {
-          font-size: 1.17em;
-          margin: 0.5em 0;
-          font-weight: 600;
-          color: #111827;
-        }
-        
-        .rich-text-content h4 {
-          font-size: 1em;
-          margin: 0.5em 0;
-          font-weight: 600;
-          color: #111827;
+        .rich-text-content h1, .rich-text-content h2, .rich-text-content h3, .rich-text-content h4 {
+          color: #6B4F3A;
         }
         
         .rich-text-content p {
           margin: 0.75em 0;
         }
         
-        .rich-text-content ul {
-          list-style-type: disc;
+        .rich-text-content ul, .rich-text-content ol {
           padding-left: 1.5em;
           margin: 0.5em 0;
-        }
-        
-        .rich-text-content ol {
-          list-style-type: decimal;
-          padding-left: 1.5em;
-          margin: 0.5em 0;
-        }
-        
-        .rich-text-content li {
-          margin: 0.25em 0;
         }
         
         .rich-text-content a {
-          color: #2563eb;
+          color: #3A7D44;
           text-decoration: none;
           font-weight: 500;
         }
         
         .rich-text-content a:hover {
           text-decoration: underline;
-          color: #1d4ed8;
-        }
-        
-        .rich-text-content strong {
-          font-weight: 600;
-          color: #111827;
-        }
-        
-        .rich-text-content em {
-          font-style: italic;
-        }
-        
-        .rich-text-content blockquote {
-          border-left: 4px solid #e5e7eb;
-          padding-left: 1em;
-          margin: 1em 0;
-          color: #6b7280;
-        }
-        
-        .rich-text-content code {
-          background-color: #f3f4f6;
-          padding: 0.2em 0.4em;
-          border-radius: 0.25em;
-          font-family: monospace;
-          font-size: 0.875em;
-        }
-        
-        .rich-text-content pre {
-          background-color: #f3f4f6;
-          padding: 1em;
-          border-radius: 0.5em;
-          overflow-x: auto;
-          font-family: monospace;
-          font-size: 0.875em;
         }
         
         .rich-text-preview {
           color: #6b7280;
           line-height: 1.5;
         }
-        
-        .rich-text-preview p {
-          margin: 0.5em 0;
-        }
-        
-        .rich-text-preview a {
-          color: #2563eb;
-        }
-          @keyframes shimmer {
-    0% {
-      transform: translateX(-100%);
-    }
-    100% {
-      transform: translateX(100%);
-    }
-  }
-  
-  .animate-shimmer {
-    animation: shimmer 1.5s infinite;
-  }
       `}</style>
     </div>
   );

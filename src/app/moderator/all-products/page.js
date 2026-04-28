@@ -1,9 +1,10 @@
 
 
 
+
 // 'use client';
 
-// import { useState, useEffect, useCallback } from 'react';
+// import { useState, useEffect, useCallback, useMemo } from 'react';
 // import { useRouter } from 'next/navigation';
 // import Link from 'next/link';
 // import { 
@@ -29,15 +30,22 @@
 //   Award,
 //   Flame,
 //   Palette,
-//   Layers
+//   Layers,
+//   FolderTree
 // } from 'lucide-react';
 // import { toast } from 'sonner';
 
-// // Filter Bar Component - Responsive
+// // Filter Bar Component - Responsive with Subcategory
 // const FilterBar = ({ 
 //   filters, 
 //   handleFilterChange,
+//     handleChildSubcategoryChange, 
 //   categories,
+//   subcategories,
+//    childSubcategories, 
+//   selectedCategory,
+//    selectedSubcategory, // ADD THIS
+//   showChildSubcategory, // ADD THIS
 //   minPriceInput,
 //   maxPriceInput,
 //   setMinPriceInput,
@@ -63,7 +71,7 @@
 //       )}
 //     </div>
   
-//     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3 mb-3">
+//     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-2 sm:gap-3 mb-3">
 //       {/* Category Filter */}
 //       <div>
 //         <label className="block text-[10px] sm:text-xs text-gray-500 mb-0.5 sm:mb-1">Category</label>
@@ -78,6 +86,40 @@
 //           ))}
 //         </select>
 //       </div>
+
+//       {/* Subcategory Filter - Only show when a category is selected */}
+//       {selectedCategory && subcategories.length > 0 && (
+//         <div>
+//           <label className="block text-[10px] sm:text-xs text-gray-500 mb-0.5 sm:mb-1">Subcategory</label>
+//           <select
+//             value={filters.subcategory}
+//             onChange={(e) => handleFilterChange('subcategory', e.target.value)}
+//             className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none bg-white"
+//           >
+//             <option value="">All Subcategories</option>
+//             {subcategories.map(sub => (
+//               <option key={sub._id} value={sub._id}>{sub.name}</option>
+//             ))}
+//           </select>
+//         </div>
+//       )}
+
+
+//        {showChildSubcategory && selectedSubcategory && childSubcategories.length > 0 && (
+//     <div>
+//       <label className="block text-[10px] sm:text-xs text-gray-500 mb-0.5 sm:mb-1">Child Subcategory</label>
+//       <select
+//         value={filters.childSubcategory}
+//         onChange={(e) => handleChildSubcategoryChange(e.target.value)}
+//         className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none bg-white"
+//       >
+//         <option value="">All Child Subcategories</option>
+//         {childSubcategories.map(child => (
+//           <option key={child._id} value={child._id}>{child.name}</option>
+//         ))}
+//       </select>
+//     </div>
+//   )}
 
 //       {/* Target Audience Filter */}
 //       <div>
@@ -213,6 +255,8 @@
 //   const [filters, setFilters] = useState({
 //     search: '',
 //     category: '',
+//     subcategory: '', // NEW: Subcategory filter
+//      childSubcategory: '',
 //     targetedCustomer: '',
 //     minPrice: '',
 //     maxPrice: '',
@@ -230,7 +274,15 @@
 
 //   // Available filter options
 //   const [categories, setCategories] = useState([]);
+//   const [subcategories, setSubcategories] = useState([]); // NEW: Subcategories state
+//   const [selectedCategory, setSelectedCategory] = useState(null); // NEW: Track selected category
   
+
+//   // Add these with your other state variables
+// const [childSubcategories, setChildSubcategories] = useState([]);
+// const [selectedSubcategory, setSelectedSubcategory] = useState(null);
+// const [showChildSubcategory, setShowChildSubcategory] = useState(false);
+
 //   // Pagination
 //   const [currentPage, setCurrentPage] = useState(1);
 //   const [totalPages, setTotalPages] = useState(1);
@@ -244,6 +296,39 @@
 //       router.push('/login');
 //     }
 //   }, [router]);
+
+//   // Fetch subcategories when category changes
+//   useEffect(() => {
+//     if (filters.category) {
+//       const categoryId = filters.category;
+//       setSelectedCategory(categoryId);
+//       fetchSubcategories(categoryId);
+//     } else {
+//       setSubcategories([]);
+//       setSelectedCategory(null);
+//       // Clear subcategory filter when no category selected
+//       if (filters.subcategory) {
+//         setFilters(prev => ({ ...prev, subcategory: '' }));
+//       }
+//     }
+//   }, [filters.category]);
+
+
+//   // Fetch child subcategories when subcategory is selected
+// useEffect(() => {
+//   if (filters.category && filters.subcategory) {
+//     setSelectedSubcategory(filters.subcategory);
+//     fetchChildSubcategories(filters.category, filters.subcategory);
+//   } else {
+//     setChildSubcategories([]);
+//     setSelectedSubcategory(null);
+//     setShowChildSubcategory(false);
+//     // Clear child subcategory filter when subcategory changes
+//     if (filters.childSubcategory) {
+//       setFilters(prev => ({ ...prev, childSubcategory: '' }));
+//     }
+//   }
+// }, [filters.subcategory, filters.category]);
 
 //   // Helper functions
 //   const capitalizeFirst = (str) => {
@@ -315,18 +400,51 @@
 //   }, [filters.search]);
 
 //   // Fetch products when other filters change
-//   useEffect(() => {
-//     fetchProducts();
-//   }, [
-//     filters.category, 
-//     filters.targetedCustomer, 
-//     filters.minPrice, 
-//     filters.maxPrice, 
-//     filters.status,
-//     filters.isFeatured,
-//     filters.sortBy, 
-//     currentPage
-//   ]);
+//   // useEffect(() => {
+//   //   fetchProducts();
+//   // }, [
+//   //   filters.category, 
+//   //   filters.subcategory, 
+//   //   filters.targetedCustomer, 
+//   //   filters.minPrice, 
+//   //   filters.maxPrice, 
+//   //   filters.status,
+//   //   filters.isFeatured,
+//   //   filters.sortBy, 
+//   //   currentPage
+//   // ]);
+//   // Fetch products when other filters change
+// // Create a stable filter key for useEffect dependency
+// const filterKey = useMemo(() => {
+//   return JSON.stringify({
+//     category: filters.category || '',
+//     subcategory: filters.subcategory || '',
+//     childSubcategory: filters.childSubcategory || '',
+//     targetedCustomer: filters.targetedCustomer || '',
+//     minPrice: filters.minPrice || '',
+//     maxPrice: filters.maxPrice || '',
+//     status: filters.status || 'all',
+//     isFeatured: filters.isFeatured || '',
+//     sortBy: filters.sortBy || 'newest',
+//     page: currentPage
+//   });
+// }, [
+//   filters.category,
+//   filters.subcategory,
+//   filters.childSubcategory,
+//   filters.targetedCustomer,
+//   filters.minPrice,
+//   filters.maxPrice,
+//   filters.status,
+//   filters.isFeatured,
+//   filters.sortBy,
+//   currentPage
+// ]);
+
+// // Fetch products when filterKey changes
+// useEffect(() => {
+//   fetchProducts();
+// }, [filterKey]);
 
 //   const fetchCategories = async () => {
 //     try {
@@ -343,6 +461,47 @@
 //     }
 //   };
 
+//   // NEW: Fetch subcategories for a category
+//   const fetchSubcategories = async (categoryId) => {
+//     try {
+//       const token = localStorage.getItem('token');
+//       const response = await fetch(`http://localhost:5000/api/categories/${categoryId}/subcategories`, {
+//         headers: { 'Authorization': `Bearer ${token}` }
+//       });
+//       const data = await response.json();
+//       if (data.success) {
+//         setSubcategories(data.data.subcategories);
+//       } else {
+//         setSubcategories([]);
+//       }
+//     } catch (error) {
+//       console.error('Error fetching subcategories:', error);
+//       setSubcategories([]);
+//     }
+//   };
+
+//   // Fetch child subcategories for a subcategory
+// const fetchChildSubcategories = async (categoryId, subcategoryId) => {
+//   try {
+//     const token = localStorage.getItem('token');
+//     const response = await fetch(`http://localhost:5000/api/categories/${categoryId}/subcategories/${subcategoryId}/children`, {
+//       headers: { 'Authorization': `Bearer ${token}` }
+//     });
+//     const data = await response.json();
+//     if (data.success) {
+//       setChildSubcategories(data.data.children);
+//       setShowChildSubcategory(data.data.children.length > 0);
+//     } else {
+//       setChildSubcategories([]);
+//       setShowChildSubcategory(false);
+//     }
+//   } catch (error) {
+//     console.error('Error fetching child subcategories:', error);
+//     setChildSubcategories([]);
+//     setShowChildSubcategory(false);
+//   }
+// };
+
 //   const fetchProducts = async () => {
 //     if (filters.search) {
 //       setSearchLoading(true);
@@ -358,6 +517,8 @@
       
 //       if (filters.search) queryParams.append('search', filters.search);
 //       if (filters.category) queryParams.append('category', filters.category);
+//       if (filters.subcategory) queryParams.append('subcategory', filters.subcategory); // NEW: Add subcategory to query
+//       if (filters.childSubcategory) queryParams.append('childSubcategory', filters.childSubcategory);
 //       if (filters.targetedCustomer) queryParams.append('targetedCustomer', filters.targetedCustomer);
 //       if (filters.minPrice) queryParams.append('minPrice', filters.minPrice);
 //       if (filters.maxPrice) queryParams.append('maxPrice', filters.maxPrice);
@@ -426,6 +587,11 @@
 //     setCurrentPage(1);
 //   };
 
+//   const handleChildSubcategoryChange = (value) => {
+//   setFilters(prev => ({ ...prev, childSubcategory: value }));
+//   setCurrentPage(1);
+// };
+
 //   // Apply price range function
 //   const applyPriceRange = () => {
 //     setFilters(prev => ({
@@ -465,6 +631,9 @@
 //     setFilters({
 //       search: '',
 //       category: '',
+//       subcategory: '', // NEW: Clear subcategory
+//       childSubcategory: '', 
+      
 //       targetedCustomer: '',
 //       minPrice: '',
 //       maxPrice: '',
@@ -496,6 +665,8 @@
 //   const getActiveFilterCount = () => {
 //     let count = 0;
 //     if (filters.category) count++;
+//     if (filters.subcategory) count++; // NEW: Count subcategory filter
+//    if (filters.childSubcategory) count++;
 //     if (filters.targetedCustomer) count++;
 //     if (filters.minPrice || filters.maxPrice) count++;
 //     if (filters.status !== 'all') count++;
@@ -574,6 +745,14 @@
 //                       +{product.tags.length - 2}
 //                     </span>
 //                   )}
+//                 </div>
+//               )}
+
+//               {/* Subcategory Display */}
+//               {product.subcategoryName && (
+//                 <div className="flex items-center gap-1 mb-1">
+//                   <FolderTree className="w-2.5 h-2.5 text-gray-400" />
+//                   <span className="text-[9px] text-gray-500">Sub: {product.subcategoryName}</span>
 //                 </div>
 //               )}
 
@@ -722,7 +901,7 @@
 //             <Search className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" />
 //             <input
 //               type="text"
-//               placeholder="Instant search: Type to find products by name, fabric, or category..."
+//               placeholder="Instant search: Type to find products by name..."
 //               value={filters.search}
 //               onChange={handleSearchChange}
 //               className="w-full pl-8 sm:pl-9 pr-12 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition"
@@ -751,6 +930,12 @@
 //           filters={filters}
 //           handleFilterChange={handleFilterChange}
 //           categories={categories}
+//           subcategories={subcategories}
+//            childSubcategories={childSubcategories}
+//           selectedCategory={selectedCategory}
+//            selectedSubcategory={selectedSubcategory} // ADD THIS
+//   showChildSubcategory={showChildSubcategory} // ADD THIS
+//   handleChildSubcategoryChange={handleChildSubcategoryChange} // ADD THIS
 //           minPriceInput={minPriceInput}
 //           maxPriceInput={maxPriceInput}
 //           setMinPriceInput={setMinPriceInput}
@@ -767,6 +952,9 @@
 //             Showing <span className="font-semibold text-gray-900">{products.length}</span> of{' '}
 //             <span className="font-semibold text-gray-900">{totalProducts}</span> products
 //             {filters.search && <span> for "<span className="font-medium">{filters.search}</span>"</span>}
+//             {filters.subcategory && subcategories.find(s => s._id === filters.subcategory) && (
+//               <span> in subcategory "<span className="font-medium">{subcategories.find(s => s._id === filters.subcategory)?.name}</span>"</span>
+//             )}
 //           </p>
 //         </div>
 
@@ -885,21 +1073,37 @@ import {
   Flame,
   Palette,
   Layers,
-  FolderTree
+  FolderTree,
+  Scale,
+  Wrench
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-// Filter Bar Component - Responsive with Subcategory
+// Helper function to get unit label
+const getUnitLabel = (orderUnit) => {
+  switch(orderUnit) {
+    case 'kg': return 'kg';
+    case 'ton': return 'MT';
+    default: return 'pcs';
+  }
+};
+
+// Helper function to format price
+const formatPrice = (price) => {
+  return price?.toFixed(2) || '0.00';
+};
+
+// Filter Bar Component
 const FilterBar = ({ 
   filters, 
   handleFilterChange,
-    handleChildSubcategoryChange, 
+  handleChildSubcategoryChange, 
   categories,
   subcategories,
-   childSubcategories, 
+  childSubcategories, 
   selectedCategory,
-   selectedSubcategory, // ADD THIS
-  showChildSubcategory, // ADD THIS
+  selectedSubcategory,
+  showChildSubcategory,
   minPriceInput,
   maxPriceInput,
   setMinPriceInput,
@@ -909,16 +1113,16 @@ const FilterBar = ({
   getActiveFilterCount,
   clearFilters
 }) => (
-  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-3 sm:p-4 mb-4 sm:mb-6">
+  <div className="bg-white rounded-xl shadow-sm border border-[#E8D5C0] p-3 sm:p-4 mb-4 sm:mb-6">
     <div className="flex items-center justify-between mb-2 sm:mb-3">
-      <h3 className="text-xs sm:text-sm font-semibold text-gray-900 flex items-center gap-1.5 sm:gap-2">
-        <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#E39A65]" />
+      <h3 className="text-xs sm:text-sm font-semibold text-[#6B4F3A] flex items-center gap-1.5 sm:gap-2">
+        <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#3A7D44]" />
         Filters
       </h3>
       {getActiveFilterCount() > 0 && (
         <button
           onClick={clearFilters}
-          className="text-[10px] sm:text-xs text-[#E39A65] hover:text-[#d48b54] font-medium"
+          className="text-[10px] sm:text-xs text-[#3A7D44] hover:text-[#2d6836] font-medium"
         >
           Clear All ({getActiveFilterCount()})
         </button>
@@ -932,7 +1136,7 @@ const FilterBar = ({
         <select
           value={filters.category}
           onChange={(e) => handleFilterChange('category', e.target.value)}
-          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none bg-white"
+          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs border border-[#E8D5C0] rounded-lg focus:ring-2 focus:ring-[#3A7D44] focus:border-transparent outline-none bg-white"
         >
           <option value="">All Categories</option>
           {categories.map(cat => (
@@ -941,14 +1145,14 @@ const FilterBar = ({
         </select>
       </div>
 
-      {/* Subcategory Filter - Only show when a category is selected */}
+      {/* Subcategory Filter */}
       {selectedCategory && subcategories.length > 0 && (
         <div>
           <label className="block text-[10px] sm:text-xs text-gray-500 mb-0.5 sm:mb-1">Subcategory</label>
           <select
             value={filters.subcategory}
             onChange={(e) => handleFilterChange('subcategory', e.target.value)}
-            className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none bg-white"
+            className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs border border-[#E8D5C0] rounded-lg focus:ring-2 focus:ring-[#3A7D44] focus:border-transparent outline-none bg-white"
           >
             <option value="">All Subcategories</option>
             {subcategories.map(sub => (
@@ -958,22 +1162,22 @@ const FilterBar = ({
         </div>
       )}
 
-
-       {showChildSubcategory && selectedSubcategory && childSubcategories.length > 0 && (
-    <div>
-      <label className="block text-[10px] sm:text-xs text-gray-500 mb-0.5 sm:mb-1">Child Subcategory</label>
-      <select
-        value={filters.childSubcategory}
-        onChange={(e) => handleChildSubcategoryChange(e.target.value)}
-        className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none bg-white"
-      >
-        <option value="">All Child Subcategories</option>
-        {childSubcategories.map(child => (
-          <option key={child._id} value={child._id}>{child.name}</option>
-        ))}
-      </select>
-    </div>
-  )}
+      {/* Child Subcategory Filter */}
+      {showChildSubcategory && selectedSubcategory && childSubcategories.length > 0 && (
+        <div>
+          <label className="block text-[10px] sm:text-xs text-gray-500 mb-0.5 sm:mb-1">Child Subcategory</label>
+          <select
+            value={filters.childSubcategory}
+            onChange={(e) => handleChildSubcategoryChange(e.target.value)}
+            className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs border border-[#E8D5C0] rounded-lg focus:ring-2 focus:ring-[#3A7D44] focus:border-transparent outline-none bg-white"
+          >
+            <option value="">All Child Subcategories</option>
+            {childSubcategories.map(child => (
+              <option key={child._id} value={child._id}>{child.name}</option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {/* Target Audience Filter */}
       <div>
@@ -981,7 +1185,7 @@ const FilterBar = ({
         <select
           value={filters.targetedCustomer}
           onChange={(e) => handleFilterChange('targetedCustomer', e.target.value)}
-          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none bg-white"
+          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs border border-[#E8D5C0] rounded-lg focus:ring-2 focus:ring-[#3A7D44] focus:border-transparent outline-none bg-white"
         >
           <option value="">All</option>
           <option value="ladies">Ladies</option>
@@ -997,7 +1201,7 @@ const FilterBar = ({
         <select
           value={filters.status}
           onChange={(e) => handleFilterChange('status', e.target.value)}
-          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none bg-white"
+          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs border border-[#E8D5C0] rounded-lg focus:ring-2 focus:ring-[#3A7D44] focus:border-transparent outline-none bg-white"
         >
           <option value="all">All</option>
           <option value="active">Active Only</option>
@@ -1011,7 +1215,7 @@ const FilterBar = ({
         <select
           value={filters.isFeatured}
           onChange={(e) => handleFilterChange('isFeatured', e.target.value)}
-          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none bg-white"
+          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs border border-[#E8D5C0] rounded-lg focus:ring-2 focus:ring-[#3A7D44] focus:border-transparent outline-none bg-white"
         >
           <option value="">All Products</option>
           <option value="featured">Featured Only</option>
@@ -1024,7 +1228,7 @@ const FilterBar = ({
         <select
           value={filters.sortBy}
           onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none bg-white"
+          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs border border-[#E8D5C0] rounded-lg focus:ring-2 focus:ring-[#3A7D44] focus:border-transparent outline-none bg-white"
         >
           <option value="newest">Newest First</option>
           <option value="price_low">Price: Low to High</option>
@@ -1036,7 +1240,6 @@ const FilterBar = ({
     </div>
     
     <div className="grid grid-cols-3 gap-2 sm:gap-3">
-      {/* Min Price Input */}
       <div>
         <label className="block text-[10px] sm:text-xs text-gray-500 mb-0.5 sm:mb-1">Min Price ($)</label>
         <input
@@ -1050,11 +1253,10 @@ const FilterBar = ({
             }
           }}
           placeholder="0.00"
-          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none"
+          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs border border-[#E8D5C0] rounded-lg focus:ring-2 focus:ring-[#3A7D44] focus:border-transparent outline-none"
         />
       </div>
 
-      {/* Max Price Input */}
       <div>
         <label className="block text-[10px] sm:text-xs text-gray-500 mb-0.5 sm:mb-1">Max Price ($)</label>
         <input
@@ -1068,25 +1270,23 @@ const FilterBar = ({
             }
           }}
           placeholder="Any"
-          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none"
+          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs border border-[#E8D5C0] rounded-lg focus:ring-2 focus:ring-[#3A7D44] focus:border-transparent outline-none"
         />
       </div>
 
-      {/* Apply Price Button */}
       <div className="flex items-end">
         <button
           onClick={applyPriceRange}
           disabled={!minPriceInput && !maxPriceInput}
-          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 bg-[#E39A65] text-white text-[10px] sm:text-xs font-medium rounded-lg hover:bg-[#d48b54] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 bg-[#6B4F3A] text-white text-[10px] sm:text-xs font-medium rounded-lg hover:bg-[#8B6B51] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Apply Price
         </button>
       </div>
     </div>
 
-    {/* Show applied price range */}
     {(filters.minPrice || filters.maxPrice) && (
-      <div className="mt-2 sm:mt-3 flex items-center justify-between bg-orange-50 p-1.5 sm:p-2 rounded-lg">
+      <div className="mt-2 sm:mt-3 flex items-center justify-between bg-[#F5E6D3] p-1.5 sm:p-2 rounded-lg">
         <span className="text-[9px] sm:text-xs text-gray-700">
           Price: ${filters.minPrice || '0'} - ${filters.maxPrice || '∞'}
         </span>
@@ -1105,12 +1305,11 @@ export default function ModeratorAllProducts() {
   const [searchLoading, setSearchLoading] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState({});
   
-  // Filter states
   const [filters, setFilters] = useState({
     search: '',
     category: '',
-    subcategory: '', // NEW: Subcategory filter
-     childSubcategory: '',
+    subcategory: '',
+    childSubcategory: '',
     targetedCustomer: '',
     minPrice: '',
     maxPrice: '',
@@ -1119,25 +1318,15 @@ export default function ModeratorAllProducts() {
     sortBy: 'newest'
   });
 
-  // Price range input states - Separate for input fields
   const [minPriceInput, setMinPriceInput] = useState('');
   const [maxPriceInput, setMaxPriceInput] = useState('');
-
-  // Search timeout for debouncing
   const [searchTimeout, setSearchTimeout] = useState(null);
-
-  // Available filter options
   const [categories, setCategories] = useState([]);
-  const [subcategories, setSubcategories] = useState([]); // NEW: Subcategories state
-  const [selectedCategory, setSelectedCategory] = useState(null); // NEW: Track selected category
-  
-
-  // Add these with your other state variables
-const [childSubcategories, setChildSubcategories] = useState([]);
-const [selectedSubcategory, setSelectedSubcategory] = useState(null);
-const [showChildSubcategory, setShowChildSubcategory] = useState(false);
-
-  // Pagination
+  const [subcategories, setSubcategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [childSubcategories, setChildSubcategories] = useState([]);
+  const [selectedSubcategory, setSelectedSubcategory] = useState(null);
+  const [showChildSubcategory, setShowChildSubcategory] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalProducts, setTotalProducts] = useState(0);
@@ -1160,31 +1349,27 @@ const [showChildSubcategory, setShowChildSubcategory] = useState(false);
     } else {
       setSubcategories([]);
       setSelectedCategory(null);
-      // Clear subcategory filter when no category selected
       if (filters.subcategory) {
         setFilters(prev => ({ ...prev, subcategory: '' }));
       }
     }
   }, [filters.category]);
 
-
   // Fetch child subcategories when subcategory is selected
-useEffect(() => {
-  if (filters.category && filters.subcategory) {
-    setSelectedSubcategory(filters.subcategory);
-    fetchChildSubcategories(filters.category, filters.subcategory);
-  } else {
-    setChildSubcategories([]);
-    setSelectedSubcategory(null);
-    setShowChildSubcategory(false);
-    // Clear child subcategory filter when subcategory changes
-    if (filters.childSubcategory) {
-      setFilters(prev => ({ ...prev, childSubcategory: '' }));
+  useEffect(() => {
+    if (filters.category && filters.subcategory) {
+      setSelectedSubcategory(filters.subcategory);
+      fetchChildSubcategories(filters.category, filters.subcategory);
+    } else {
+      setChildSubcategories([]);
+      setSelectedSubcategory(null);
+      setShowChildSubcategory(false);
+      if (filters.childSubcategory) {
+        setFilters(prev => ({ ...prev, childSubcategory: '' }));
+      }
     }
-  }
-}, [filters.subcategory, filters.category]);
+  }, [filters.subcategory, filters.category]);
 
-  // Helper functions
   const capitalizeFirst = (str) => {
     if (!str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
@@ -1195,10 +1380,6 @@ useEffect(() => {
     return pricingTiers[0];
   };
 
-  const formatPrice = (price) => {
-    return price?.toFixed(2) || '0.00';
-  };
-
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -1207,28 +1388,31 @@ useEffect(() => {
     });
   };
 
-  // Get tag color based on tag name
+  // Get tag color based on tag name - Jute theme
   const getTagColor = (tag) => {
-    if (tag.includes('Top')) return 'bg-amber-100 text-amber-800 border-amber-200';
-    if (tag.includes('New')) return 'bg-blue-100 text-blue-800 border-blue-200';
-    if (tag.includes('Best')) return 'bg-purple-100 text-purple-800 border-purple-200';
-    if (tag.includes('Summer')) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    if (tag.includes('Winter')) return 'bg-indigo-100 text-indigo-800 border-indigo-200';
-    if (tag.includes('Limited')) return 'bg-red-100 text-red-800 border-red-200';
-    if (tag.includes('Trending')) return 'bg-pink-100 text-pink-800 border-pink-200';
-    return 'bg-gray-100 text-gray-800 border-gray-200';
+    const colors = {
+      'Best Seller': 'bg-[#3A7D44] text-white',
+      'Hot Export Item': 'bg-[#6B4F3A] text-white',
+      'Eco-Friendly': 'bg-green-600 text-white',
+      'Export Ready': 'bg-blue-600 text-white',
+      'OEM Available': 'bg-purple-600 text-white',
+      'Customizable': 'bg-amber-600 text-white',
+      'Bulk Discount': 'bg-red-600 text-white',
+      'Premium Quality': 'bg-indigo-600 text-white'
+    };
+    return colors[tag] || 'bg-gray-100 text-gray-800';
   };
 
   // Get tag icon based on tag name
   const getTagIcon = (tag) => {
-    if (tag === 'Top Ranking') return <TrendingUp className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5" />;
     if (tag === 'Best Seller') return <Award className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5" />;
-    if (tag === 'New Arrival') return <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5" />;
-    if (tag === 'Trending') return <Flame className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5" />;
+    if (tag === 'Hot Export Item') return <TrendingUp className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5" />;
+    if (tag === 'Eco-Friendly') return <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5" />;
+    if (tag === 'Customizable') return <Wrench className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5" />;
     return <Tag className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5" />;
   };
 
-  // Fetch categories on mount
+  // Fetch categories
   useEffect(() => {
     fetchCategories();
     fetchProducts();
@@ -1253,52 +1437,35 @@ useEffect(() => {
     };
   }, [filters.search]);
 
-  // Fetch products when other filters change
-  // useEffect(() => {
-  //   fetchProducts();
-  // }, [
-  //   filters.category, 
-  //   filters.subcategory, 
-  //   filters.targetedCustomer, 
-  //   filters.minPrice, 
-  //   filters.maxPrice, 
-  //   filters.status,
-  //   filters.isFeatured,
-  //   filters.sortBy, 
-  //   currentPage
-  // ]);
-  // Fetch products when other filters change
-// Create a stable filter key for useEffect dependency
-const filterKey = useMemo(() => {
-  return JSON.stringify({
-    category: filters.category || '',
-    subcategory: filters.subcategory || '',
-    childSubcategory: filters.childSubcategory || '',
-    targetedCustomer: filters.targetedCustomer || '',
-    minPrice: filters.minPrice || '',
-    maxPrice: filters.maxPrice || '',
-    status: filters.status || 'all',
-    isFeatured: filters.isFeatured || '',
-    sortBy: filters.sortBy || 'newest',
-    page: currentPage
-  });
-}, [
-  filters.category,
-  filters.subcategory,
-  filters.childSubcategory,
-  filters.targetedCustomer,
-  filters.minPrice,
-  filters.maxPrice,
-  filters.status,
-  filters.isFeatured,
-  filters.sortBy,
-  currentPage
-]);
+  const filterKey = useMemo(() => {
+    return JSON.stringify({
+      category: filters.category || '',
+      subcategory: filters.subcategory || '',
+      childSubcategory: filters.childSubcategory || '',
+      targetedCustomer: filters.targetedCustomer || '',
+      minPrice: filters.minPrice || '',
+      maxPrice: filters.maxPrice || '',
+      status: filters.status || 'all',
+      isFeatured: filters.isFeatured || '',
+      sortBy: filters.sortBy || 'newest',
+      page: currentPage
+    });
+  }, [
+    filters.category,
+    filters.subcategory,
+    filters.childSubcategory,
+    filters.targetedCustomer,
+    filters.minPrice,
+    filters.maxPrice,
+    filters.status,
+    filters.isFeatured,
+    filters.sortBy,
+    currentPage
+  ]);
 
-// Fetch products when filterKey changes
-useEffect(() => {
-  fetchProducts();
-}, [filterKey]);
+  useEffect(() => {
+    fetchProducts();
+  }, [filterKey]);
 
   const fetchCategories = async () => {
     try {
@@ -1315,7 +1482,6 @@ useEffect(() => {
     }
   };
 
-  // NEW: Fetch subcategories for a category
   const fetchSubcategories = async (categoryId) => {
     try {
       const token = localStorage.getItem('token');
@@ -1334,27 +1500,26 @@ useEffect(() => {
     }
   };
 
-  // Fetch child subcategories for a subcategory
-const fetchChildSubcategories = async (categoryId, subcategoryId) => {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`http://localhost:5000/api/categories/${categoryId}/subcategories/${subcategoryId}/children`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    const data = await response.json();
-    if (data.success) {
-      setChildSubcategories(data.data.children);
-      setShowChildSubcategory(data.data.children.length > 0);
-    } else {
+  const fetchChildSubcategories = async (categoryId, subcategoryId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5000/api/categories/${categoryId}/subcategories/${subcategoryId}/children`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await response.json();
+      if (data.success) {
+        setChildSubcategories(data.data.children);
+        setShowChildSubcategory(data.data.children.length > 0);
+      } else {
+        setChildSubcategories([]);
+        setShowChildSubcategory(false);
+      }
+    } catch (error) {
+      console.error('Error fetching child subcategories:', error);
       setChildSubcategories([]);
       setShowChildSubcategory(false);
     }
-  } catch (error) {
-    console.error('Error fetching child subcategories:', error);
-    setChildSubcategories([]);
-    setShowChildSubcategory(false);
-  }
-};
+  };
 
   const fetchProducts = async () => {
     if (filters.search) {
@@ -1371,7 +1536,7 @@ const fetchChildSubcategories = async (categoryId, subcategoryId) => {
       
       if (filters.search) queryParams.append('search', filters.search);
       if (filters.category) queryParams.append('category', filters.category);
-      if (filters.subcategory) queryParams.append('subcategory', filters.subcategory); // NEW: Add subcategory to query
+      if (filters.subcategory) queryParams.append('subcategory', filters.subcategory);
       if (filters.childSubcategory) queryParams.append('childSubcategory', filters.childSubcategory);
       if (filters.targetedCustomer) queryParams.append('targetedCustomer', filters.targetedCustomer);
       if (filters.minPrice) queryParams.append('minPrice', filters.minPrice);
@@ -1442,11 +1607,10 @@ const fetchChildSubcategories = async (categoryId, subcategoryId) => {
   };
 
   const handleChildSubcategoryChange = (value) => {
-  setFilters(prev => ({ ...prev, childSubcategory: value }));
-  setCurrentPage(1);
-};
+    setFilters(prev => ({ ...prev, childSubcategory: value }));
+    setCurrentPage(1);
+  };
 
-  // Apply price range function
   const applyPriceRange = () => {
     setFilters(prev => ({
       ...prev,
@@ -1456,7 +1620,6 @@ const fetchChildSubcategories = async (categoryId, subcategoryId) => {
     setCurrentPage(1);
   };
 
-  // Clear price range function
   const clearPriceRange = () => {
     setMinPriceInput('');
     setMaxPriceInput('');
@@ -1464,7 +1627,6 @@ const fetchChildSubcategories = async (categoryId, subcategoryId) => {
     setCurrentPage(1);
   };
 
-  // Special handler for search with debouncing
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setFilters(prev => ({ ...prev, search: value }));
@@ -1485,9 +1647,8 @@ const fetchChildSubcategories = async (categoryId, subcategoryId) => {
     setFilters({
       search: '',
       category: '',
-      subcategory: '', // NEW: Clear subcategory
+      subcategory: '',
       childSubcategory: '', 
-      
       targetedCustomer: '',
       minPrice: '',
       maxPrice: '',
@@ -1519,8 +1680,8 @@ const fetchChildSubcategories = async (categoryId, subcategoryId) => {
   const getActiveFilterCount = () => {
     let count = 0;
     if (filters.category) count++;
-    if (filters.subcategory) count++; // NEW: Count subcategory filter
-   if (filters.childSubcategory) count++;
+    if (filters.subcategory) count++;
+    if (filters.childSubcategory) count++;
     if (filters.targetedCustomer) count++;
     if (filters.minPrice || filters.maxPrice) count++;
     if (filters.status !== 'all') count++;
@@ -1528,19 +1689,20 @@ const fetchChildSubcategories = async (categoryId, subcategoryId) => {
     return count;
   };
 
-  // Compact List View Component - Responsive (same as admin version)
+  // Compact Product List Component with Unit Support
   const CompactProductList = ({ product }) => {
     const productImages = product.images || [];
     const activeIndex = activeImageIndex[product._id] || 0;
     const firstTier = getFirstPricingTier(product.quantityBasedPricing);
     const hasTags = product.tags && product.tags.length > 0;
+    const unitLabel = getUnitLabel(product.orderUnit);
 
     return (
       <div className={`bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border ${
-        product.isActive ? 'border-gray-200' : 'border-red-200 bg-red-50/30'
+        product.isActive ? 'border-[#E8D5C0]' : 'border-red-200 bg-red-50/30'
       }`}>
         <div className="p-3">
-          {/* First Row: Image and Product Details - 2 columns */}
+          {/* First Row: Image and Product Details */}
           <div className="flex gap-3">
             {/* Left Column - Image */}
             <div 
@@ -1564,7 +1726,7 @@ const fetchChildSubcategories = async (categoryId, subcategoryId) => {
             {/* Right Column - Product Details */}
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-1 mb-1">
-                <h3 className="text-sm font-semibold text-gray-900 truncate" title={product.productName}>
+                <h3 className="text-sm font-semibold text-gray-900 truncate font-serif" title={product.productName}>
                   {product.productName}
                 </h3>
                 
@@ -1595,7 +1757,7 @@ const fetchChildSubcategories = async (categoryId, subcategoryId) => {
                     </span>
                   ))}
                   {product.tags.length > 2 && (
-                    <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[8px] font-medium bg-gray-100 text-gray-600">
+                    <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[8px] font-medium bg-[#F5E6D3] text-[#6B4F3A]">
                       +{product.tags.length - 2}
                     </span>
                   )}
@@ -1605,52 +1767,66 @@ const fetchChildSubcategories = async (categoryId, subcategoryId) => {
               {/* Subcategory Display */}
               {product.subcategoryName && (
                 <div className="flex items-center gap-1 mb-1">
-                  <FolderTree className="w-2.5 h-2.5 text-gray-400" />
-                  <span className="text-[9px] text-gray-500">Sub: {product.subcategoryName}</span>
+                  <FolderTree className="w-2.5 h-2.5 text-[#6B4F3A]" />
+                  <span className="text-[9px] text-gray-500">{product.subcategoryName}</span>
+                  {product.childSubcategoryName && (
+                    <>
+                      <span className="text-gray-300 text-[8px]">•</span>
+                      <span className="text-[9px] text-gray-500">{product.childSubcategoryName}</span>
+                    </>
+                  )}
                 </div>
               )}
 
-              {/* Price */}
-              <div className="flex items-center gap-1 mb-1">
-                <DollarSign className="w-3 h-3 text-[#E39A65]" />
-                <span className="font-medium text-[#E39A65] text-xs">${formatPrice(product.pricePerUnit)}</span>
-                <span className="text-gray-400 text-[10px]">/pc</span>
+              {/* Price with Unit */}
+              <div className="flex items-center gap-1 mb-1 flex-wrap">
+                <DollarSign className="w-3 h-3 text-[#6B4F3A]" />
+                <span className="font-medium text-[#6B4F3A] text-sm">${formatPrice(product.pricePerUnit)}</span>
+                <span className="text-gray-400 text-[10px]">/{unitLabel === 'pcs' ? 'pc' : unitLabel}</span>
                 {firstTier && (
-                  <span className="text-orange-600 text-[9px] ml-1">
-                    • {firstTier.range}pcs: ${formatPrice(firstTier.price)}
+                  <span className="text-[#3A7D44] text-[9px] ml-1">
+                    • Bulk from {firstTier.range}: ${formatPrice(firstTier.price)}
                   </span>
                 )}
               </div>
 
               {/* Category */}
               <div className="flex items-center gap-1">
-                <Tag className="w-2.5 h-2.5 text-gray-400" />
+                <Tag className="w-2.5 h-2.5 text-[#6B4F3A]" />
                 <span className="text-[10px] text-gray-600 truncate">{product.category?.name || 'N/A'}</span>
               </div>
             </div>
           </div>
 
-          {/* Second Row: MOQ & Colors (Left) and Action Buttons (Right) */}
-          <div className="flex items-center justify-between mt-3 pt-2 border-t border-gray-100">
-            {/* Left Side - MOQ and Colors */}
-            <div className="flex items-center gap-3">
-              {/* MOQ */}
+          {/* Second Row: MOQ, Unit, Colors and Action Buttons */}
+          <div className="flex items-center justify-between mt-3 pt-2 border-t border-[#E8D5C0]">
+            {/* Left Side - MOQ, Unit, Weight, Colors */}
+            <div className="flex items-center gap-3 flex-wrap">
+              {/* MOQ with Unit */}
               <div className="flex items-center gap-1">
-                <Package className="w-3 h-3 text-gray-400" />
-                <span className="text-[10px] text-gray-600">MOQ: {product.moq}</span>
+                <Package className="w-3 h-3 text-[#6B4F3A]" />
+                <span className="text-[10px] text-gray-600">MOQ: {product.moq} {unitLabel}</span>
               </div>
+
+              {/* Weight Per Unit */}
+              {product.weightPerUnit && (
+                <div className="flex items-center gap-1">
+                  <Scale className="w-3 h-3 text-[#6B4F3A]" />
+                  <span className="text-[10px] text-gray-600">{product.weightPerUnit} kg/unit</span>
+                </div>
+              )}
 
               {/* Colors */}
               {product.colors && product.colors.length > 0 && (
                 <div className="flex items-center gap-1">
-                  <Palette className="w-3 h-3 text-gray-400" />
+                  <Palette className="w-3 h-3 text-[#6B4F3A]" />
                   <div className="flex gap-0.5">
                     {product.colors.slice(0, 3).map((color, idx) => (
                       <div
                         key={idx}
-                        className="w-2.5 h-2.5 rounded-full border border-gray-200"
+                        className="w-2.5 h-2.5 rounded-full border border-gray-200 shadow-sm"
                         style={{ backgroundColor: color.code }}
-                        title={color.name}
+                        title={color.name || color.code}
                       />
                     ))}
                     {product.colors.length > 3 && (
@@ -1659,20 +1835,29 @@ const fetchChildSubcategories = async (categoryId, subcategoryId) => {
                   </div>
                 </div>
               )}
+
+              {/* Selling Unit Badge */}
+              {product.orderUnit && product.orderUnit !== 'piece' && (
+                <div className="flex items-center gap-1">
+                  <span className="text-[9px] px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded-full">
+                    {getUnitLabel(product.orderUnit).toUpperCase()}
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Right Side - Action Buttons */}
             <div className="flex items-center gap-1.5 flex-shrink-0">
               <button
                 onClick={() => handleView(product._id)}
-                className="p-1.5 bg-[#E39A65] text-white rounded hover:bg-[#d48b54] transition-colors"
+                className="p-1.5 bg-[#6B4F3A] text-white rounded hover:bg-[#8B6B51] transition-colors"
                 title="View Details"
               >
                 <Eye className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => handleEdit(product._id)}
-                className="p-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                className="p-1.5 bg-[#3A7D44] text-white rounded hover:bg-[#2d6836] transition-colors"
                 title="Edit"
               >
                 <Edit className="w-3.5 h-3.5" />
@@ -1685,20 +1870,19 @@ const fetchChildSubcategories = async (categoryId, subcategoryId) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header - Responsive (same as admin) */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <div className="min-h-screen bg-[#FAF7F2]">
+      {/* Header */}
+      <div className="bg-white border-b border-[#E8D5C0] sticky top-0 z-10 shadow-sm">
         <div className="px-3 sm:px-6 py-3 sm:py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
-            {/* Left Side - Title Section */}
             <div className="flex items-center gap-2 sm:gap-4">
-              <Link href="/moderator/dashboard" className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+              <Link href="/moderator/dashboard" className="p-1.5 sm:p-2 hover:bg-[#F5E6D3] rounded-lg transition-colors">
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-[#6B4F3A]" />
               </Link>
               <div>
                 <div className="flex flex-wrap items-center gap-1 sm:gap-2">
-                  <h1 className="text-lg sm:text-2xl font-bold text-gray-900">All Products</h1>
-                  <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-blue-100 text-blue-600 text-[9px] sm:text-xs font-medium rounded-full">
+                  <h1 className="text-lg sm:text-2xl font-bold text-[#6B4F3A] font-serif">All Products</h1>
+                  <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-[#F5E6D3] text-[#6B4F3A] text-[9px] sm:text-xs font-medium rounded-full">
                     Moderator
                   </span>
                 </div>
@@ -1708,18 +1892,17 @@ const fetchChildSubcategories = async (categoryId, subcategoryId) => {
               </div>
             </div>
 
-            {/* Right Side - Action Buttons (Desktop) */}
             <div className="hidden sm:flex items-center gap-1.5 sm:gap-3">
               <button
                 onClick={fetchProducts}
-                className="p-1.5 sm:p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-1.5 sm:p-2 text-[#6B4F3A] hover:bg-[#F5E6D3] rounded-lg transition-colors"
                 title="Refresh"
               >
                 <RefreshCw className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
               </button>
               <Link
                 href="/moderator/create-products"
-                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 bg-[#E39A65] text-white rounded-lg hover:bg-[#d48b54] transition-colors text-[10px] sm:text-sm"
+                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 bg-[#6B4F3A] text-white rounded-lg hover:bg-[#8B6B51] transition-colors text-[10px] sm:text-sm"
               >
                 <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span>Add Product</span>
@@ -1727,18 +1910,17 @@ const fetchChildSubcategories = async (categoryId, subcategoryId) => {
             </div>
           </div>
 
-          {/* Action Buttons - Below Title (Mobile Only) */}
-          <div className="flex sm:hidden items-center justify-end gap-2 mt-3 pt-2 border-t border-gray-100">
+          <div className="flex sm:hidden items-center justify-end gap-2 mt-3 pt-2 border-t border-[#E8D5C0]">
             <button
               onClick={fetchProducts}
-              className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 text-[#6B4F3A] hover:bg-[#F5E6D3] rounded-lg transition-colors"
               title="Refresh"
             >
               <RefreshCw className="w-4 h-4" />
             </button>
             <Link
               href="/moderator/create-products"
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#E39A65] text-white rounded-lg hover:bg-[#d48b54] transition-colors text-xs"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#6B4F3A] text-white rounded-lg hover:bg-[#8B6B51] transition-colors text-xs"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Add Product</span>
@@ -1758,7 +1940,7 @@ const fetchChildSubcategories = async (categoryId, subcategoryId) => {
               placeholder="Instant search: Type to find products by name..."
               value={filters.search}
               onChange={handleSearchChange}
-              className="w-full pl-8 sm:pl-9 pr-12 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition"
+              className="w-full pl-8 sm:pl-9 pr-12 py-1.5 sm:py-2 text-xs sm:text-sm border border-[#E8D5C0] rounded-lg focus:ring-2 focus:ring-[#3A7D44] focus:border-transparent outline-none transition bg-white"
             />
             {filters.search && (
               <button
@@ -1770,7 +1952,7 @@ const fetchChildSubcategories = async (categoryId, subcategoryId) => {
             )}
             {searchLoading && (
               <div className="absolute right-9 sm:right-10 top-1/2 -translate-y-1/2">
-                <Loader2 className="w-2.5 h-2.5 sm:w-3 sm:h-3 animate-spin text-[#E39A65]" />
+                <Loader2 className="w-2.5 h-2.5 sm:w-3 sm:h-3 animate-spin text-[#3A7D44]" />
               </div>
             )}
           </div>
@@ -1785,11 +1967,11 @@ const fetchChildSubcategories = async (categoryId, subcategoryId) => {
           handleFilterChange={handleFilterChange}
           categories={categories}
           subcategories={subcategories}
-           childSubcategories={childSubcategories}
+          childSubcategories={childSubcategories}
           selectedCategory={selectedCategory}
-           selectedSubcategory={selectedSubcategory} // ADD THIS
-  showChildSubcategory={showChildSubcategory} // ADD THIS
-  handleChildSubcategoryChange={handleChildSubcategoryChange} // ADD THIS
+          selectedSubcategory={selectedSubcategory}
+          showChildSubcategory={showChildSubcategory}
+          handleChildSubcategoryChange={handleChildSubcategoryChange}
           minPriceInput={minPriceInput}
           maxPriceInput={maxPriceInput}
           setMinPriceInput={setMinPriceInput}
@@ -1803,19 +1985,16 @@ const fetchChildSubcategories = async (categoryId, subcategoryId) => {
         {/* Results Count */}
         <div className="mb-3 sm:mb-4 flex items-center justify-between">
           <p className="text-[10px] sm:text-sm text-gray-600">
-            Showing <span className="font-semibold text-gray-900">{products.length}</span> of{' '}
-            <span className="font-semibold text-gray-900">{totalProducts}</span> products
+            Showing <span className="font-semibold text-[#6B4F3A]">{products.length}</span> of{' '}
+            <span className="font-semibold text-[#6B4F3A]">{totalProducts}</span> products
             {filters.search && <span> for "<span className="font-medium">{filters.search}</span>"</span>}
-            {filters.subcategory && subcategories.find(s => s._id === filters.subcategory) && (
-              <span> in subcategory "<span className="font-medium">{subcategories.find(s => s._id === filters.subcategory)?.name}</span>"</span>
-            )}
           </p>
         </div>
 
         {/* Loading State */}
         {loading && !searchLoading && (
           <div className="flex justify-center items-center py-10 sm:py-20">
-            <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-[#E39A65]" />
+            <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-[#3A7D44]" />
           </div>
         )}
 
@@ -1823,12 +2002,12 @@ const fetchChildSubcategories = async (categoryId, subcategoryId) => {
         {!loading && (
           <>
             {products.length === 0 ? (
-              <div className="text-center py-10 sm:py-20 bg-white rounded-lg border border-gray-200">
+              <div className="text-center py-10 sm:py-20 bg-white rounded-lg border border-[#E8D5C0]">
                 <Package className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
                 <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">No products found matching your criteria</p>
                 <button
                   onClick={clearFilters}
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#E39A65] text-white text-[10px] sm:text-sm rounded-lg hover:bg-[#d48b54] transition-colors"
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#6B4F3A] text-white text-[10px] sm:text-sm rounded-lg hover:bg-[#8B6B51] transition-colors"
                 >
                   Clear Filters
                 </button>
@@ -1847,9 +2026,9 @@ const fetchChildSubcategories = async (categoryId, subcategoryId) => {
                     <button
                       onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                       disabled={currentPage === 1}
-                      className="p-1 sm:p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors bg-white"
+                      className="p-1 sm:p-2 border border-[#E8D5C0] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5E6D3] transition-colors bg-white"
                     >
-                      <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4 text-[#6B4F3A]" />
                     </button>
                     
                     {[...Array(totalPages)].map((_, i) => {
@@ -1865,8 +2044,8 @@ const fetchChildSubcategories = async (categoryId, subcategoryId) => {
                             onClick={() => setCurrentPage(pageNum)}
                             className={`w-6 h-6 sm:w-8 sm:h-8 rounded-lg text-[10px] sm:text-sm font-medium transition-colors ${
                               currentPage === pageNum
-                                ? 'bg-[#E39A65] text-white'
-                                : 'bg-white border border-gray-300 hover:bg-gray-50'
+                                ? 'bg-[#6B4F3A] text-white'
+                                : 'bg-white border border-[#E8D5C0] hover:bg-[#F5E6D3] text-[#6B4F3A]'
                             }`}
                           >
                             {pageNum}
@@ -1881,9 +2060,9 @@ const fetchChildSubcategories = async (categoryId, subcategoryId) => {
                     <button
                       onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                       disabled={currentPage === totalPages}
-                      className="p-1 sm:p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors bg-white"
+                      className="p-1 sm:p-2 border border-[#E8D5C0] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5E6D3] transition-colors bg-white"
                     >
-                      <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 text-[#6B4F3A]" />
                     </button>
                   </div>
                 )}

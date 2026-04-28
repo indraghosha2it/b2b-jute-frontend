@@ -244,7 +244,7 @@ export default function ManageUsers() {
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              <UserCog className="w-6 h-6" style={{ color: '#E39A65' }} />
+              <UserCog className="w-6 h-6" style={{ color: '#84654C' }} />
               Manage Users
             </h1>
             <p className="text-sm text-gray-600 mt-1">
@@ -254,7 +254,7 @@ export default function ManageUsers() {
           
           <Link
             href="/admin/create-users"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#E39A65] text-white rounded-lg hover:bg-[#d68b55] transition-colors shadow-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#84654C] text-white rounded-lg hover:bg-[#d68b55] transition-colors shadow-sm"
           >
             <Plus className="w-4 h-4" />
             <span>Create New User</span>
@@ -270,14 +270,14 @@ export default function ManageUsers() {
               placeholder="Search by name or email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#84654C] focus:border-[#84654C]"
             />
           </div>
           
           <select
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value)}
-            className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65] bg-white"
+            className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#84654C] focus:border-[#84654C] bg-white"
           >
             <option value="all">All Roles</option>
             <option value="admin">Admin Only</option>
@@ -324,7 +324,7 @@ export default function ManageUsers() {
                   <tr>
                     <td colSpan="6" className="px-6 py-12 text-center">
                       <div className="flex justify-center items-center gap-2">
-                        <RefreshCw className="w-5 h-5 animate-spin" style={{ color: '#E39A65' }} />
+                        <RefreshCw className="w-5 h-5 animate-spin" style={{ color: '#84654C' }} />
                         <span className="text-gray-500">Loading users...</span>
                       </div>
                     </td>
@@ -347,7 +347,7 @@ export default function ManageUsers() {
                       <tr key={user._id} className={`hover:bg-gray-50 transition-colors ${currentUserAccount ? 'bg-orange-50/30' : ''}`}>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#E39A65] to-[#f5b485] flex items-center justify-center text-white font-semibold relative">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#84654C] to-[#f5b485] flex items-center justify-center text-white font-semibold relative">
                               {user.contactPerson?.charAt(0) || user.email?.charAt(0)}
                               {currentUserAccount && (
                                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
@@ -412,7 +412,7 @@ export default function ManageUsers() {
                           <div className="flex items-center justify-end gap-2">
                             <button
                               onClick={() => handleEdit(user)}
-                              className="p-2 text-gray-600 hover:text-[#E39A65] hover:bg-orange-50 rounded-lg transition-colors"
+                              className="p-2 text-gray-600 hover:text-[#84654C] hover:bg-orange-50 rounded-lg transition-colors"
                               title="Edit user"
                             >
                               <Edit2 className="w-4 h-4" />
@@ -516,7 +516,7 @@ export default function ManageUsers() {
                 {/* User Info Card - Compact */}
                 <div className="mb-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
                   <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#E39A65] to-[#f5b485] flex items-center justify-center text-white font-semibold text-base flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#84654C] to-[#f5b485] flex items-center justify-center text-white font-semibold text-base flex-shrink-0">
                       {deleteModal.userName?.charAt(0)}
                     </div>
                     <div>
@@ -576,7 +576,7 @@ export default function ManageUsers() {
               className="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden"
             >
               {/* Modal Header - Compact */}
-              <div className="px-5 py-3 bg-gradient-to-r from-[#E39A65] to-[#f5b485] flex items-center justify-between">
+              <div className="px-5 py-3 bg-gradient-to-r from-[#84654C] to-[#f5b485] flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-xs flex items-center justify-center">
                     <Edit2 className="w-4 h-4 text-white" />
@@ -597,7 +597,7 @@ export default function ManageUsers() {
                   <div className="space-y-3">
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">
-                        Full Name <span className="text-[#E39A65]">*</span>
+                        Full Name <span className="text-[#84654C]">*</span>
                       </label>
                       <input
                         type="text"
@@ -605,14 +605,14 @@ export default function ManageUsers() {
                         value={editFormData.contactPerson}
                         onChange={handleEditChange}
                         required
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65] transition-all"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#84654C] focus:border-[#84654C] transition-all"
                         placeholder="Enter full name"
                       />
                     </div>
 
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">
-                        Email Address <span className="text-[#E39A65]">*</span>
+                        Email Address <span className="text-[#84654C]">*</span>
                       </label>
                       <input
                         type="email"
@@ -620,14 +620,14 @@ export default function ManageUsers() {
                         value={editFormData.email}
                         onChange={handleEditChange}
                         required
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65] transition-all"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#84654C] focus:border-[#84654C] transition-all"
                         placeholder="user@example.com"
                       />
                     </div>
 
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">
-                        Phone Number <span className="text-[#E39A65]">*</span>
+                        Phone Number <span className="text-[#84654C]">*</span>
                       </label>
                       <input
                         type="tel"
@@ -635,7 +635,7 @@ export default function ManageUsers() {
                         value={editFormData.phone}
                         onChange={handleEditChange}
                         required
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65] transition-all"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#84654C] focus:border-[#84654C] transition-all"
                         placeholder="+1 (555) 000-0000"
                       />
                     </div>
@@ -649,20 +649,20 @@ export default function ManageUsers() {
                         name="whatsapp"
                         value={editFormData.whatsapp}
                         onChange={handleEditChange}
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65] transition-all"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#84654C] focus:border-[#84654C] transition-all"
                         placeholder="+1 (555) 000-0000"
                       />
                     </div>
 
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">
-                        User Role <span className="text-[#E39A65]">*</span>
+                        User Role <span className="text-[#84654C]">*</span>
                       </label>
                       <select
                         name="role"
                         value={editFormData.role}
                         onChange={handleEditChange}
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65] transition-all bg-white"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#84654C] focus:border-[#84654C] transition-all bg-white"
                       >
                         <option value="admin">Admin - Full System Access</option>
                         <option value="moderator">Moderator - Limited Management Access</option>
@@ -681,7 +681,7 @@ export default function ManageUsers() {
                     </button>
                     <button
                       type="submit"
-                      className="flex-1 px-3 py-2 bg-[#E39A65] text-white rounded-lg hover:bg-[#d68b55] transition-colors text-sm font-medium shadow-sm flex items-center justify-center gap-1.5"
+                      className="flex-1 px-3 py-2 bg-[#84654C] text-white rounded-lg hover:bg-[#d68b55] transition-colors text-sm font-medium shadow-sm flex items-center justify-center gap-1.5"
                     >
                       <Save className="w-3.5 h-3.5" />
                       Save

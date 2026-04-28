@@ -1,4 +1,6 @@
 
+
+
 // 'use client';
 
 // import React, { useState, useEffect } from 'react';
@@ -14,7 +16,6 @@
 //   Clock,
 //   DollarSign,
 //   Calendar,
-//   Building2,
 //   User,
 //   Mail,
 //   Phone,
@@ -23,7 +24,6 @@
 //   TrendingUp,
 //   TrendingDown,
 //   Download,
-//   Printer,
 //   CreditCard,
 //   Landmark,
 //   Copy,
@@ -32,12 +32,11 @@
 //   ChevronUp,
 //   ChevronDown,
 //   Edit,
-//   Send,
 //   Trash2,
-//   MoreVertical
+//   FileText as FileTextIcon
 // } from 'lucide-react';
 // import { toast } from 'sonner';
-// import { generateInvoicePDF } from '@/utils/invoicePDF'; 
+// import { generateInvoicePDF } from '@/utils/invoicePDF';
 
 // // Helper function to format currency
 // const formatPrice = (price) => {
@@ -58,9 +57,8 @@
 //   });
 // };
 
-// // FIXED: Check if invoice is expired (due date passed) - Only for unpaid/partial invoices
+// // Check if invoice is expired
 // const isInvoiceExpired = (invoice) => {
-//   // Don't mark as expired if paid or cancelled or overpaid
 //   if (invoice.paymentStatus === 'paid' || 
 //       invoice.paymentStatus === 'cancelled' || 
 //       invoice.paymentStatus === 'overpaid') {
@@ -69,34 +67,24 @@
   
 //   const today = new Date();
 //   const dueDate = new Date(invoice.dueDate);
-  
-//   // Reset time part to compare dates only
 //   today.setHours(0, 0, 0, 0);
 //   dueDate.setHours(0, 0, 0, 0);
   
 //   return dueDate < today;
 // };
 
-// // FIXED: Calculate overdue days correctly
+// // Calculate overdue days
 // const getOverdueDays = (dueDate) => {
 //   const today = new Date();
 //   const due = new Date(dueDate);
-  
-//   // Reset time part to compare dates only
 //   today.setHours(0, 0, 0, 0);
 //   due.setHours(0, 0, 0, 0);
-  
-//   // Calculate difference in milliseconds
 //   const diffTime = today - due;
-  
-//   // Convert to days (1000 ms * 60 seconds * 60 minutes * 24 hours)
 //   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  
-//   // Only return positive numbers (if due date is in the past)
 //   return diffDays > 0 ? diffDays : 0;
 // };
 
-// // Payment Status Badge - Shows actual payment status only
+// // Payment Status Badge
 // const PaymentStatusBadge = ({ status }) => {
 //   const statusConfig = {
 //     paid: { 
@@ -175,7 +163,30 @@
 //   );
 // };
 
-// // Product Row Component with professional design
+// // Function to wrap long text
+// const wrapText = (text, maxLength = 60) => {
+//   if (!text || typeof text !== 'string') return [''];
+//   if (text.length <= maxLength) return [text];
+  
+//   const words = text.split(' ');
+//   const lines = [];
+//   let currentLine = '';
+  
+//   for (let word of words) {
+//     const testLine = currentLine ? `${currentLine} ${word}` : word;
+//     if (testLine.length <= maxLength) {
+//       currentLine = testLine;
+//     } else {
+//       if (currentLine) lines.push(currentLine);
+//       currentLine = word;
+//     }
+//   }
+//   if (currentLine) lines.push(currentLine);
+  
+//   return lines.length > 0 ? lines : [text];
+// };
+
+// // Product Row Component
 // const ProductRow = ({ product, index }) => {
 //   const [expanded, setExpanded] = useState(true);
   
@@ -183,11 +194,12 @@
 //     sum + (color.totalForColor || 0), 0) || 0;
   
 //   const productTotal = product.total || (totalQuantity * product.unitPrice);
+//   const productNameLines = wrapText(product.productName, 50);
 
 //   return (
-//     <>
+//     <React.Fragment key={`product-${index}`}>
 //       {/* Main Product Row */}
-//       <tr key={`product-${index}`} className="border-b border-gray-200 hover:bg-gray-50/80 transition-colors">
+//       <tr className="border-b border-gray-200 hover:bg-gray-50/80 transition-colors">
 //         <td className="px-2 sm:px-6 py-3 sm:py-4 w-6 sm:w-12">
 //           <button
 //             onClick={() => setExpanded(!expanded)}
@@ -196,9 +208,9 @@
 //           >
 //             {expanded ? <ChevronUp className="w-3 h-3 sm:w-4 sm:h-4" /> : <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4" />}
 //           </button>
-//          </td>
+//         </td>
 //         <td className="px-2 sm:px-6 py-3 sm:py-4" colSpan={2}>
-//           <div className="flex items-center gap-2 sm:gap-4">
+//           <div className="flex items-start gap-2 sm:gap-4">
 //             {/* Product Image */}
 //             <div className="w-12 h-14 sm:w-16 sm:h-[88px] bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200 overflow-hidden shadow-sm flex-shrink-0">
 //               {product.productImage ? (
@@ -218,12 +230,28 @@
 //               )}
 //             </div>
 //             <div className="flex-1 min-w-0">
-//               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2">
-//                 <h4 className="font-semibold text-gray-900 text-xs sm:text-sm truncate">{product.productName}</h4>
-//                 <div className="flex items-center gap-2 sm:gap-3">
-//                   <span className="text-[10px] sm:text-sm text-gray-500">SKU: {product.productId?.slice(-6) || 'N/A'}</span>
-//                 </div>
+//               {/* Product Name - Multi-line */}
+//               <div className="mb-1 sm:mb-2">
+//                 {productNameLines && productNameLines.length > 1 ? (
+//                   <div className="space-y-0.5">
+//                     {productNameLines.map((line, idx) => (
+//                       <h4 
+//                         key={idx} 
+//                         className="font-semibold text-gray-900 text-xs sm:text-sm break-words"
+//                         style={{ wordBreak: 'break-word' }}
+//                       >
+//                         {line}
+//                       </h4>
+//                     ))}
+//                   </div>
+//                 ) : (
+//                   <h4 className="font-semibold text-gray-900 text-xs sm:text-sm break-words">
+//                     {product.productName || 'N/A'}
+//                   </h4>
+//                 )}
 //               </div>
+              
+             
 //               <div className="flex flex-wrap items-center gap-1.5 sm:gap-4 mt-1 sm:mt-2">
 //                 <span className="inline-flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-3 py-0.5 sm:py-1 bg-blue-50 text-blue-700 rounded-full text-[10px] sm:text-xs font-medium">
 //                   <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-blue-500"></span>
@@ -241,74 +269,80 @@
 //               </div>
 //             </div>
 //           </div>
-//          </td>
+//         </td>
 //         <td className="px-2 sm:px-6 py-3 sm:py-4 text-right">
 //           <div className="text-base sm:text-2xl font-bold text-gray-900">{totalQuantity}</div>
 //           <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1">Total Units</div>
-//          </td>
+//         </td>
 //         <td className="px-2 sm:px-6 py-3 sm:py-4 text-right">
 //           <div className="text-sm sm:text-lg font-semibold text-gray-900">{formatPrice(product.unitPrice)}</div>
 //           <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1">Per Unit</div>
-//          </td>
+//         </td>
 //         <td className="px-2 sm:px-6 py-3 sm:py-4 text-right">
 //           <div className="text-base sm:text-xl font-bold text-[#E39A65]">{formatPrice(productTotal)}</div>
 //           <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1">Line Total</div>
-//          </td>
-//        </tr>
+//         </td>
+//       </tr>
 
 //       {/* Expanded Color Details */}
-//       {expanded && product.colors?.map((color, colorIdx) => (
-//         <tr key={`color-${index}-${colorIdx}`} className="bg-gray-50/30 border-b border-gray-100">
-//           <td className="px-2 sm:px-6 py-2 sm:py-3"> </td>
-//           <td className="px-2 sm:px-6 py-2 sm:py-3" colSpan={5}>
-//             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-//               {/* Color Swatch */}
-//               <div className="relative flex-shrink-0">
+//     {expanded && product.colors?.map((color, colorIdx) => {
+//   // Get per-color unit price (use color.unitPrice, fallback to product.unitPrice)
+//   const colorUnitPrice = color.unitPrice || product.unitPrice || 0;
+//   const colorSubtotal = (color.totalForColor || 0) * colorUnitPrice;
+  
+//   return (
+//     <tr key={`color-${index}-${colorIdx}`} className="bg-gray-50/30 border-b border-gray-100">
+//       <td className="px-2 sm:px-6 py-2 sm:py-3"></td>
+//       <td className="px-2 sm:px-6 py-2 sm:py-3" colSpan={5}>
+//         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+//           {/* Color Swatch */}
+//           <div className="relative flex-shrink-0">
+//             <div 
+//               className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg border-2 border-white shadow-md"
+//               style={{ backgroundColor: color.color.code }}
+//               title={color.color.name || color.color.code}
+//             />
+//             <div className="absolute -top-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 bg-white rounded-full border border-gray-200"></div>
+//           </div>
+
+//           {/* Size Breakdown */}
+//           <div className="flex-1 min-w-0">
+//             <div className="flex flex-wrap items-center gap-1 sm:gap-2">
+//               {color.sizeQuantities?.map((sq, sqIdx) => sq.quantity > 0 && (
 //                 <div 
-//                   className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg border-2 border-white shadow-md"
-//                   style={{ backgroundColor: color.color.code }}
-//                   title={color.color.name || color.color.code}
-//                 />
-//                 <div className="absolute -top-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 bg-white rounded-full border border-gray-200"></div>
-//               </div>
-
-//               {/* Size Breakdown */}
-//               <div className="flex-1 min-w-0">
-//                 <div className="flex flex-wrap items-center gap-1 sm:gap-2">
-//                   {color.sizeQuantities?.map((sq, sqIdx) => sq.quantity > 0 && (
-//                     <div 
-//                       key={`size-${index}-${colorIdx}-${sqIdx}`} 
-//                       className="inline-flex items-center bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden"
-//                     >
-//                       <span className="px-1 sm:px-2 py-0.5 sm:py-1 bg-gray-100 text-[10px] sm:text-xs font-medium text-gray-700 border-r border-gray-200">
-//                         {sq.size}
-//                       </span>
-//                       <span className="px-1 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold text-gray-900">
-//                         {sq.quantity}
-//                       </span>
-//                     </div>
-//                   ))}
+//                   key={`size-${index}-${colorIdx}-${sqIdx}`} 
+//                   className="inline-flex items-center bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden"
+//                 >
+//                   <span className="px-1 sm:px-2 py-0.5 sm:py-1 bg-gray-100 text-[10px] sm:text-xs font-medium text-gray-700 border-r border-gray-200">
+//                     {sq.size}
+//                   </span>
+//                   <span className="px-1 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold text-gray-900">
+//                     {sq.quantity}
+//                   </span>
 //                 </div>
-//               </div>
-
-//               {/* Color Summary */}
-//               <div className="text-right flex-shrink-0">
-//                 <div className="text-xs sm:text-sm font-medium text-gray-900 whitespace-nowrap">
-//                   {color.totalForColor} pcs × {formatPrice(product.unitPrice)}
-//                 </div>
-//                 <div className="text-sm sm:text-base font-bold text-[#E39A65] mt-0.5 sm:mt-1 whitespace-nowrap">
-//                   {formatPrice(color.totalForColor * product.unitPrice)}
-//                 </div>
-//               </div>
+//               ))}
 //             </div>
-//            </td>
-//          </tr>
-//       ))}
+//           </div>
+
+//           {/* Color Summary with Per-Color Unit Price */}
+//           <div className="text-right flex-shrink-0">
+//             <div className="text-[10px] sm:text-xs font-medium text-gray-500 whitespace-nowrap">
+//               {color.totalForColor} pcs × {formatPrice(colorUnitPrice)}/pc
+//             </div>
+//             <div className="text-xs sm:text-sm font-semibold text-[#E39A65] mt-0.5 sm:mt-1 whitespace-nowrap">
+//               = {formatPrice(colorSubtotal)}
+//             </div>
+//           </div>
+//         </div>
+//       </td>
+//      </tr>
+//   );
+// })}
 
 //       {/* Special Instructions */}
 //       {expanded && product.specialInstructions && (
-//         <tr key={`note-${index}`} className="bg-amber-50/30 border-b border-gray-200">
-//           <td className="px-2 sm:px-6 py-2 sm:py-3" colSpan={2}> </td>
+//         <tr className="bg-amber-50/30 border-b border-gray-200">
+//           <td className="px-2 sm:px-6 py-2 sm:py-3" colSpan={2}></td>
 //           <td className="px-2 sm:px-6 py-2 sm:py-3" colSpan={4}>
 //             <div className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 bg-amber-50 rounded-lg border border-amber-200">
 //               <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 text-amber-600 mt-0.5 flex-shrink-0" />
@@ -319,10 +353,216 @@
 //                 <p className="text-xs sm:text-sm text-amber-700">{product.specialInstructions}</p>
 //               </div>
 //             </div>
-//            </td>
-//          </tr>
+//           </td>
+//         </tr>
 //       )}
-//     </>
+//     </React.Fragment>
+//   );
+// };
+
+// // Product Row Component - CORRECTED
+// // const ProductRow = ({ product, index }) => {
+// //   const [expanded, setExpanded] = useState(true);
+  
+// //   const totalQuantity = product.colors?.reduce((sum, color) => 
+// //     sum + (color.totalForColor || 0), 0) || 0;
+  
+// //   const productTotal = product.total || (totalQuantity * product.unitPrice);
+// //   const productNameLines = wrapText(product.productName, 50);
+
+// //   return (
+// //     <React.Fragment key={`product-${index}`}>
+// //       {/* Main Product Row */}
+// //       <tr className="border-b border-gray-200 hover:bg-gray-50/80 transition-colors">
+// //         <td className="px-2 sm:px-6 py-3 sm:py-4 w-6 sm:w-12">
+// //           <button
+// //             onClick={() => setExpanded(!expanded)}
+// //             className="w-5 h-5 sm:w-7 sm:h-7 flex items-center justify-center rounded-md hover:bg-gray-200 transition-colors text-gray-500"
+// //             title={expanded ? "Hide details" : "Show details"}
+// //           >
+// //             {expanded ? <ChevronUp className="w-3 h-3 sm:w-4 sm:h-4" /> : <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4" />}
+// //           </button>
+// //         </td>
+// //         <td className="px-2 sm:px-6 py-3 sm:py-4" colSpan={2}>
+// //           <div className="flex items-start gap-2 sm:gap-4">
+// //             {/* Product Image */}
+// //             <div className="w-12 h-14 sm:w-16 sm:h-[88px] bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200 overflow-hidden shadow-sm flex-shrink-0">
+// //               {product.productImage ? (
+// //                 <img 
+// //                   src={product.productImage} 
+// //                   alt={product.productName}
+// //                   className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+// //                   onError={(e) => {
+// //                     e.target.onerror = null;
+// //                     e.target.src = 'https://via.placeholder.com/64x64?text=No+Image';
+// //                   }}
+// //                 />
+// //               ) : (
+// //                 <div className="w-full h-full flex items-center justify-center bg-gray-100">
+// //                   <Package className="w-4 h-4 sm:w-6 sm:h-6 text-gray-400" />
+// //                 </div>
+// //               )}
+// //             </div>
+// //             <div className="flex-1 min-w-0">
+// //               {/* Product Name - Multi-line */}
+// //               <div className="mb-1 sm:mb-2">
+// //                 {productNameLines && productNameLines.length > 1 ? (
+// //                   <div className="space-y-0.5">
+// //                     {productNameLines.map((line, idx) => (
+// //                       <h4 
+// //                         key={idx} 
+// //                         className="font-semibold text-gray-900 text-xs sm:text-sm break-words"
+// //                         style={{ wordBreak: 'break-word' }}
+// //                       >
+// //                         {line}
+// //                       </h4>
+// //                     ))}
+// //                   </div>
+// //                 ) : (
+// //                   <h4 className="font-semibold text-gray-900 text-xs sm:text-sm break-words">
+// //                     {product.productName || 'N/A'}
+// //                   </h4>
+// //                 )}
+// //               </div>
+              
+// //               <div className="flex flex-wrap items-center gap-1.5 sm:gap-4 mt-1 sm:mt-2">
+// //                 <span className="inline-flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-3 py-0.5 sm:py-1 bg-blue-50 text-blue-700 rounded-full text-[10px] sm:text-xs font-medium">
+// //                   <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-blue-500"></span>
+// //                   {product.colors?.length || 0} Colors
+// //                 </span>
+// //                 <span className="inline-flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-3 py-0.5 sm:py-1 bg-purple-50 text-purple-700 rounded-full text-[10px] sm:text-xs font-medium">
+// //                   <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-purple-500"></span>
+// //                   {totalQuantity} Units
+// //                 </span>
+// //                 {product.moq && (
+// //                   <span className="inline-flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-3 py-0.5 sm:py-1 bg-gray-50 text-gray-600 rounded-full text-[10px] sm:text-xs font-medium">
+// //                     MOQ: {product.moq}
+// //                   </span>
+// //                 )}
+// //               </div>
+// //             </div>
+// //           </div>
+// //         </td>
+// //         <td className="px-2 sm:px-6 py-3 sm:py-4 text-right">
+// //           <div className="text-base sm:text-2xl font-bold text-gray-900">{totalQuantity}</div>
+// //           <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1">Total Units</div>
+// //         </td>
+// //         <td className="px-2 sm:px-6 py-3 sm:py-4 text-right">
+// //           <div className="text-sm sm:text-lg font-semibold text-gray-900">{formatPrice(product.unitPrice)}</div>
+// //           <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1">Per Unit</div>
+// //         </td>
+// //         <td className="px-2 sm:px-6 py-3 sm:py-4 text-right">
+// //           <div className="text-base sm:text-xl font-bold text-[#E39A65]">{formatPrice(productTotal)}</div>
+// //           <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1">Line Total</div>
+// //         </td>
+// //       </table>
+
+// //       {/* Expanded Color Details with Per-Color Unit Price */}
+// //       {expanded && product.colors?.map((color, colorIdx) => {
+// //         // Get per-color unit price (use color.unitPrice, fallback to product.unitPrice)
+// //         const colorUnitPrice = color.unitPrice || product.unitPrice || 0;
+// //         const colorSubtotal = (color.totalForColor || 0) * colorUnitPrice;
+        
+// //         return (
+// //           <tr key={`color-${index}-${colorIdx}`} className="bg-gray-50/30 border-b border-gray-100">
+// //             <td className="px-2 sm:px-6 py-2 sm:py-3"></td>
+// //             <td className="px-2 sm:px-6 py-2 sm:py-3" colSpan={5}>
+// //               <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+// //                 {/* Color Swatch */}
+// //                 <div className="relative flex-shrink-0">
+// //                   <div 
+// //                     className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg border-2 border-white shadow-md"
+// //                     style={{ backgroundColor: color.color.code }}
+// //                     title={color.color.name || color.color.code}
+// //                   />
+// //                   <div className="absolute -top-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 bg-white rounded-full border border-gray-200"></div>
+// //                 </div>
+
+// //                 {/* Size Breakdown */}
+// //                 <div className="flex-1 min-w-0">
+// //                   <div className="flex flex-wrap items-center gap-1 sm:gap-2">
+// //                     {color.sizeQuantities?.map((sq, sqIdx) => sq.quantity > 0 && (
+// //                       <div 
+// //                         key={`size-${index}-${colorIdx}-${sqIdx}`} 
+// //                         className="inline-flex items-center bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden"
+// //                       >
+// //                         <span className="px-1 sm:px-2 py-0.5 sm:py-1 bg-gray-100 text-[10px] sm:text-xs font-medium text-gray-700 border-r border-gray-200">
+// //                           {sq.size}
+// //                         </span>
+// //                         <span className="px-1 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold text-gray-900">
+// //                           {sq.quantity}
+// //                         </span>
+// //                       </div>
+// //                     ))}
+// //                   </div>
+// //                 </div>
+
+// //                 {/* Color Summary with Per-Color Unit Price */}
+// //                 <div className="text-right flex-shrink-0">
+// //                   <div className="text-[10px] sm:text-xs font-medium text-gray-500 whitespace-nowrap">
+// //                     {color.totalForColor} pcs × {formatPrice(colorUnitPrice)}/pc
+// //                   </div>
+// //                   <div className="text-xs sm:text-sm font-semibold text-[#E39A65] mt-0.5 sm:mt-1 whitespace-nowrap">
+// //                     = {formatPrice(colorSubtotal)}
+// //                   </div>
+// //                 </div>
+// //               </div>
+// //             </td>
+// //             </tr>
+// //           );
+// //         }
+// //       )}
+
+// //       {/* Special Instructions */}
+// //       {expanded && product.specialInstructions && (
+// //         <tr className="bg-amber-50/30 border-b border-gray-200">
+// //           <td className="px-2 sm:px-6 py-2 sm:py-3" colSpan={2}></td>
+// //           <td className="px-2 sm:px-6 py-2 sm:py-3" colSpan={4}>
+// //             <div className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 bg-amber-50 rounded-lg border border-amber-200">
+// //               <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+// //               <div>
+// //                 <span className="text-[10px] sm:text-xs font-semibold text-amber-800 uppercase tracking-wider block mb-0.5 sm:mb-1">
+// //                   Special Instructions
+// //                 </span>
+// //                 <p className="text-xs sm:text-sm text-amber-700">{product.specialInstructions}</p>
+// //               </div>
+// //             </div>
+// //           </td>
+// //         </tr>
+// //       )}
+// //     </React.Fragment>
+// //   );
+// // };
+
+// // Banking Terms Component
+// const BankingTermsSection = ({ bankingTerms }) => {
+//   if (!bankingTerms || bankingTerms.length === 0) return null;
+  
+//   return (
+//     <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+//       <div className="px-3 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
+//         <h2 className="text-sm sm:text-base font-semibold text-gray-900 flex items-center gap-1.5 sm:gap-2">
+//           <FileTextIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+//           Banking Terms
+//         </h2>
+//       </div>
+//       <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
+//         {bankingTerms.map((term, idx) => (
+//           <div key={idx} className="border-b border-gray-100 last:border-0 pb-2 sm:pb-3 last:pb-0">
+//             {term.title && (
+//               <h3 className="text-xs sm:text-sm font-semibold text-gray-800 mb-1 sm:mb-2">
+//                 {term.title}
+//               </h3>
+//             )}
+//             {term.value && (
+//               <p className="text-xs sm:text-sm text-gray-600 leading-relaxed break-words">
+//                 {term.value}
+//               </p>
+//             )}
+//           </div>
+//         ))}
+//       </div>
+//     </div>
 //   );
 // };
 
@@ -332,13 +572,11 @@
 //   const [error, setError] = useState(null);
 //   const [isExpired, setIsExpired] = useState(false);
 //   const [overdueDays, setOverdueDays] = useState(0);
-//   const [showActions, setShowActions] = useState(false);
 //   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 //   const [deleting, setDeleting] = useState(false);
 //   const [updating, setUpdating] = useState(false);
 //   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
 //   const [generatingPDF, setGeneratingPDF] = useState(false);
-  
   
 //   const router = useRouter();
 //   const searchParams = useSearchParams();
@@ -372,11 +610,8 @@
       
 //       if (data.success) {
 //         setInvoice(data.data);
-        
-//         // Check if expired using fixed function
 //         const expired = isInvoiceExpired(data.data);
 //         setIsExpired(expired);
-        
 //         if (expired) {
 //           const days = getOverdueDays(data.data.dueDate);
 //           setOverdueDays(days);
@@ -395,7 +630,6 @@
 //     setUpdating(true);
 //     try {
 //       const token = localStorage.getItem('token');
-      
 //       const updateData = { paymentStatus: newStatus };
       
 //       if (newStatus === 'paid') {
@@ -461,7 +695,6 @@
 
 //   const handleDownloadPDF = async () => {
 //     if (!invoice) return;
-    
 //     setGeneratingPDF(true);
 //     try {
 //       toast.info('🖨️ Generating PDF invoice...');
@@ -479,22 +712,13 @@
 //     router.push('/admin/invoices');
 //   };
 
-//   // Get status options based on current status
 //   const getStatusOptions = () => {
 //     if (!invoice) return [];
-    
-//     // If paid or cancelled, no options
 //     if (invoice.paymentStatus === 'paid' || invoice.paymentStatus === 'cancelled') {
 //       return [];
 //     }
-
-//     // Status options based on current status (no special handling for expired)
 //     switch (invoice.paymentStatus) {
 //       case 'partial':
-//         return [
-//           { value: 'paid', label: 'Mark as Paid', icon: CheckCircle },
-//           { value: 'cancelled', label: 'Cancel Invoice', icon: XCircle }
-//         ];
 //       case 'unpaid':
 //         return [
 //           { value: 'paid', label: 'Mark as Paid', icon: CheckCircle },
@@ -547,7 +771,7 @@
 //   return (
 //     <div className="min-h-screen bg-gray-50 py-4 sm:py-6">
 //       <div className="container mx-auto px-3 sm:px-4 max-w-6xl">
-//         {/* Header with Navigation and Actions - Responsive */}
+//         {/* Header */}
 //         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 sm:mb-6">
 //           <button
 //             onClick={handleGoBack}
@@ -558,7 +782,6 @@
 //           </button>
           
 //           <div className="flex flex-wrap items-center gap-2">
-//             {/* Status Dropdown */}
 //             {statusOptions.length > 0 && (
 //               <div className="relative">
 //                 <button
@@ -608,7 +831,6 @@
 //               {generatingPDF ? 'Generating...' : 'PDF'}
 //             </button>
             
-//             {/* Delete Button */}
 //             <button
 //               onClick={() => setShowDeleteConfirm(true)}
 //               className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
@@ -619,9 +841,9 @@
 //           </div>
 //         </div>
 
+//         {/* Rest of your invoice display code remains the same... */}
 //         {/* Invoice Header Card */}
 //         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4 sm:mb-6">
-//           {/* Status Bar */}
 //           <div className="px-3 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
 //             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
 //               <div className="flex items-center gap-2 sm:gap-4">
@@ -658,7 +880,6 @@
 //             </div>
 //           </div>
 
-//           {/* Overdue Warning */}
 //           {isExpired && (
 //             <div className="px-3 sm:px-6 py-2 sm:py-3 bg-red-50 border-b border-red-200 flex items-center gap-1.5 sm:gap-2">
 //               <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4 text-red-600" />
@@ -668,19 +889,13 @@
 //             </div>
 //           )}
 
-//           {/* Company and Customer Info */}
 //           <div className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-//             {/* From: Company */}
 //             <div>
 //               <h3 className="text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 sm:mb-3">From</h3>
 //               <div className="space-y-1.5 sm:space-y-2">
 //                 {invoice.company?.logo && (
 //                   <div className="w-20 h-14 sm:w-28 sm:h-20 bg-gray-100 rounded-lg border border-gray-200 overflow-hidden mb-2 sm:mb-3">
-//                     <img 
-//                       src={invoice.company.logo} 
-//                       alt={invoice.company.companyName}
-//                       className="w-full h-full object-cover"
-//                     />
+//                     <img src={invoice.company.logo} alt={invoice.company.companyName} className="w-full h-full object-cover" />
 //                   </div>
 //                 )}
 //                 <p className="font-semibold text-gray-900 text-sm sm:text-base">{invoice.company?.companyName || 'Asian Clothify'}</p>
@@ -705,7 +920,6 @@
 //               </div>
 //             </div>
 
-//             {/* To: Customer */}
 //             <div>
 //               <h3 className="text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 sm:mb-3">To</h3>
 //               <div className="space-y-1.5 sm:space-y-2">
@@ -726,7 +940,6 @@
 //                   <CopyButton text={invoice.customer?.phone || ''} label="phone" />
 //                 </p>
                 
-//                 {/* Billing Address */}
 //                 {(invoice.customer?.billingAddress || invoice.customer?.billingCity) && (
 //                   <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-gray-100">
 //                     <p className="text-[10px] sm:text-xs font-medium text-gray-500 mb-1 sm:mb-2">Billing Address</p>
@@ -744,7 +957,6 @@
 //                   </div>
 //                 )}
 
-//                 {/* Shipping Address (if different) */}
 //                 {invoice.customer?.shippingAddress && (
 //                   <div className="mt-2 sm:mt-3">
 //                     <p className="text-[10px] sm:text-xs font-medium text-gray-500 mb-1 sm:mb-2">Shipping Address</p>
@@ -797,7 +1009,7 @@
 //                   <th className="px-2 sm:px-6 py-2 sm:py-3 text-right text-[10px] sm:text-xs font-semibold text-gray-600 uppercase tracking-wider">
 //                     Total
 //                   </th>
-//                  </tr>
+//                 </tr>
 //               </thead>
 //               <tbody className="divide-y divide-gray-100">
 //                 {invoice.items?.map((product, index) => (
@@ -808,71 +1020,77 @@
 //           </div>
 //         </div>
 
-//         {/* Invoice Summary and Payment Details */}
+//         {/* Invoice Summary and Payment Details with Banking Terms */}
 //         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6 items-start">
-//           {/* Bank Details */}
-//           {invoice.bankDetails && Object.values(invoice.bankDetails).some(v => v) && (
-//             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-//               <div className="px-3 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
-//                 <h2 className="text-sm sm:text-base font-semibold text-gray-900 flex items-center gap-1.5 sm:gap-2">
-//                   <Landmark className="w-4 h-4 sm:w-5 sm:h-5" />
-//                   Bank Details
-//                 </h2>
+//           {/* Left Column - Bank Details and Banking Terms */}
+//           <div className="space-y-4 sm:space-y-6">
+//             {/* Bank Details */}
+//             {invoice.bankDetails && Object.values(invoice.bankDetails).some(v => v) && (
+//               <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+//                 <div className="px-3 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
+//                   <h2 className="text-sm sm:text-base font-semibold text-gray-900 flex items-center gap-1.5 sm:gap-2">
+//                     <Landmark className="w-4 h-4 sm:w-5 sm:h-5" />
+//                     Bank Details
+//                   </h2>
+//                 </div>
+//                 <div className="p-4 sm:p-6 space-y-2 sm:space-y-3">
+//                   {invoice.bankDetails.bankName && (
+//                     <div className="flex flex-col sm:flex-row sm:justify-between text-xs sm:text-sm gap-1 sm:gap-0">
+//                       <span className="text-gray-500">Bank Name:</span>
+//                       <span className="font-medium text-gray-900 break-words">{invoice.bankDetails.bankName}</span>
+//                     </div>
+//                   )}
+//                   {invoice.bankDetails.accountName && (
+//                     <div className="flex flex-col sm:flex-row sm:justify-between text-xs sm:text-sm gap-1 sm:gap-0">
+//                       <span className="text-gray-500">Account Name:</span>
+//                       <span className="font-medium text-gray-900 break-words">{invoice.bankDetails.accountName}</span>
+//                     </div>
+//                   )}
+//                   {invoice.bankDetails.accountNumber && (
+//                     <div className="flex flex-col sm:flex-row sm:justify-between text-xs sm:text-sm gap-1 sm:gap-0">
+//                       <span className="text-gray-500">Account Number:</span>
+//                       <span className="font-medium text-gray-900 break-words">{invoice.bankDetails.accountNumber}</span>
+//                     </div>
+//                   )}
+//                   {invoice.bankDetails.accountType && (
+//                     <div className="flex flex-col sm:flex-row sm:justify-between text-xs sm:text-sm gap-1 sm:gap-0">
+//                       <span className="text-gray-500">Account Type:</span>
+//                       <span className="font-medium text-gray-900">{invoice.bankDetails.accountType}</span>
+//                     </div>
+//                   )}
+//                   {invoice.bankDetails.routingNumber && (
+//                     <div className="flex flex-col sm:flex-row sm:justify-between text-xs sm:text-sm gap-1 sm:gap-0">
+//                       <span className="text-gray-500">Routing Number:</span>
+//                       <span className="font-medium text-gray-900">{invoice.bankDetails.routingNumber}</span>
+//                     </div>
+//                   )}
+//                   {invoice.bankDetails.swiftCode && (
+//                     <div className="flex flex-col sm:flex-row sm:justify-between text-xs sm:text-sm gap-1 sm:gap-0">
+//                       <span className="text-gray-500">SWIFT Code:</span>
+//                       <span className="font-medium text-gray-900">{invoice.bankDetails.swiftCode}</span>
+//                     </div>
+//                   )}
+//                   {invoice.bankDetails.iban && (
+//                     <div className="flex flex-col sm:flex-row sm:justify-between text-xs sm:text-sm gap-1 sm:gap-0">
+//                       <span className="text-gray-500">IBAN:</span>
+//                       <span className="font-medium text-gray-900 break-words">{invoice.bankDetails.iban}</span>
+//                     </div>
+//                   )}
+//                   {invoice.bankDetails.bankAddress && (
+//                     <div className="flex flex-col sm:flex-row sm:justify-between text-xs sm:text-sm gap-1 sm:gap-0">
+//                       <span className="text-gray-500">Bank Address:</span>
+//                       <span className="font-medium text-gray-900 break-words">{invoice.bankDetails.bankAddress}</span>
+//                     </div>
+//                   )}
+//                 </div>
 //               </div>
-//               <div className="p-4 sm:p-6 space-y-2 sm:space-y-3">
-//                 {invoice.bankDetails.bankName && (
-//                   <div className="flex flex-col sm:flex-row sm:justify-between text-xs sm:text-sm gap-1 sm:gap-0">
-//                     <span className="text-gray-500">Bank Name:</span>
-//                     <span className="font-medium text-gray-900 break-words">{invoice.bankDetails.bankName}</span>
-//                   </div>
-//                 )}
-//                 {invoice.bankDetails.accountName && (
-//                   <div className="flex flex-col sm:flex-row sm:justify-between text-xs sm:text-sm gap-1 sm:gap-0">
-//                     <span className="text-gray-500">Account Name:</span>
-//                     <span className="font-medium text-gray-900 break-words">{invoice.bankDetails.accountName}</span>
-//                   </div>
-//                 )}
-//                 {invoice.bankDetails.accountNumber && (
-//                   <div className="flex flex-col sm:flex-row sm:justify-between text-xs sm:text-sm gap-1 sm:gap-0">
-//                     <span className="text-gray-500">Account Number:</span>
-//                     <span className="font-medium text-gray-900 break-words">{invoice.bankDetails.accountNumber}</span>
-//                   </div>
-//                 )}
-//                 {invoice.bankDetails.accountType && (
-//                   <div className="flex flex-col sm:flex-row sm:justify-between text-xs sm:text-sm gap-1 sm:gap-0">
-//                     <span className="text-gray-500">Account Type:</span>
-//                     <span className="font-medium text-gray-900">{invoice.bankDetails.accountType}</span>
-//                   </div>
-//                 )}
-//                 {invoice.bankDetails.routingNumber && (
-//                   <div className="flex flex-col sm:flex-row sm:justify-between text-xs sm:text-sm gap-1 sm:gap-0">
-//                     <span className="text-gray-500">Routing Number:</span>
-//                     <span className="font-medium text-gray-900">{invoice.bankDetails.routingNumber}</span>
-//                   </div>
-//                 )}
-//                 {invoice.bankDetails.swiftCode && (
-//                   <div className="flex flex-col sm:flex-row sm:justify-between text-xs sm:text-sm gap-1 sm:gap-0">
-//                     <span className="text-gray-500">SWIFT Code:</span>
-//                     <span className="font-medium text-gray-900">{invoice.bankDetails.swiftCode}</span>
-//                   </div>
-//                 )}
-//                 {invoice.bankDetails.iban && (
-//                   <div className="flex flex-col sm:flex-row sm:justify-between text-xs sm:text-sm gap-1 sm:gap-0">
-//                     <span className="text-gray-500">IBAN:</span>
-//                     <span className="font-medium text-gray-900 break-words">{invoice.bankDetails.iban}</span>
-//                   </div>
-//                 )}
-//                 {invoice.bankDetails.bankAddress && (
-//                   <div className="flex flex-col sm:flex-row sm:justify-between text-xs sm:text-sm gap-1 sm:gap-0">
-//                     <span className="text-gray-500">Bank Address:</span>
-//                     <span className="font-medium text-gray-900 break-words">{invoice.bankDetails.bankAddress}</span>
-//                   </div>
-//                 )}
-//               </div>
-//             </div>
-//           )}
+//             )}
 
-//           {/* Invoice Summary */}
+//             {/* Banking Terms */}
+//             <BankingTermsSection bankingTerms={invoice.bankingTerms} />
+//           </div>
+
+//           {/* Right Column - Invoice Summary */}
 //           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
 //             <div className="px-3 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
 //               <h2 className="text-sm sm:text-base font-semibold text-gray-900 flex items-center gap-1.5 sm:gap-2">
@@ -916,14 +1134,13 @@
 //                 </div>
 //               </div>
 
-//               {/* Payment Details with Percentages */}
+//               {/* Payment Details */}
 //               <div className="bg-gray-50 rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3">
 //                 <h3 className="text-xs sm:text-sm font-semibold text-gray-700 mb-1 sm:mb-2 flex items-center gap-1.5 sm:gap-2">
 //                   <CreditCard className="w-3 h-3 sm:w-4 sm:h-4" />
 //                   Payment Details
 //                 </h3>
                 
-//                 {/* Paid Section with Amount and Percentage */}
 //                 <div className="bg-green-50 p-2 sm:p-3 rounded-lg border border-green-200">
 //                   <div className="flex justify-between items-center mb-1 sm:mb-2">
 //                     <div className="flex items-center gap-1 sm:gap-2">
@@ -938,58 +1155,36 @@
 //                     <div className="flex justify-between text-[10px] sm:text-xs">
 //                       <span className="text-green-600">Percentage</span>
 //                       <span className="font-medium text-green-700">
-//                         {invoice.finalTotal > 0 
-//                           ? ((invoice.amountPaid / invoice.finalTotal) * 100).toFixed(1) 
-//                           : '0'}%
+//                         {invoice.finalTotal > 0 ? ((invoice.amountPaid / invoice.finalTotal) * 100).toFixed(1) : '0'}%
 //                       </span>
 //                     </div>
 //                     <div className="w-full h-1.5 sm:h-2 bg-green-100 rounded-full overflow-hidden">
-//                       <div 
-//                         className="h-full bg-green-500 rounded-full transition-all duration-300"
-//                         style={{ 
-//                           width: `${invoice.finalTotal > 0 
-//                             ? Math.min((invoice.amountPaid / invoice.finalTotal) * 100, 100) 
-//                             : 0}%` 
-//                         }}
-//                       />
+//                       <div className="h-full bg-green-500 rounded-full transition-all duration-300" style={{ width: `${invoice.finalTotal > 0 ? Math.min((invoice.amountPaid / invoice.finalTotal) * 100, 100) : 0}%` }} />
 //                     </div>
 //                   </div>
 //                 </div>
 
-//                 {/* Unpaid Section with Amount and Percentage */}
 //                 <div className="bg-red-50 p-2 sm:p-3 rounded-lg border border-red-200">
 //                   <div className="flex justify-between items-center mb-1 sm:mb-2">
 //                     <div className="flex items-center gap-1 sm:gap-2">
 //                       <TrendingDown className="w-3 h-3 sm:w-4 sm:h-4 text-red-600" />
 //                       <span className="text-xs sm:text-sm font-medium text-red-700">Unpaid</span>
 //                     </div>
-//                     <span className="text-xs sm:text-sm font-bold text-red-700">
-//                       {formatPrice(dueAmount)}
-//                     </span>
+//                     <span className="text-xs sm:text-sm font-bold text-red-700">{formatPrice(dueAmount)}</span>
 //                   </div>
 //                   <div className="space-y-1">
 //                     <div className="flex justify-between text-[10px] sm:text-xs">
 //                       <span className="text-red-600">Percentage</span>
 //                       <span className="font-medium text-red-700">
-//                         {invoice.finalTotal > 0 
-//                           ? ((dueAmount / invoice.finalTotal) * 100).toFixed(1) 
-//                           : '0'}%
+//                         {invoice.finalTotal > 0 ? ((dueAmount / invoice.finalTotal) * 100).toFixed(1) : '0'}%
 //                       </span>
 //                     </div>
 //                     <div className="w-full h-1.5 sm:h-2 bg-red-100 rounded-full overflow-hidden">
-//                       <div 
-//                         className="h-full bg-red-500 rounded-full transition-all duration-300"
-//                         style={{ 
-//                           width: `${invoice.finalTotal > 0 
-//                             ? Math.max(Math.min((dueAmount / invoice.finalTotal) * 100, 100), 0) 
-//                             : 0}%` 
-//                         }}
-//                       />
+//                       <div className="h-full bg-red-500 rounded-full transition-all duration-300" style={{ width: `${invoice.finalTotal > 0 ? Math.max(Math.min((dueAmount / invoice.finalTotal) * 100, 100), 0) : 0}%` }} />
 //                     </div>
 //                   </div>
 //                 </div>
 
-//                 {/* Compact Summary */}
 //                 <div className="flex justify-between text-[10px] sm:text-sm pt-1 sm:pt-2 border-t border-gray-200">
 //                   <span className="text-gray-500">Payment Status:</span>
 //                   <PaymentStatusBadge status={invoice.paymentStatus} />
@@ -1000,24 +1195,19 @@
 //                     <p className="text-gray-500">Paid Amount</p>
 //                     <p className="font-semibold text-green-600 text-xs sm:text-sm">{formatPrice(invoice.amountPaid || 0)}</p>
 //                     <p className="text-[8px] sm:text-[10px] text-gray-400 mt-0.5">
-//                       {invoice.finalTotal > 0 
-//                         ? ((invoice.amountPaid / invoice.finalTotal) * 100).toFixed(1) 
-//                         : '0'}% of total
+//                       {invoice.finalTotal > 0 ? ((invoice.amountPaid / invoice.finalTotal) * 100).toFixed(1) : '0'}% of total
 //                     </p>
 //                   </div>
 //                   <div className="bg-white p-1.5 sm:p-2 rounded border border-gray-200">
 //                     <p className="text-gray-500">Unpaid Amount</p>
 //                     <p className="font-semibold text-red-500 text-xs sm:text-sm">{formatPrice(dueAmount)}</p>
 //                     <p className="text-[8px] sm:text-[10px] text-gray-400 mt-0.5">
-//                       {invoice.finalTotal > 0 
-//                         ? ((dueAmount / invoice.finalTotal) * 100).toFixed(1) 
-//                         : '0'}% of total
+//                       {invoice.finalTotal > 0 ? ((dueAmount / invoice.finalTotal) * 100).toFixed(1) : '0'}% of total
 //                     </p>
 //                   </div>
 //                 </div>
 //               </div>
 
-//               {/* Dates */}
 //               <div className="grid grid-cols-2 gap-2 sm:gap-3 text-[10px] sm:text-xs">
 //                 <div>
 //                   <p className="text-gray-500">Invoice Date</p>
@@ -1057,30 +1247,40 @@
 //           </div>
 //         )}
 
-//         {/* Custom Fields */}
 //         {invoice.customFields && invoice.customFields.length > 0 && (
-//           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4 sm:mb-6">
-//             <div className="px-3 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
-//               <h2 className="text-sm sm:text-base font-semibold text-gray-900">Additional Fields</h2>
-//             </div>
-//             <div className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-//               {invoice.customFields.map((field, idx) => (
-//                 <div key={idx}>
-//                   <p className="text-[10px] sm:text-xs text-gray-500">{field.fieldName}</p>
-//                   <p className="text-xs sm:text-sm font-medium text-gray-900 mt-0.5 sm:mt-1 break-words">{field.fieldValue}</p>
-//                 </div>
-//               ))}
-//             </div>
-//           </div>
-//         )}
+//   <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4 sm:mb-6">
+    
+//     <div className="px-3 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
+//       <h2 className="text-sm sm:text-base font-semibold text-gray-900">
+//         Additional Fields
+//       </h2>
+//     </div>
+
+//     <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
+//       {invoice.customFields.map((field, idx) => (
+//         <div
+//           key={idx}
+//           className="flex justify-between items-start border-b border-gray-100 pb-2"
+//         >
+//           {/* Left: Title */}
+//           <p className="text-xs sm:text-sm text-gray-500">
+//             {field.fieldName}
+//           </p>
+
+//           {/* Right: Value */}
+//           <p className="text-xs sm:text-sm font-medium text-gray-900 text-right max-w-[60%] break-words">
+//             {field.fieldValue}
+//           </p>
+//         </div>
+//       ))}
+//     </div>
+
+//   </div>
+// )}
 
 //         {/* Footer Note */}
 //         <div className="text-center text-[10px] sm:text-xs text-gray-400 mt-6 sm:mt-8 mb-4">
-//           Invoice generated by {
-//             typeof invoice.createdBy === 'object' 
-//               ? invoice.createdBy?.contactPerson || invoice.createdBy?.email || 'Admin' 
-//               : invoice.createdBy || 'Admin'
-//           } on {formatDate(invoice.createdAt)}
+//           Invoice generated by {typeof invoice.createdBy === 'object' ? invoice.createdBy?.contactPerson || invoice.createdBy?.email || 'Admin' : invoice.createdBy || 'Admin'} on {formatDate(invoice.createdAt)}
 //         </div>
 //       </div>
 
@@ -1126,6 +1326,7 @@
 // }
 
 
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -1158,7 +1359,8 @@ import {
   ChevronDown,
   Edit,
   Trash2,
-  FileText as FileTextIcon
+  FileText as FileTextIcon,
+  Scale
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { generateInvoicePDF } from '@/utils/invoicePDF';
@@ -1170,6 +1372,15 @@ const formatPrice = (price) => {
     currency: 'USD',
     minimumFractionDigits: 2
   }).format(price || 0);
+};
+
+// Helper function to get unit label
+const getUnitLabel = (orderUnit) => {
+  switch(orderUnit) {
+    case 'kg': return 'kg';
+    case 'ton': return 'MT';
+    default: return 'pcs';
+  }
 };
 
 // Helper function to format date
@@ -1209,7 +1420,7 @@ const getOverdueDays = (dueDate) => {
   return diffDays > 0 ? diffDays : 0;
 };
 
-// Payment Status Badge
+// Payment Status Badge - Jute Theme
 const PaymentStatusBadge = ({ status }) => {
   const statusConfig = {
     paid: { 
@@ -1311,12 +1522,20 @@ const wrapText = (text, maxLength = 60) => {
   return lines.length > 0 ? lines : [text];
 };
 
-// Product Row Component
+// Product Row Component - Supports piece, kg, ton
 const ProductRow = ({ product, index }) => {
   const [expanded, setExpanded] = useState(true);
+  const isWeightBased = product.orderUnit === 'kg' || product.orderUnit === 'ton';
+  const unitLabel = getUnitLabel(product.orderUnit);
   
-  const totalQuantity = product.colors?.reduce((sum, color) => 
-    sum + (color.totalForColor || 0), 0) || 0;
+  let totalQuantity = 0;
+  if (isWeightBased) {
+    totalQuantity = product.colors?.reduce((sum, color) => 
+      sum + (color.quantity || color.totalQuantity || color.totalForColor || 0), 0) || 0;
+  } else {
+    totalQuantity = product.colors?.reduce((sum, color) => 
+      sum + (color.totalForColor || 0), 0) || 0;
+  }
   
   const productTotal = product.total || (totalQuantity * product.unitPrice);
   const productNameLines = wrapText(product.productName, 50);
@@ -1336,7 +1555,6 @@ const ProductRow = ({ product, index }) => {
         </td>
         <td className="px-2 sm:px-6 py-3 sm:py-4" colSpan={2}>
           <div className="flex items-start gap-2 sm:gap-4">
-            {/* Product Image */}
             <div className="w-12 h-14 sm:w-16 sm:h-[88px] bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200 overflow-hidden shadow-sm flex-shrink-0">
               {product.productImage ? (
                 <img 
@@ -1355,7 +1573,6 @@ const ProductRow = ({ product, index }) => {
               )}
             </div>
             <div className="flex-1 min-w-0">
-              {/* Product Name - Multi-line */}
               <div className="mb-1 sm:mb-2">
                 {productNameLines && productNameLines.length > 1 ? (
                   <div className="space-y-0.5">
@@ -1376,19 +1593,22 @@ const ProductRow = ({ product, index }) => {
                 )}
               </div>
               
-             
               <div className="flex flex-wrap items-center gap-1.5 sm:gap-4 mt-1 sm:mt-2">
                 <span className="inline-flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-3 py-0.5 sm:py-1 bg-blue-50 text-blue-700 rounded-full text-[10px] sm:text-xs font-medium">
                   <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-blue-500"></span>
-                  {product.colors?.length || 0} Colors
+                  {product.orderUnit === 'kg' ? 'KG (Weight)' : product.orderUnit === 'ton' ? 'MT (Weight)' : 'Pieces'}
                 </span>
                 <span className="inline-flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-3 py-0.5 sm:py-1 bg-purple-50 text-purple-700 rounded-full text-[10px] sm:text-xs font-medium">
                   <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-purple-500"></span>
-                  {totalQuantity} Units
+                  {product.colors?.length || 0} Colors
+                </span>
+                <span className="inline-flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-3 py-0.5 sm:py-1 bg-green-50 text-green-700 rounded-full text-[10px] sm:text-xs font-medium">
+                  <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-green-500"></span>
+                  {totalQuantity} {unitLabel}
                 </span>
                 {product.moq && (
-                  <span className="inline-flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-3 py-0.5 sm:py-1 bg-gray-50 text-gray-600 rounded-full text-[10px] sm:text-xs font-medium">
-                    MOQ: {product.moq}
+                  <span className="inline-flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-3 py-0.5 sm:py-1 bg-orange-50 text-orange-700 rounded-full text-[10px] sm:text-xs font-medium">
+                    MOQ: {product.moq} {unitLabel}
                   </span>
                 )}
               </div>
@@ -1397,72 +1617,90 @@ const ProductRow = ({ product, index }) => {
         </td>
         <td className="px-2 sm:px-6 py-3 sm:py-4 text-right">
           <div className="text-base sm:text-2xl font-bold text-gray-900">{totalQuantity}</div>
-          <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1">Total Units</div>
+          <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1">Total {unitLabel}</div>
         </td>
         <td className="px-2 sm:px-6 py-3 sm:py-4 text-right">
           <div className="text-sm sm:text-lg font-semibold text-gray-900">{formatPrice(product.unitPrice)}</div>
-          <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1">Per Unit</div>
+          <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1">Per {unitLabel === 'pcs' ? 'pc' : unitLabel}</div>
         </td>
         <td className="px-2 sm:px-6 py-3 sm:py-4 text-right">
-          <div className="text-base sm:text-xl font-bold text-[#E39A65]">{formatPrice(productTotal)}</div>
+          <div className="text-base sm:text-xl font-bold text-[#6B4F3A]">{formatPrice(productTotal)}</div>
           <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1">Line Total</div>
         </td>
       </tr>
 
       {/* Expanded Color Details */}
-    {expanded && product.colors?.map((color, colorIdx) => {
-  // Get per-color unit price (use color.unitPrice, fallback to product.unitPrice)
-  const colorUnitPrice = color.unitPrice || product.unitPrice || 0;
-  const colorSubtotal = (color.totalForColor || 0) * colorUnitPrice;
-  
-  return (
-    <tr key={`color-${index}-${colorIdx}`} className="bg-gray-50/30 border-b border-gray-100">
-      <td className="px-2 sm:px-6 py-2 sm:py-3"></td>
-      <td className="px-2 sm:px-6 py-2 sm:py-3" colSpan={5}>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-          {/* Color Swatch */}
-          <div className="relative flex-shrink-0">
-            <div 
-              className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg border-2 border-white shadow-md"
-              style={{ backgroundColor: color.color.code }}
-              title={color.color.name || color.color.code}
-            />
-            <div className="absolute -top-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 bg-white rounded-full border border-gray-200"></div>
-          </div>
-
-          {/* Size Breakdown */}
-          <div className="flex-1 min-w-0">
-            <div className="flex flex-wrap items-center gap-1 sm:gap-2">
-              {color.sizeQuantities?.map((sq, sqIdx) => sq.quantity > 0 && (
-                <div 
-                  key={`size-${index}-${colorIdx}-${sqIdx}`} 
-                  className="inline-flex items-center bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden"
-                >
-                  <span className="px-1 sm:px-2 py-0.5 sm:py-1 bg-gray-100 text-[10px] sm:text-xs font-medium text-gray-700 border-r border-gray-200">
-                    {sq.size}
-                  </span>
-                  <span className="px-1 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold text-gray-900">
-                    {sq.quantity}
-                  </span>
+      {expanded && product.colors?.map((color, colorIdx) => {
+        let colorQty = 0;
+        if (isWeightBased) {
+          colorQty = color.quantity || color.totalQuantity || color.totalForColor || 0;
+        } else {
+          colorQty = color.totalForColor || (color.sizeQuantities?.reduce((sum, sq) => sum + (sq.quantity || 0), 0) || 0);
+        }
+        const colorUnitPrice = color.unitPrice || product.unitPrice || 0;
+        const colorSubtotal = colorQty * colorUnitPrice;
+        
+        return (
+          <tr key={`color-${index}-${colorIdx}`} className="bg-gray-50/30 border-b border-gray-100">
+            <td className="px-2 sm:px-6 py-2 sm:py-3"></td>
+            <td className="px-2 sm:px-6 py-2 sm:py-3" colSpan={5}>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                {/* Color Swatch */}
+                <div className="relative flex-shrink-0">
+                  <div 
+                    className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg border-2 border-white shadow-md"
+                    style={{ backgroundColor: color.color.code }}
+                    title={color.color.name || color.color.code}
+                  />
+                  <div className="absolute -top-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 bg-white rounded-full border border-gray-200"></div>
                 </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Color Summary with Per-Color Unit Price */}
-          <div className="text-right flex-shrink-0">
-            <div className="text-[10px] sm:text-xs font-medium text-gray-500 whitespace-nowrap">
-              {color.totalForColor} pcs × {formatPrice(colorUnitPrice)}/pc
-            </div>
-            <div className="text-xs sm:text-sm font-semibold text-[#E39A65] mt-0.5 sm:mt-1 whitespace-nowrap">
-              = {formatPrice(colorSubtotal)}
-            </div>
-          </div>
-        </div>
-      </td>
-     </tr>
-  );
-})}
+                {/* Size Breakdown or Weight Quantity Display */}
+                <div className="flex-1 min-w-0">
+                  {isWeightBased ? (
+                    <div className="flex items-center gap-2">
+                      <Scale className="w-3 h-3 sm:w-4 sm:h-4 text-[#6B4F3A]" />
+                      <span className="text-xs sm:text-sm font-medium text-gray-700">
+                        {colorQty} {unitLabel}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap items-center gap-1 sm:gap-2">
+                      {color.sizeQuantities?.map((sq, sqIdx) => sq.quantity > 0 && (
+                        <div 
+                          key={`size-${index}-${colorIdx}-${sqIdx}`} 
+                          className="inline-flex items-center bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden"
+                        >
+                          <span className="px-1 sm:px-2 py-0.5 sm:py-1 bg-gray-100 text-[10px] sm:text-xs font-medium text-gray-700 border-r border-gray-200">
+                            {sq.size}
+                          </span>
+                          <span className="px-1 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold text-gray-900">
+                            {sq.quantity}
+                          </span>
+                        </div>
+                      ))}
+                      {(!color.sizeQuantities || color.sizeQuantities.length === 0) && (
+                        <span className="text-xs text-gray-500">No size details</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Color Summary with Per-Color Unit Price */}
+                <div className="text-right flex-shrink-0">
+                  <div className="text-[10px] sm:text-xs font-medium text-gray-500 whitespace-nowrap">
+                    {colorQty} {unitLabel} × {formatPrice(colorUnitPrice)}/{unitLabel === 'pcs' ? 'pc' : unitLabel}
+                  </div>
+                  <div className="text-xs sm:text-sm font-semibold text-[#6B4F3A] mt-0.5 sm:mt-1 whitespace-nowrap">
+                    = {formatPrice(colorSubtotal)}
+                  </div>
+                </div>
+              </div>
+            </td>
+            </tr>
+           );
+        })}
+  
 
       {/* Special Instructions */}
       {expanded && product.specialInstructions && (
@@ -1485,180 +1723,6 @@ const ProductRow = ({ product, index }) => {
   );
 };
 
-// Product Row Component - CORRECTED
-// const ProductRow = ({ product, index }) => {
-//   const [expanded, setExpanded] = useState(true);
-  
-//   const totalQuantity = product.colors?.reduce((sum, color) => 
-//     sum + (color.totalForColor || 0), 0) || 0;
-  
-//   const productTotal = product.total || (totalQuantity * product.unitPrice);
-//   const productNameLines = wrapText(product.productName, 50);
-
-//   return (
-//     <React.Fragment key={`product-${index}`}>
-//       {/* Main Product Row */}
-//       <tr className="border-b border-gray-200 hover:bg-gray-50/80 transition-colors">
-//         <td className="px-2 sm:px-6 py-3 sm:py-4 w-6 sm:w-12">
-//           <button
-//             onClick={() => setExpanded(!expanded)}
-//             className="w-5 h-5 sm:w-7 sm:h-7 flex items-center justify-center rounded-md hover:bg-gray-200 transition-colors text-gray-500"
-//             title={expanded ? "Hide details" : "Show details"}
-//           >
-//             {expanded ? <ChevronUp className="w-3 h-3 sm:w-4 sm:h-4" /> : <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4" />}
-//           </button>
-//         </td>
-//         <td className="px-2 sm:px-6 py-3 sm:py-4" colSpan={2}>
-//           <div className="flex items-start gap-2 sm:gap-4">
-//             {/* Product Image */}
-//             <div className="w-12 h-14 sm:w-16 sm:h-[88px] bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200 overflow-hidden shadow-sm flex-shrink-0">
-//               {product.productImage ? (
-//                 <img 
-//                   src={product.productImage} 
-//                   alt={product.productName}
-//                   className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
-//                   onError={(e) => {
-//                     e.target.onerror = null;
-//                     e.target.src = 'https://via.placeholder.com/64x64?text=No+Image';
-//                   }}
-//                 />
-//               ) : (
-//                 <div className="w-full h-full flex items-center justify-center bg-gray-100">
-//                   <Package className="w-4 h-4 sm:w-6 sm:h-6 text-gray-400" />
-//                 </div>
-//               )}
-//             </div>
-//             <div className="flex-1 min-w-0">
-//               {/* Product Name - Multi-line */}
-//               <div className="mb-1 sm:mb-2">
-//                 {productNameLines && productNameLines.length > 1 ? (
-//                   <div className="space-y-0.5">
-//                     {productNameLines.map((line, idx) => (
-//                       <h4 
-//                         key={idx} 
-//                         className="font-semibold text-gray-900 text-xs sm:text-sm break-words"
-//                         style={{ wordBreak: 'break-word' }}
-//                       >
-//                         {line}
-//                       </h4>
-//                     ))}
-//                   </div>
-//                 ) : (
-//                   <h4 className="font-semibold text-gray-900 text-xs sm:text-sm break-words">
-//                     {product.productName || 'N/A'}
-//                   </h4>
-//                 )}
-//               </div>
-              
-//               <div className="flex flex-wrap items-center gap-1.5 sm:gap-4 mt-1 sm:mt-2">
-//                 <span className="inline-flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-3 py-0.5 sm:py-1 bg-blue-50 text-blue-700 rounded-full text-[10px] sm:text-xs font-medium">
-//                   <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-blue-500"></span>
-//                   {product.colors?.length || 0} Colors
-//                 </span>
-//                 <span className="inline-flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-3 py-0.5 sm:py-1 bg-purple-50 text-purple-700 rounded-full text-[10px] sm:text-xs font-medium">
-//                   <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-purple-500"></span>
-//                   {totalQuantity} Units
-//                 </span>
-//                 {product.moq && (
-//                   <span className="inline-flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-3 py-0.5 sm:py-1 bg-gray-50 text-gray-600 rounded-full text-[10px] sm:text-xs font-medium">
-//                     MOQ: {product.moq}
-//                   </span>
-//                 )}
-//               </div>
-//             </div>
-//           </div>
-//         </td>
-//         <td className="px-2 sm:px-6 py-3 sm:py-4 text-right">
-//           <div className="text-base sm:text-2xl font-bold text-gray-900">{totalQuantity}</div>
-//           <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1">Total Units</div>
-//         </td>
-//         <td className="px-2 sm:px-6 py-3 sm:py-4 text-right">
-//           <div className="text-sm sm:text-lg font-semibold text-gray-900">{formatPrice(product.unitPrice)}</div>
-//           <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1">Per Unit</div>
-//         </td>
-//         <td className="px-2 sm:px-6 py-3 sm:py-4 text-right">
-//           <div className="text-base sm:text-xl font-bold text-[#E39A65]">{formatPrice(productTotal)}</div>
-//           <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1">Line Total</div>
-//         </td>
-//       </table>
-
-//       {/* Expanded Color Details with Per-Color Unit Price */}
-//       {expanded && product.colors?.map((color, colorIdx) => {
-//         // Get per-color unit price (use color.unitPrice, fallback to product.unitPrice)
-//         const colorUnitPrice = color.unitPrice || product.unitPrice || 0;
-//         const colorSubtotal = (color.totalForColor || 0) * colorUnitPrice;
-        
-//         return (
-//           <tr key={`color-${index}-${colorIdx}`} className="bg-gray-50/30 border-b border-gray-100">
-//             <td className="px-2 sm:px-6 py-2 sm:py-3"></td>
-//             <td className="px-2 sm:px-6 py-2 sm:py-3" colSpan={5}>
-//               <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-//                 {/* Color Swatch */}
-//                 <div className="relative flex-shrink-0">
-//                   <div 
-//                     className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg border-2 border-white shadow-md"
-//                     style={{ backgroundColor: color.color.code }}
-//                     title={color.color.name || color.color.code}
-//                   />
-//                   <div className="absolute -top-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 bg-white rounded-full border border-gray-200"></div>
-//                 </div>
-
-//                 {/* Size Breakdown */}
-//                 <div className="flex-1 min-w-0">
-//                   <div className="flex flex-wrap items-center gap-1 sm:gap-2">
-//                     {color.sizeQuantities?.map((sq, sqIdx) => sq.quantity > 0 && (
-//                       <div 
-//                         key={`size-${index}-${colorIdx}-${sqIdx}`} 
-//                         className="inline-flex items-center bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden"
-//                       >
-//                         <span className="px-1 sm:px-2 py-0.5 sm:py-1 bg-gray-100 text-[10px] sm:text-xs font-medium text-gray-700 border-r border-gray-200">
-//                           {sq.size}
-//                         </span>
-//                         <span className="px-1 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold text-gray-900">
-//                           {sq.quantity}
-//                         </span>
-//                       </div>
-//                     ))}
-//                   </div>
-//                 </div>
-
-//                 {/* Color Summary with Per-Color Unit Price */}
-//                 <div className="text-right flex-shrink-0">
-//                   <div className="text-[10px] sm:text-xs font-medium text-gray-500 whitespace-nowrap">
-//                     {color.totalForColor} pcs × {formatPrice(colorUnitPrice)}/pc
-//                   </div>
-//                   <div className="text-xs sm:text-sm font-semibold text-[#E39A65] mt-0.5 sm:mt-1 whitespace-nowrap">
-//                     = {formatPrice(colorSubtotal)}
-//                   </div>
-//                 </div>
-//               </div>
-//             </td>
-//             </tr>
-//           );
-//         }
-//       )}
-
-//       {/* Special Instructions */}
-//       {expanded && product.specialInstructions && (
-//         <tr className="bg-amber-50/30 border-b border-gray-200">
-//           <td className="px-2 sm:px-6 py-2 sm:py-3" colSpan={2}></td>
-//           <td className="px-2 sm:px-6 py-2 sm:py-3" colSpan={4}>
-//             <div className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 bg-amber-50 rounded-lg border border-amber-200">
-//               <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 text-amber-600 mt-0.5 flex-shrink-0" />
-//               <div>
-//                 <span className="text-[10px] sm:text-xs font-semibold text-amber-800 uppercase tracking-wider block mb-0.5 sm:mb-1">
-//                   Special Instructions
-//                 </span>
-//                 <p className="text-xs sm:text-sm text-amber-700">{product.specialInstructions}</p>
-//               </div>
-//             </div>
-//           </td>
-//         </tr>
-//       )}
-//     </React.Fragment>
-//   );
-// };
-
 // Banking Terms Component
 const BankingTermsSection = ({ bankingTerms }) => {
   if (!bankingTerms || bankingTerms.length === 0) return null;
@@ -1666,8 +1730,8 @@ const BankingTermsSection = ({ bankingTerms }) => {
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
       <div className="px-3 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
-        <h2 className="text-sm sm:text-base font-semibold text-gray-900 flex items-center gap-1.5 sm:gap-2">
-          <FileTextIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+        <h2 className="text-sm sm:text-base font-semibold text-gray-900 flex items-center gap-1.5 sm:gap-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <FileTextIcon className="w-4 h-4 sm:w-5 sm:h-5 text-[#6B4F3A]" />
           Banking Terms
         </h2>
       </div>
@@ -1862,7 +1926,7 @@ export default function AdminInvoiceViewPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 sm:w-10 sm:h-10 animate-spin text-[#E39A65] mx-auto mb-3 sm:mb-4" />
+          <Loader2 className="w-8 h-8 sm:w-10 sm:h-10 animate-spin text-[#6B4F3A] mx-auto mb-3 sm:mb-4" />
           <p className="text-xs sm:text-sm text-gray-500">Loading invoice details...</p>
         </div>
       </div>
@@ -1880,7 +1944,7 @@ export default function AdminInvoiceViewPage() {
           <p className="text-xs sm:text-sm text-gray-600 mb-4 sm:mb-6">{error || 'The invoice you are looking for does not exist.'}</p>
           <button
             onClick={handleGoBack}
-            className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-[#E39A65] text-white rounded-lg hover:bg-[#d48b54] transition-colors text-xs sm:text-sm"
+            className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-[#6B4F3A] text-white rounded-lg hover:bg-[#8B6B51] transition-colors text-xs sm:text-sm"
           >
             <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" />
             Back to Invoices
@@ -1892,6 +1956,7 @@ export default function AdminInvoiceViewPage() {
 
   const dueAmount = invoice.finalTotal - (invoice.amountPaid || 0);
   const statusOptions = getStatusOptions();
+  const mainUnit = invoice.items?.[0]?.orderUnit === 'kg' ? 'kg' : invoice.items?.[0]?.orderUnit === 'ton' ? 'MT' : 'pcs';
 
   return (
     <div className="min-h-screen bg-gray-50 py-4 sm:py-6">
@@ -1912,7 +1977,7 @@ export default function AdminInvoiceViewPage() {
                 <button
                   onClick={() => setStatusDropdownOpen(!statusDropdownOpen)}
                   disabled={updating}
-                  className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-[#E39A65] text-white rounded-lg hover:bg-[#d48b54] transition-colors"
+                  className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-[#6B4F3A] text-white rounded-lg hover:bg-[#8B6B51] transition-colors"
                 >
                   {updating ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin" /> : 'Change Status'}
                   <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -1966,17 +2031,16 @@ export default function AdminInvoiceViewPage() {
           </div>
         </div>
 
-        {/* Rest of your invoice display code remains the same... */}
         {/* Invoice Header Card */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4 sm:mb-6">
           <div className="px-3 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div className="flex items-center gap-2 sm:gap-4">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-[#E39A65] to-[#d48b54] rounded-lg flex items-center justify-center shadow-md">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-[#6B4F3A] to-[#8B6B51] rounded-lg flex items-center justify-center shadow-md">
                   <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-base sm:text-xl font-bold text-gray-900">{invoice.invoiceNumber}</h1>
+                  <h1 className="text-base sm:text-xl font-bold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>{invoice.invoiceNumber}</h1>
                   <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-1 text-[10px] sm:text-xs text-gray-500">
                     <div className="flex items-center gap-1">
                       <Calendar className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5" />
@@ -2107,8 +2171,8 @@ export default function AdminInvoiceViewPage() {
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4 sm:mb-6">
           <div className="px-3 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm sm:text-lg font-semibold text-gray-900 flex items-center gap-1.5 sm:gap-2">
-                <Package className="w-4 h-4 sm:w-5 sm:h-5 text-[#E39A65]" />
+              <h2 className="text-sm sm:text-lg font-semibold text-gray-900 flex items-center gap-1.5 sm:gap-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+                <Package className="w-4 h-4 sm:w-5 sm:h-5 text-[#6B4F3A]" />
                 Invoice Items
               </h2>
               <span className="text-[10px] sm:text-xs text-gray-500">
@@ -2153,8 +2217,8 @@ export default function AdminInvoiceViewPage() {
             {invoice.bankDetails && Object.values(invoice.bankDetails).some(v => v) && (
               <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                 <div className="px-3 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
-                  <h2 className="text-sm sm:text-base font-semibold text-gray-900 flex items-center gap-1.5 sm:gap-2">
-                    <Landmark className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <h2 className="text-sm sm:text-base font-semibold text-gray-900 flex items-center gap-1.5 sm:gap-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+                    <Landmark className="w-4 h-4 sm:w-5 sm:h-5 text-[#6B4F3A]" />
                     Bank Details
                   </h2>
                 </div>
@@ -2218,8 +2282,8 @@ export default function AdminInvoiceViewPage() {
           {/* Right Column - Invoice Summary */}
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <div className="px-3 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
-              <h2 className="text-sm sm:text-base font-semibold text-gray-900 flex items-center gap-1.5 sm:gap-2">
-                <DollarSign className="w-4 h-4 sm:w-5 sm:h-5" />
+              <h2 className="text-sm sm:text-base font-semibold text-gray-900 flex items-center gap-1.5 sm:gap-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+                <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-[#6B4F3A]" />
                 Invoice Summary
               </h2>
             </div>
@@ -2254,7 +2318,7 @@ export default function AdminInvoiceViewPage() {
                 <div className="border-t border-gray-200 my-2 sm:my-3 pt-2 sm:pt-3">
                   <div className="flex justify-between font-semibold">
                     <span className="text-gray-900 text-sm sm:text-base">Total:</span>
-                    <span className="text-[#E39A65] text-base sm:text-lg">{formatPrice(invoice.finalTotal)}</span>
+                    <span className="text-[#6B4F3A] text-base sm:text-lg">{formatPrice(invoice.finalTotal)}</span>
                   </div>
                 </div>
               </div>
@@ -2262,7 +2326,7 @@ export default function AdminInvoiceViewPage() {
               {/* Payment Details */}
               <div className="bg-gray-50 rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3">
                 <h3 className="text-xs sm:text-sm font-semibold text-gray-700 mb-1 sm:mb-2 flex items-center gap-1.5 sm:gap-2">
-                  <CreditCard className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <CreditCard className="w-3 h-3 sm:w-4 sm:h-4 text-[#6B4F3A]" />
                   Payment Details
                 </h3>
                 
@@ -2353,7 +2417,7 @@ export default function AdminInvoiceViewPage() {
         {(invoice.notes || invoice.terms) && (
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4 sm:mb-6">
             <div className="px-3 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
-              <h2 className="text-sm sm:text-base font-semibold text-gray-900">Additional Information</h2>
+              <h2 className="text-sm sm:text-base font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>Additional Information</h2>
             </div>
             <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
               {invoice.notes && (
@@ -2372,36 +2436,22 @@ export default function AdminInvoiceViewPage() {
           </div>
         )}
 
+        {/* Custom Fields */}
         {invoice.customFields && invoice.customFields.length > 0 && (
-  <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4 sm:mb-6">
-    
-    <div className="px-3 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
-      <h2 className="text-sm sm:text-base font-semibold text-gray-900">
-        Additional Fields
-      </h2>
-    </div>
-
-    <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-      {invoice.customFields.map((field, idx) => (
-        <div
-          key={idx}
-          className="flex justify-between items-start border-b border-gray-100 pb-2"
-        >
-          {/* Left: Title */}
-          <p className="text-xs sm:text-sm text-gray-500">
-            {field.fieldName}
-          </p>
-
-          {/* Right: Value */}
-          <p className="text-xs sm:text-sm font-medium text-gray-900 text-right max-w-[60%] break-words">
-            {field.fieldValue}
-          </p>
-        </div>
-      ))}
-    </div>
-
-  </div>
-)}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4 sm:mb-6">
+            <div className="px-3 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
+              <h2 className="text-sm sm:text-base font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>Additional Fields</h2>
+            </div>
+            <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
+              {invoice.customFields.map((field, idx) => (
+                <div key={idx} className="flex justify-between items-start border-b border-gray-100 pb-2">
+                  <p className="text-xs sm:text-sm text-gray-500">{field.fieldName}</p>
+                  <p className="text-xs sm:text-sm font-medium text-gray-900 text-right max-w-[60%] break-words">{field.fieldValue}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Footer Note */}
         <div className="text-center text-[10px] sm:text-xs text-gray-400 mt-6 sm:mt-8 mb-4">

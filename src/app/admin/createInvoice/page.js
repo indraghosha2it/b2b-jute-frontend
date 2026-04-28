@@ -1,6 +1,4 @@
 
-
-
 // 'use client';
 
 // import { useState, useEffect } from 'react';
@@ -834,52 +832,8 @@
 //   return product.pricePerUnit;
 // };
 
-//  // Recalculate all totals - FIXED: Per-color pricing for new products previous
-// // const recalculateTotals = (items) => {
-// //   let subtotal = 0;
-  
-// //   const updatedItems = items.map(item => {
-// //     let itemTotalQty = 0;
-// //     let itemTotalPrice = 0;
-    
-// //     // For each color, calculate based on its quantities
-// //     item.colors.forEach(color => {
-// //       // Calculate total quantity for this color
-// //       const colorQty = color.sizeQuantities.reduce((sum, sq) => sum + (sq.quantity || 0), 0);
-      
-// //       let unitPrice;
-      
-// //       // Check if this product came from inquiry (has originalUnitPrice)
-// //       if (item.originalUnitPrice !== undefined && item.originalUnitPrice !== null && item.originalUnitPrice > 0) {
-// //         // Use the original unit price from inquiry (preserved during quotation)
-// //         unitPrice = item.originalUnitPrice;
-// //       } else {
-// //         // NEW product - calculate based on bulk pricing tiers for THIS COLOR'S quantity
-// //         unitPrice = calculateUnitPrice(item.productId, colorQty);
-// //       }
-      
-// //       const colorTotal = colorQty * unitPrice;
-// //       itemTotalQty += colorQty;
-// //       itemTotalPrice += colorTotal;
-      
-// //       // Update the color's unit price for display
-// //       color.unitPrice = unitPrice;
-// //     });
-    
-// //     subtotal += itemTotalPrice;
-    
-// //     return {
-// //       ...item,
-// //       totalQuantity: itemTotalQty,
-// //       unitPrice: item.originalUnitPrice !== undefined && item.originalUnitPrice > 0 ? item.originalUnitPrice : (item.unitPrice || 0),
-// //       total: itemTotalPrice
-// //     };
-// //   });
-  
-// //   return { items: updatedItems, subtotal };
-// // };
 
-// // Recalculate all totals - Use per-color original prices for inquiry products
+
 // const recalculateTotals = (items) => {
 //   let subtotal = 0;
   
@@ -887,35 +841,33 @@
 //     let itemTotalQty = 0;
 //     let itemTotalPrice = 0;
     
-//     // For each color, calculate based on its quantities
 //     item.colors.forEach(color => {
-//       // Calculate total quantity for this color
 //       const colorQty = color.sizeQuantities.reduce((sum, sq) => sum + (sq.quantity || 0), 0);
       
 //       let unitPrice;
       
-//       // PRIORITY 1: Check if this color has an original unit price from inquiry
-//       if (color.originalUnitPrice !== undefined && color.originalUnitPrice !== null && color.originalUnitPrice > 0) {
-//         // Use the per-color original unit price from inquiry
+//       // PRIORITY 1: Use existing unitPrice (user may have edited it)
+//       if (color.userSetUnitPrice !== undefined && color.userSetUnitPrice !== null) {
+//         unitPrice = color.userSetUnitPrice;
+//       }
+//       // PRIORITY 2: Use originalUnitPrice from inquiry
+//       else if (color.originalUnitPrice !== undefined && color.originalUnitPrice !== null && color.originalUnitPrice > 0) {
 //         unitPrice = color.originalUnitPrice;
-//         console.log(`🎨 Using color original price: ${color.color?.code} - ${unitPrice}`);
 //       } 
-//       // PRIORITY 2: Check if product level has originalUnitPrice (fallback)
+//       // PRIORITY 3: Use product level originalUnitPrice
 //       else if (item.originalUnitPrice !== undefined && item.originalUnitPrice !== null && item.originalUnitPrice > 0) {
 //         unitPrice = item.originalUnitPrice;
-//         console.log(`📦 Using product original price: ${item.productName} - ${unitPrice}`);
 //       } 
-//       // PRIORITY 3: NEW product - calculate based on bulk pricing tiers
+//       // PRIORITY 4: Calculate based on bulk pricing for new products
 //       else {
 //         unitPrice = calculateUnitPrice(item.productId, colorQty);
-//         console.log(`🆕 Using calculated bulk price: ${item.productName} - ${colorQty} pcs = ${unitPrice}`);
 //       }
       
 //       const colorTotal = colorQty * unitPrice;
 //       itemTotalQty += colorQty;
 //       itemTotalPrice += colorTotal;
       
-//       // Update the color's unit price for display
+//       // Store the unit price being used
 //       color.unitPrice = unitPrice;
 //     });
     
@@ -1267,6 +1219,52 @@
 //   };
 
 //   // Handle color unit price change
+// // const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
+// //   setInvoiceData(prev => {
+// //     const updatedItems = JSON.parse(JSON.stringify(prev.items));
+// //     const color = updatedItems[itemIndex].colors[colorIndex];
+    
+// //     // Update the color's unit price
+// //     color.unitPrice = newUnitPrice;
+// //     // Also update originalUnitPrice if it exists (for inquiry products)
+// //     if (color.originalUnitPrice !== undefined) {
+// //       color.originalUnitPrice = newUnitPrice;
+// //     }
+    
+// //     // Recalculate totals
+// //     const { items, subtotal } = recalculateTotals(updatedItems);
+    
+// //     return {
+// //       ...prev,
+// //       items,
+// //       subtotal
+// //     };
+// //   });
+// // };
+// // const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
+// //   setInvoiceData(prev => {
+// //     const updatedItems = JSON.parse(JSON.stringify(prev.items));
+// //     const color = updatedItems[itemIndex].colors[colorIndex];
+    
+// //     // Update the color's unit price
+// //     color.unitPrice = newUnitPrice;
+    
+// //     // Set originalUnitPrice if it doesn't exist (for new colors)
+// //     if (color.originalUnitPrice === undefined || color.originalUnitPrice === null) {
+// //       color.originalUnitPrice = newUnitPrice;
+// //     }
+    
+// //     // Recalculate totals with the new price
+// //     const { items, subtotal } = recalculateTotals(updatedItems);
+    
+// //     return {
+// //       ...prev,
+// //       items,
+// //       subtotal
+// //     };
+// //   });
+// // };
+
 // const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
 //   setInvoiceData(prev => {
 //     const updatedItems = JSON.parse(JSON.stringify(prev.items));
@@ -1274,10 +1272,8 @@
     
 //     // Update the color's unit price
 //     color.unitPrice = newUnitPrice;
-//     // Also update originalUnitPrice if it exists (for inquiry products)
-//     if (color.originalUnitPrice !== undefined) {
-//       color.originalUnitPrice = newUnitPrice;
-//     }
+//     // Mark this as user-set to prevent recalculation from overwriting
+//     color.userSetUnitPrice = newUnitPrice;
     
 //     // Recalculate totals
 //     const { items, subtotal } = recalculateTotals(updatedItems);
@@ -1291,42 +1287,83 @@
 // };
 
 //   // Add a new color to an item
+//   // const handleAddColor = (itemIndex, colorCode, colorName) => {
+//   //   setInvoiceData(prev => {
+//   //     const updatedItems = JSON.parse(JSON.stringify(prev.items));
+//   //     const item = updatedItems[itemIndex];
+//   //     const product = productDetails[item.productId];
+      
+//   //     if (!product) return prev;
+      
+//   //     const colorExists = item.colors.some(c => c.color?.code === colorCode);
+//   //     if (colorExists) return prev;
+      
+//   //     const sizeQuantities = (product.sizes || []).map(size => ({
+//   //       size,
+//   //       quantity: 0
+//   //     }));
+      
+//   //     item.colors.push({
+//   //       color: {
+//   //         code: colorCode,
+//   //         name: colorName || colorCode
+//   //       },
+//   //       sizeQuantities,
+//   //       totalForColor: 0,
+//   //       unitPrice: 0 // Will be calculated in recalculateTotals
+//   //     });
+      
+//   //     // Recalculate totals (this will handle pricing correctly)
+//   //     const { items, subtotal } = recalculateTotals(updatedItems);
+      
+//   //     return {
+//   //       ...prev,
+//   //       items,
+//   //       subtotal
+//   //     };
+//   //   });
+//   // };
+
 //   const handleAddColor = (itemIndex, colorCode, colorName) => {
-//     setInvoiceData(prev => {
-//       const updatedItems = JSON.parse(JSON.stringify(prev.items));
-//       const item = updatedItems[itemIndex];
-//       const product = productDetails[item.productId];
-      
-//       if (!product) return prev;
-      
-//       const colorExists = item.colors.some(c => c.color?.code === colorCode);
-//       if (colorExists) return prev;
-      
-//       const sizeQuantities = (product.sizes || []).map(size => ({
-//         size,
-//         quantity: 0
-//       }));
-      
-//       item.colors.push({
-//         color: {
-//           code: colorCode,
-//           name: colorName || colorCode
-//         },
-//         sizeQuantities,
-//         totalForColor: 0,
-//         unitPrice: 0 // Will be calculated in recalculateTotals
-//       });
-      
-//       // Recalculate totals (this will handle pricing correctly)
-//       const { items, subtotal } = recalculateTotals(updatedItems);
-      
-//       return {
-//         ...prev,
-//         items,
-//         subtotal
-//       };
+//   setInvoiceData(prev => {
+//     const updatedItems = JSON.parse(JSON.stringify(prev.items));
+//     const item = updatedItems[itemIndex];
+//     const product = productDetails[item.productId];
+    
+//     if (!product) return prev;
+    
+//     const colorExists = item.colors.some(c => c.color?.code === colorCode);
+//     if (colorExists) return prev;
+    
+//     const sizeQuantities = (product.sizes || []).map(size => ({
+//       size,
+//       quantity: 0
+//     }));
+    
+//     // Calculate initial unit price based on product's base price
+//     const initialUnitPrice = product.pricePerUnit || 0;
+    
+//     item.colors.push({
+//       color: {
+//         code: colorCode,
+//         name: colorName || colorCode
+//       },
+//       sizeQuantities,
+//       totalForColor: 0,
+//       unitPrice: initialUnitPrice,  // Initialize with product's base price
+//       originalUnitPrice: null  // Mark as new color (not from inquiry)
 //     });
-//   };
+    
+//     // Recalculate totals
+//     const { items, subtotal } = recalculateTotals(updatedItems);
+    
+//     return {
+//       ...prev,
+//       items,
+//       subtotal
+//     };
+//   });
+// };
 
 //   // Add a new size to a color
 //   const handleAddSize = (itemIndex, colorIndex, size) => {
@@ -1416,39 +1453,71 @@
 //   };
 
 //   // Add a new product to invoice
+//   // const handleAddProduct = (product) => {
+//   //   setInvoiceData(prev => {
+//   //     const newItem = {
+//   //       productId: product._id,
+//   //       productName: product.productName,
+//   //       productImage: product.images?.[0]?.url,
+//   //       colors: [],
+//   //       totalQuantity: 0,
+//   //       unitPrice: product.pricePerUnit,
+//   //       moq: product.moq,
+//   //       total: 0,
+//   //       originalUnitPrice: null // Mark as NOT from inquiry (will use bulk pricing)
+//   //     };
+
+//   //     const updatedItems = [...prev.items, newItem];
+      
+//   //     fetchProductDetails(product._id);
+      
+//   //     const newExpandedItems = {};
+//   //     updatedItems.forEach((_, index) => {
+//   //       newExpandedItems[index] = true;
+//   //     });
+//   //     setExpandedItems(newExpandedItems);
+      
+//   //     toast.success(`${product.productName} added to invoice`);
+      
+//   //     return {
+//   //       ...prev,
+//   //       items: updatedItems
+//   //     };
+//   //   });
+//   // };
+
 //   const handleAddProduct = (product) => {
-//     setInvoiceData(prev => {
-//       const newItem = {
-//         productId: product._id,
-//         productName: product.productName,
-//         productImage: product.images?.[0]?.url,
-//         colors: [],
-//         totalQuantity: 0,
-//         unitPrice: product.pricePerUnit,
-//         moq: product.moq,
-//         total: 0,
-//         originalUnitPrice: null // Mark as NOT from inquiry (will use bulk pricing)
-//       };
+//   setInvoiceData(prev => {
+//     const newItem = {
+//       productId: product._id,
+//       productName: product.productName,
+//       productImage: product.images?.[0]?.url,
+//       colors: [],  // Start with no colors
+//       totalQuantity: 0,
+//       unitPrice: product.pricePerUnit,
+//       moq: product.moq,
+//       total: 0,
+//       originalUnitPrice: null  // Mark as new product (not from inquiry)
+//     };
 
-//       const updatedItems = [...prev.items, newItem];
-      
-//       fetchProductDetails(product._id);
-      
-//       const newExpandedItems = {};
-//       updatedItems.forEach((_, index) => {
-//         newExpandedItems[index] = true;
-//       });
-//       setExpandedItems(newExpandedItems);
-      
-//       toast.success(`${product.productName} added to invoice`);
-      
-//       return {
-//         ...prev,
-//         items: updatedItems
-//       };
+//     const updatedItems = [...prev.items, newItem];
+    
+//     fetchProductDetails(product._id);
+    
+//     const newExpandedItems = {};
+//     updatedItems.forEach((_, index) => {
+//       newExpandedItems[index] = true;
 //     });
-//   };
-
+//     setExpandedItems(newExpandedItems);
+    
+//     toast.success(`${product.productName} added to invoice`);
+    
+//     return {
+//       ...prev,
+//       items: updatedItems
+//     };
+//   });
+// };
 //   const handleCompanyChange = (field, value) => {
 //     setInvoiceData(prev => ({
 //       ...prev,
@@ -2762,19 +2831,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -2804,7 +2860,8 @@ import {
   ChevronDown,
   ChevronUp,
   Package,
-  AlertTriangle
+  AlertTriangle,
+  Scale
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -2817,8 +2874,17 @@ const formatPrice = (price) => {
   }).format(price || 0);
 };
 
+// Helper function to get unit label
+const getUnitLabel = (orderUnit) => {
+  switch(orderUnit) {
+    case 'kg': return 'kg';
+    case 'ton': return 'MT';
+    default: return 'pcs';
+  }
+};
+
 // Default logo URL
-const DEFAULT_LOGO_URL = 'https://i.ibb.co.com/60xkJ1Wd/favicon.png';
+const DEFAULT_LOGO_URL = 'https://i.ibb.co.com/YBG2DF6f/Chat-GPT-Image-Feb-26-2026-09-57-28-AM-removebg-preview.png';
 
 // Parse number helper
 const parseNumber = (value) => {
@@ -2848,8 +2914,54 @@ const StatusBadge = ({ status }) => {
   );
 };
 
-// Size Badge Component
-const SizeBadge = ({ size, quantity, onRemove, onQuantityChange }) => {
+// Weight Quantity Input Component for kg/ton products
+const WeightQuantityInput = ({ quantity, onQuantityChange, unitLabel, moq, onBlur }) => {
+  const displayValue = quantity === 0 ? '' : quantity;
+
+  const handleChange = (e) => {
+    const value = e.target.value;
+    if (value === '') {
+      onQuantityChange(0);
+    } else {
+      const num = parseFloat(value);
+      if (!isNaN(num) && num >= 0) {
+        onQuantityChange(num);
+      }
+    }
+  };
+
+  const handleBlur = () => {
+    if (quantity === 0) {
+      onQuantityChange(0);
+    }
+    if (onBlur) onBlur();
+  };
+
+  return (
+    <div className="inline-flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:border-[#6B4F3A] transition-all">
+      <div className="px-1.5 sm:px-2 py-1 sm:py-1.5 bg-gray-50 border-r border-gray-200">
+        <span className="text-[10px] sm:text-xs font-medium text-gray-700">Qty</span>
+      </div>
+      <input
+        type="number"
+        step="0.01"
+        min="0"
+        value={displayValue}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        onWheel={(e) => e.target.blur()}
+        className="w-20 sm:w-24 px-1 py-1 sm:py-1.5 text-[10px] sm:text-xs text-center border-none focus:outline-none focus:ring-2 focus:ring-[#6B4F3A]"
+        placeholder="0"
+      />
+      <div className="px-1.5 sm:px-2 py-1 sm:py-1.5 bg-gray-50 border-l border-gray-200">
+        <span className="text-[9px] sm:text-[10px] font-medium text-gray-500">{unitLabel}</span>
+      </div>
+    </div>
+  );
+};
+
+// Size Badge Component (for piece-based products)
+const SizeBadge = ({ size, quantity, onRemove, onQuantityChange, onBlur }) => {
   const displayValue = quantity === 0 ? '' : quantity;
 
   const handleChange = (e) => {
@@ -2868,10 +2980,11 @@ const SizeBadge = ({ size, quantity, onRemove, onQuantityChange }) => {
     if (quantity === 0) {
       onQuantityChange(0);
     }
+    if (onBlur) onBlur();
   };
 
   return (
-    <div className="inline-flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:border-[#E39A65] transition-all">
+    <div className="inline-flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:border-[#6B4F3A] transition-all">
       <div className="px-1.5 sm:px-2 py-1 sm:py-1.5 bg-gray-50 border-r border-gray-200">
         <span className="text-[10px] sm:text-xs font-medium text-gray-700">{size}</span>
       </div>
@@ -2882,7 +2995,7 @@ const SizeBadge = ({ size, quantity, onRemove, onQuantityChange }) => {
         onChange={handleChange}
         onBlur={handleBlur}
         onWheel={(e) => e.target.blur()}
-        className="w-10 sm:w-14 px-1 py-1 sm:py-1.5 text-[10px] sm:text-xs text-center border-none focus:outline-none focus:ring-2 focus:ring-[#E39A65]"
+        className="w-10 sm:w-14 px-1 py-1 sm:py-1.5 text-[10px] sm:text-xs text-center border-none focus:outline-none focus:ring-2 focus:ring-[#6B4F3A]"
         placeholder="0"
       />
       <button
@@ -2906,14 +3019,14 @@ const BankingTermField = ({ field, onUpdate, onRemove }) => {
           value={field.title}
           onChange={(e) => onUpdate(field.id, 'title', e.target.value)}
           placeholder="Term title (e.g., Payment Terms, Late Fee)"
-          className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent mb-2"
+          className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent mb-2"
         />
         <textarea
           value={field.value}
           onChange={(e) => onUpdate(field.id, 'value', e.target.value)}
           placeholder="Term description or value (optional - can be left empty)"
           rows="2"
-          className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+          className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
         />
         <p className="text-xs text-gray-400 mt-1">
           You can leave the value empty if this is just a heading or note
@@ -2930,12 +3043,13 @@ const BankingTermField = ({ field, onUpdate, onRemove }) => {
   );
 };
 
-// Product Item Card Component
+// Product Item Card Component - Supports both piece-based and weight-based with bulk pricing
 const ProductItemCard = ({ 
   item, 
   itemIndex, 
   product, 
   onUpdate, 
+  onUpdateWeightQuantity,
   onUpdateUnitPrice,
   onAddColor, 
   onAddSize, 
@@ -2943,14 +3057,23 @@ const ProductItemCard = ({
   onRemoveSize,
   onRemoveProduct,
   isExpanded,
-  onToggleExpand
+  onToggleExpand,
+  calculateBulkPrice
 }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const availableColors = product?.colors || [];
   const availableSizes = product?.sizes || [];
+  const isWeightBased = item.orderUnit === 'kg' || item.orderUnit === 'ton';
+  const unitLabel = getUnitLabel(item.orderUnit);
 
-  const handleQuantityChange = (colorIndex, sizeIndex, newQuantity) => {
+  const handleSizeQuantityChange = (colorIndex, sizeIndex, newQuantity) => {
     onUpdate(itemIndex, colorIndex, sizeIndex, newQuantity);
+  };
+
+  const handleWeightQuantityChange = (colorIndex, newQuantity) => {
+    if (onUpdateWeightQuantity) {
+      onUpdateWeightQuantity(itemIndex, colorIndex, newQuantity);
+    }
   };
 
   const handleRemoveColor = (colorIndex) => {
@@ -2976,9 +3099,17 @@ const ProductItemCard = ({
 
   const imageUrl = item.productImage || product?.images?.[0]?.url || 'https://via.placeholder.com/80x80?text=No+Image';
   const productTotalPrice = item.total || 0;
-
-  // Calculate if this product is from inquiry (has originalUnitPrice)
   const isFromInquiry = item.originalUnitPrice !== undefined && item.originalUnitPrice !== null;
+
+  // Calculate bulk price for a color when quantity changes
+  const handleQuantityBlur = (colorIndex, colorTotal) => {
+    if (!isFromInquiry && product && colorTotal > 0) {
+      const bulkPrice = calculateBulkPrice(product, colorTotal);
+      if (bulkPrice !== undefined && bulkPrice > 0) {
+        onUpdateUnitPrice(itemIndex, colorIndex, bulkPrice);
+      }
+    }
+  };
 
   return (
     <>
@@ -3006,19 +3137,17 @@ const ProductItemCard = ({
                   <h3 className="text-sm sm:text-base font-semibold text-gray-900">{item.productName}</h3>
                   <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1">
                     <span className="text-[10px] sm:text-xs bg-blue-50 text-blue-700 px-1.5 sm:px-2 py-0.5 rounded-full">
-                      {item.colors.length} Colors
+                      {item.orderUnit === 'kg' ? 'KG (Weight)' : item.orderUnit === 'ton' ? 'MT (Weight)' : 'Pieces'}
                     </span>
                     <span className="text-[10px] sm:text-xs bg-purple-50 text-purple-700 px-1.5 sm:px-2 py-0.5 rounded-full">
-                      {item.totalQuantity} Total Pcs
+                      {item.colors.length} Colors
                     </span>
-                    {!isFromInquiry && (
-                      <span className="text-[10px] sm:text-xs bg-green-50 text-green-700 px-1.5 sm:px-2 py-0.5 rounded-full">
-                        New Product (Bulk Pricing)
-                      </span>
-                    )}
-                    {isFromInquiry && (
+                    <span className="text-[10px] sm:text-xs bg-green-50 text-green-700 px-1.5 sm:px-2 py-0.5 rounded-full">
+                      {item.totalQuantity} {unitLabel}
+                    </span>
+                    {!isFromInquiry && product?.quantityBasedPricing?.length > 0 && (
                       <span className="text-[10px] sm:text-xs bg-orange-50 text-orange-700 px-1.5 sm:px-2 py-0.5 rounded-full">
-                        From Inquiry (Fixed Price)
+                        Bulk Pricing Available
                       </span>
                     )}
                   </div>
@@ -3026,16 +3155,14 @@ const ProductItemCard = ({
                 
                 <div className="flex flex-wrap items-center justify-between md:justify-end gap-3">
                   <div className="text-left md:text-right">
-                    <p className="text-[10px] sm:text-xs text-gray-500">Basic Unit Price</p>
-                    <p className="text-sm sm:text-base font-bold text-[#E39A65]">{formatPrice(item.unitPrice)}</p>
-                    {!isFromInquiry && item.colors.length > 0 && (
-                      <p className="text-[8px] text-gray-400">Per color based on quantity</p>
-                    )}
+                    <p className="text-[10px] sm:text-xs text-gray-500">Base Price</p>
+                    <p className="text-sm sm:text-base font-bold text-[#6B4F3A]">{formatPrice(item.unitPrice)}</p>
+                    <p className="text-[8px] text-gray-400">per {unitLabel === 'pcs' ? 'pc' : unitLabel}</p>
                   </div>
                   
                   <div className="text-left md:text-right min-w-[80px] sm:min-w-[100px]">
                     <p className="text-[10px] sm:text-xs text-gray-500">Product Total</p>
-                    <p className="text-sm sm:text-base font-bold text-[#E39A65]">{formatPrice(productTotalPrice)}</p>
+                    <p className="text-sm sm:text-base font-bold text-[#6B4F3A]">{formatPrice(productTotalPrice)}</p>
                   </div>
                   
                   <div className="flex items-center gap-1">
@@ -3071,136 +3198,198 @@ const ProductItemCard = ({
 
         {isExpanded && (
           <div className="p-3 sm:p-5 space-y-4">
-  {item.colors.map((color, colorIndex) => {
-  const colorTotal = color.sizeQuantities.reduce((sum, sq) => sum + (sq.quantity || 0), 0);
-  const displayUnitPrice = color.originalUnitPrice || color.unitPrice || 0;
-  const isInquiryColor = color.originalUnitPrice !== undefined && color.originalUnitPrice !== null;
-
-  return (
-    <div key={`${itemIndex}-${colorIndex}-${color.color.code}`} className="bg-gray-50/50 rounded-lg p-3 sm:p-4 border border-gray-100">
-      {/* Color Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-        <div className="flex items-center gap-2">
-          <div 
-            className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-white shadow-md" 
-            style={{ backgroundColor: color.color.code }}
-          />
-          <span className="text-xs sm:text-sm font-semibold text-gray-800">
-            {color.color.name || color.color.code}
-          </span>
-          <span className="text-[10px] sm:text-xs bg-white px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full border border-gray-200">
-            {colorTotal} pcs
-          </span>
-        </div>
-        
-        {/* Editable Unit Price - REPLACE THIS SECTION */}
-        <div className="flex items-center gap-2">
-          {colorTotal > 0 && (
-            <div className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-full">
-              <span className="text-[9px] sm:text-[10px] text-gray-500">$</span>
-              <input
-                type="number"
-                step="0.01"
-                min="0"
-                value={displayUnitPrice}
-                onChange={(e) => {
-                  const newPrice = parseFloat(e.target.value) || 0;
-                  onUpdateUnitPrice(itemIndex, colorIndex, newPrice);
-                }}
-                className="w-16 sm:w-20 px-1 py-0.5 text-[9px] sm:text-[10px] text-center bg-transparent border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#E39A65]"
-              />
-              <span className="text-[9px] sm:text-[10px] text-gray-500">/pc</span>
-            </div>
-          )}
-          <button
-            onClick={() => handleRemoveColor(colorIndex)}
-            className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors self-start sm:self-auto"
-            title="Remove color"
-          >
-            <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </button>
-        </div>
-      </div>
-
-      {/* Size Quantities Grid */}
-      <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-3">
-        {color.sizeQuantities.map((sq, sizeIndex) => (
-          <SizeBadge
-            key={`${itemIndex}-${colorIndex}-${sizeIndex}-${sq.size}`}
-            size={sq.size}
-            quantity={sq.quantity}
-            onQuantityChange={(newQty) => handleQuantityChange(colorIndex, sizeIndex, newQty)}
-            onRemove={() => handleRemoveSize(colorIndex, sizeIndex)}
-          />
-        ))}
-        
-        {availableSizes.length > 0 && (
-          <select
-            onChange={(e) => {
-              if (e.target.value) {
-                handleAddSize(colorIndex, e.target.value);
-                e.target.value = '';
+            {item.colors.map((color, colorIndex) => {
+              let colorTotal = 0;
+              if (isWeightBased) {
+                colorTotal = color.quantity || color.totalQuantity || 0;
+              } else {
+                colorTotal = color.sizeQuantities.reduce((sum, sq) => sum + (sq.quantity || 0), 0);
               }
-            }}
-            className="px-1.5 sm:px-2 py-1 sm:py-1.5 text-[10px] sm:text-xs border border-gray-200 rounded-lg bg-white hover:border-[#E39A65] focus:outline-none focus:ring-2 focus:ring-[#E39A65] transition-colors"
-            value=""
-          >
-            <option value="">+ Add Size</option>
-            {availableSizes
-              .filter(s => !color.sizeQuantities.some(sq => sq.size === s))
-              .map(size => (
-                <option key={size} value={size}>{size}</option>
-              ))
-            }
-          </select>
-        )}
-      </div>
+              const displayUnitPrice = color.unitPrice || 0;
+              const isInquiryColor = color.originalUnitPrice !== undefined && color.originalUnitPrice !== null;
+              const isManuallyEdited = color.userSetUnitPrice !== undefined && color.userSetUnitPrice !== null;
+              
+              // Calculate if bulk price would apply (for display only)
+              let bulkPriceInfo = null;
+              if (!isInquiryColor && !isManuallyEdited && product && colorTotal >= product.moq && product.quantityBasedPricing?.length > 0) {
+                const sortedTiers = [...product.quantityBasedPricing].sort((a, b) => {
+                  const aMin = parseInt(a.range.split('-')[0] || a.range.replace('+', ''));
+                  const bMin = parseInt(b.range.split('-')[0] || b.range.replace('+', ''));
+                  return aMin - bMin;
+                });
+                for (const tier of sortedTiers) {
+                  const range = tier.range;
+                  if (range.includes('-')) {
+                    const [min, max] = range.split('-').map(Number);
+                    if (colorTotal >= min && colorTotal <= max) {
+                      bulkPriceInfo = { price: tier.price, range: range };
+                      break;
+                    }
+                  } else if (range.includes('+')) {
+                    const minQty = parseInt(range.replace('+', ''));
+                    if (colorTotal >= minQty) {
+                      bulkPriceInfo = { price: tier.price, range: range };
+                      break;
+                    }
+                  }
+                }
+              }
 
-      {/* MOQ Warning for new products only */}
-      {!isInquiryColor && colorTotal > 0 && colorTotal < item.moq && (
-        <div className="mt-2 p-1.5 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <p className="text-[8px] sm:text-[9px] text-yellow-700">
-            ⚠️ Quantity ({colorTotal} pcs) is below MOQ ({item.moq} pcs). 
-            Using base price: {formatPrice(item.unitPrice)}/pc
-          </p>
-        </div>
-      )}
-      
-      {/* PRICE BREAKDOWN */}
-      {colorTotal > 0 && (
-        <div className="mt-2 pt-2 border-t border-gray-200">
-          <div className="flex justify-between items-center text-[9px] sm:text-[10px]">
-            <span className="text-gray-500">
-              {isInquiryColor ? (
-                "Fixed Price (from inquiry) - Editable"
-              ) : (
-                colorTotal < item.moq ? (
-                  <span className="text-yellow-600">⚠️ Below MOQ - Base Price Applied</span>
-                ) : (
-                  "Bulk Pricing Applied - Editable"
-                )
-              )}
-            </span>
-            <div className="text-right">
-              <span className="text-gray-500">
-                {colorTotal} pcs × {formatPrice(displayUnitPrice)}/pc = 
-              </span>
-              <span className="font-semibold text-[#E39A65] ml-1">
-                {formatPrice(colorTotal * displayUnitPrice)}
-              </span>
-            </div>
-          </div>
-          {!isInquiryColor && colorTotal < item.moq && (
-            <p className="text-[8px] text-gray-400 mt-1">
-              Add {item.moq - colorTotal} more pieces to unlock bulk pricing
-            </p>
-          )}
-        </div>
-      )}
-    </div>
-  );
-})}
+              return (
+                <div key={`${itemIndex}-${colorIndex}-${color.color.code}`} className="bg-gray-50/50 rounded-lg p-3 sm:p-4 border border-gray-100">
+                  {/* Color Header */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                    <div className="flex items-center gap-2">
+                      <div 
+                        className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-white shadow-md" 
+                        style={{ backgroundColor: color.color.code }}
+                      />
+          
+                      <span className="text-[10px] sm:text-xs bg-white px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full border border-gray-200">
+                        {colorTotal} {unitLabel}
+                      </span>
+                      {isManuallyEdited && (
+                        <span className="text-[8px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full">
+                          Manual Price
+                        </span>
+                      )}
+                      {bulkPriceInfo && !isManuallyEdited && (
+                        <span className="text-[8px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full">
+                          Bulk: {bulkPriceInfo.range}
+                        </span>
+                      )}
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      {colorTotal > 0 && (
+                        <div className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-full">
+                          <span className="text-[9px] sm:text-[10px] text-gray-500">$</span>
+                          <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            value={displayUnitPrice}
+                            onChange={(e) => {
+                              const newPrice = parseFloat(e.target.value) || 0;
+                              onUpdateUnitPrice(itemIndex, colorIndex, newPrice);
+                            }}
+                            className="w-16 sm:w-20 px-1 py-0.5 text-[9px] sm:text-[10px] text-center bg-transparent border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#6B4F3A]"
+                          />
+                          <span className="text-[9px] sm:text-[10px] text-gray-500">/{unitLabel === 'pcs' ? 'pc' : unitLabel}</span>
+                        </div>
+                      )}
 
+                           {/* {isManuallyEdited && colorTotal > 0 && (
+      <button
+        onClick={() => {
+          const bulkPrice = calculateBulkPrice(product, colorTotal);
+          if (bulkPrice > 0) {
+            onUpdateUnitPrice(itemIndex, colorIndex, bulkPrice);
+          }
+        }}
+        className="text-[8px] bg-green-50 text-green-700 px-1.5 py-0.5 rounded-full hover:bg-green-100 whitespace-nowrap"
+      >
+        Reset to Bulk Price
+      </button>
+
+
+
+
+    )} */}
+
+                      <button
+                        onClick={() => handleRemoveColor(colorIndex)}
+                        className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors self-start sm:self-auto"
+                        title="Remove color"
+                      >
+                        <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Quantity Input - Weight-based OR Size-based */}
+                  {isWeightBased ? (
+                    <div className="mt-3">
+                      <WeightQuantityInput
+                        quantity={color.quantity || color.totalQuantity || 0}
+                        onQuantityChange={(newQty) => handleWeightQuantityChange(colorIndex, newQty)}
+                        onBlur={() => handleQuantityBlur(colorIndex, colorTotal)}
+                        unitLabel={unitLabel}
+                        moq={item.moq}
+                      />
+                      {colorTotal > 0 && colorTotal < item.moq && (
+                        <p className="text-[10px] text-yellow-600 mt-1">
+                          ⚠️ Quantity ({colorTotal} {unitLabel}) is below MOQ ({item.moq} {unitLabel})
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-3">
+                      {color.sizeQuantities.map((sq, sizeIndex) => (
+                        <SizeBadge
+                          key={`${itemIndex}-${colorIndex}-${sizeIndex}-${sq.size}`}
+                          size={sq.size}
+                          quantity={sq.quantity}
+                          onQuantityChange={(newQty) => handleSizeQuantityChange(colorIndex, sizeIndex, newQty)}
+                          onBlur={() => handleQuantityBlur(colorIndex, colorTotal)}
+                          onRemove={() => handleRemoveSize(colorIndex, sizeIndex)}
+                        />
+                      ))}
+                      
+                      {availableSizes.length > 0 && (
+                        <select
+                          onChange={(e) => {
+                            if (e.target.value) {
+                              handleAddSize(colorIndex, e.target.value);
+                              e.target.value = '';
+                            }
+                          }}
+                          className="px-1.5 sm:px-2 py-1 sm:py-1.5 text-[10px] sm:text-xs border border-gray-200 rounded-lg bg-white hover:border-[#6B4F3A] focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] transition-colors"
+                          value=""
+                        >
+                          <option value="">+ Add Size</option>
+                          {availableSizes
+                            .filter(s => !color.sizeQuantities.some(sq => sq.size === s))
+                            .map(size => (
+                              <option key={size} value={size}>{size}</option>
+                            ))
+                          }
+                        </select>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Price Breakdown */}
+                  {colorTotal > 0 && (
+                    <div className="mt-2 pt-2 border-t border-gray-200">
+                      <div className="flex justify-between items-center text-[9px] sm:text-[10px]">
+                        <span className="text-gray-500">
+                          {isInquiryColor ? "Fixed Price (from inquiry)" : 
+                           isManuallyEdited ? "Manual Price (editable)" :
+                           bulkPriceInfo ? `Bulk pricing (${bulkPriceInfo.range}) applied` :
+                           colorTotal >= item.moq ? "Bulk pricing applied" : "Base price applied"}
+                        </span>
+                        <div className="text-right">
+                          <span className="text-gray-500">
+                            {colorTotal} {unitLabel} × {formatPrice(displayUnitPrice)}/{unitLabel === 'pcs' ? 'pc' : unitLabel} = 
+                          </span>
+                          <span className="font-semibold text-[#6B4F3A] ml-1">
+                            {formatPrice(colorTotal * displayUnitPrice)}
+                          </span>
+                        </div>
+                      </div>
+                      {!isInquiryColor && !isManuallyEdited && colorTotal >= item.moq && bulkPriceInfo && (
+                        <p className="text-[8px] text-green-600 mt-1">
+                          ✓ Bulk price ${bulkPriceInfo.price}/{unitLabel === 'pcs' ? 'pc' : unitLabel} applied (was ${item.unitPrice})
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+            {/* Add New Color Section */}
             {availableColors.length > 0 && (
               <div className="mt-4 pt-3 border-t border-gray-200">
                 <label className="block text-xs font-medium text-gray-700 mb-2">
@@ -3218,7 +3407,7 @@ const ProductItemCard = ({
                         title={color.code}
                       >
                         <div 
-                          className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 border-white shadow-md hover:scale-110 transition-transform hover:ring-2 hover:ring-[#E39A65]"
+                          className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 border-white shadow-md hover:scale-110 transition-transform hover:ring-2 hover:ring-[#6B4F3A]"
                           style={{ backgroundColor: color.code }}
                         />
                         <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-[10px] sm:text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
@@ -3278,35 +3467,49 @@ const ProductItemCard = ({
   );
 };
 
-// Search Product Modal Component
+// Search Product Modal Component - FIXED to fetch all product types
 const SearchProductModal = ({ isOpen, onClose, onSelectProduct, existingProductIds }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [allProducts, setAllProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
 
+  // Fetch all products on mount
   useEffect(() => {
-    if (searchTerm.trim().length > 2) {
-      searchProducts();
-    } else {
-      setSearchResults([]);
+    if (isOpen) {
+      fetchAllProducts();
     }
-  }, [searchTerm]);
+  }, [isOpen]);
 
-  const searchProducts = async () => {
-    setSearching(true);
+  const fetchAllProducts = async () => {
+    setLoadingProducts(true);
     try {
-      const response = await fetch(`http://localhost:5000/api/products?search=${encodeURIComponent(searchTerm)}&limit=20`);
+      const response = await fetch('http://localhost:5000/api/products?limit=100');
       const data = await response.json();
       if (data.success) {
         const filtered = data.data.filter(p => !existingProductIds.includes(p._id));
+        setAllProducts(filtered);
         setSearchResults(filtered);
       }
     } catch (error) {
-      console.error('Error searching products:', error);
-      toast.error('Failed to search products');
+      console.error('Error fetching products:', error);
+      toast.error('Failed to load products');
     } finally {
-      setSearching(false);
+      setLoadingProducts(false);
+    }
+  };
+
+  const handleSearch = (term) => {
+    setSearchTerm(term);
+    if (term.trim() === '') {
+      setSearchResults(allProducts);
+    } else {
+      const filtered = allProducts.filter(product =>
+        product.productName.toLowerCase().includes(term.toLowerCase())
+      );
+      setSearchResults(filtered);
     }
   };
 
@@ -3324,6 +3527,14 @@ const SearchProductModal = ({ isOpen, onClose, onSelectProduct, existingProductI
     }
   };
 
+  const getUnitDisplay = (orderUnit) => {
+    switch(orderUnit) {
+      case 'kg': return 'KG (Weight)';
+      case 'ton': return 'MT (Weight)';
+      default: return 'Pieces';
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -3331,7 +3542,7 @@ const SearchProductModal = ({ isOpen, onClose, onSelectProduct, existingProductI
       <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col">
         <div className="flex-shrink-0 p-4 sm:p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Add Product to Invoice</h2>
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>Add Product to Invoice</h2>
             <button
               onClick={onClose}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -3348,12 +3559,12 @@ const SearchProductModal = ({ isOpen, onClose, onSelectProduct, existingProductI
               type="text"
               placeholder="Search products by name..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+              onChange={(e) => handleSearch(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
               autoFocus
             />
-            {searching && (
-              <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 animate-spin text-[#E39A65]" />
+            {(searching || loadingProducts) && (
+              <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 animate-spin text-[#6B4F3A]" />
             )}
           </div>
         </div>
@@ -3367,8 +3578,8 @@ const SearchProductModal = ({ isOpen, onClose, onSelectProduct, existingProductI
                   onClick={() => handleSelectProduct(product)}
                   className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
                     selectedProduct?._id === product._id
-                      ? 'border-[#E39A65] bg-orange-50'
-                      : 'border-gray-200 hover:border-[#E39A65] hover:bg-gray-50'
+                      ? 'border-[#6B4F3A] bg-orange-50'
+                      : 'border-gray-200 hover:border-[#6B4F3A] hover:bg-gray-50'
                   }`}
                 >
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
@@ -3379,32 +3590,39 @@ const SearchProductModal = ({ isOpen, onClose, onSelectProduct, existingProductI
                     />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-xs sm:text-sm font-medium text-gray-900 truncate">{product.productName}</h3>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="text-xs sm:text-sm font-medium text-gray-900 truncate">{product.productName}</h3>
+                      <span className="text-[8px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full whitespace-nowrap">
+                        {getUnitDisplay(product.orderUnit)}
+                      </span>
+                    </div>
                     <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5">
                       {product.colors?.length || 0} colors • {product.sizes?.length || 0} sizes
+                      {product.quantityBasedPricing?.length > 0 && ` • ${product.quantityBasedPricing.length} pricing tiers`}
                     </p>
                   </div>
                   <div className="text-right flex-shrink-0">
-                    <p className="text-xs sm:text-sm font-bold text-[#E39A65]">{formatPrice(product.pricePerUnit)}</p>
+                    <p className="text-xs sm:text-sm font-bold text-[#6B4F3A]">{formatPrice(product.pricePerUnit)}</p>
                     <p className="text-[10px] sm:text-xs text-gray-500">MOQ: {product.moq}</p>
                   </div>
                 </div>
               ))
-            ) : searchTerm.length > 2 && !searching ? (
+            ) : searchTerm.length > 0 && !loadingProducts ? (
               <div className="text-center py-8 sm:py-12">
                 <Package className="w-10 h-10 sm:w-12 sm:h-12 text-gray-300 mx-auto mb-3" />
                 <p className="text-sm text-gray-500">No products found</p>
                 <p className="text-xs text-gray-400 mt-1">Try searching with different keywords</p>
               </div>
-            ) : searchTerm.length > 0 && searchTerm.length <= 2 ? (
+            ) : loadingProducts ? (
               <div className="text-center py-8 sm:py-12">
-                <Search className="w-10 h-10 sm:w-12 sm:h-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-sm text-gray-500">Type at least 3 characters to search</p>
+                <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 text-[#6B4F3A] mx-auto mb-3 animate-spin" />
+                <p className="text-sm text-gray-500">Loading products...</p>
               </div>
             ) : (
               <div className="text-center py-8 sm:py-12">
                 <Package className="w-10 h-10 sm:w-12 sm:h-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-sm text-gray-500">Start typing to search for products</p>
+                <p className="text-sm text-gray-500">No products available</p>
+                <p className="text-xs text-gray-400 mt-1">All products may have been added already</p>
               </div>
             )}
           </div>
@@ -3421,7 +3639,7 @@ const SearchProductModal = ({ isOpen, onClose, onSelectProduct, existingProductI
             <button
               onClick={handleAddProduct}
               disabled={!selectedProduct}
-              className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium bg-[#E39A65] text-white rounded-lg hover:bg-[#d48b54] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium bg-[#6B4F3A] text-white rounded-lg hover:bg-[#8B6B51] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Add Product
             </button>
@@ -3443,7 +3661,6 @@ export default function CreateInvoicePage() {
   const [productDetails, setProductDetails] = useState({});
   const [expandedItems, setExpandedItems] = useState({});
   const [showProductSearch, setShowProductSearch] = useState(false);
-  const [amountPaid, setAmountPaid] = useState(0);
   const [dynamicFields, setDynamicFields] = useState([]);
   const [bankingTerms, setBankingTerms] = useState([]);
   
@@ -3457,11 +3674,11 @@ export default function CreateInvoicePage() {
     company: {
       logo: DEFAULT_LOGO_URL,
       logoPublicId: '',
-      companyName: 'Asian Clothify',
+      companyName: 'Jute Craftify',
       contactPerson: '',
-      email: 'info@asianclothify.com',
-      phone: '+8801305-785685',
-      address: '49/10-C, Ground Floor, Genda, Savar, Dhaka, Bangladesh'
+      email: 'info@jutecraftify.com',
+      phone: '+8801871-733305',
+      address: '34/6,Mongla, Khulna, Bangladesh, Khulna, Bangladesh'
     },
     customer: {
       companyName: '',
@@ -3505,6 +3722,52 @@ export default function CreateInvoicePage() {
     status: 'draft'
   });
 
+  // Calculate bulk price based on quantity tiers
+  const calculateBulkPrice = (product, quantity) => {
+    if (!product || quantity === 0) return product?.pricePerUnit || 0;
+    
+    // Check if product has bulk pricing tiers
+    if (!product.quantityBasedPricing || product.quantityBasedPricing.length === 0) {
+      return product.pricePerUnit;
+    }
+    
+    // Check if quantity meets MOQ
+    if (quantity < product.moq) {
+      return product.pricePerUnit;
+    }
+    
+    // Sort tiers by minimum quantity
+    const sortedTiers = [...product.quantityBasedPricing].sort((a, b) => {
+      const aMin = parseInt(a.range.split('-')[0] || a.range.replace('+', ''));
+      const bMin = parseInt(b.range.split('-')[0] || b.range.replace('+', ''));
+      return aMin - bMin;
+    });
+    
+    // Find matching tier
+    for (const tier of sortedTiers) {
+      const range = tier.range;
+      if (range.includes('-')) {
+        const [min, max] = range.split('-').map(Number);
+        if (quantity >= min && quantity <= max) {
+          return tier.price;
+        }
+      } else if (range.includes('+')) {
+        const minQty = parseInt(range.replace('+', ''));
+        if (quantity >= minQty) {
+          return tier.price;
+        }
+      }
+    }
+    
+    // If no tier matched, check highest tier
+    const highestTier = sortedTiers[sortedTiers.length - 1];
+    if (highestTier && highestTier.range.includes('-') && quantity > parseInt(highestTier.range.split('-')[1])) {
+      return highestTier.price;
+    }
+    
+    return product.pricePerUnit;
+  };
+
   // Filter out unavailable items
   const filterAvailableItems = (items) => {
     if (!items || !Array.isArray(items)) return [];
@@ -3513,156 +3776,72 @@ export default function CreateInvoicePage() {
     
     for (const product of items) {
       if (product.isAvailable === false) {
-        console.log(`❌ Filtering out product: ${product.productName} (marked unavailable)`);
         continue;
       }
       
       const availableColors = (product.colors || []).filter(color => {
-        if (color.isAvailable === false) {
-          console.log(`❌ Filtering out color: ${color.color?.code} from product ${product.productName} (marked unavailable)`);
-          return false;
-        }
+        if (color.isAvailable === false) return false;
         return true;
       });
       
       const processedColors = availableColors.map(color => {
-        const availableSizes = (color.sizeQuantities || []).filter(size => {
-          if (size.isAvailable === false) {
-            console.log(`❌ Filtering out size: ${size.size} from color ${color.color?.code} (marked unavailable)`);
-            return false;
-          }
-          return true;
-        });
+        const isWeightBased = product.orderUnit === 'kg' || product.orderUnit === 'ton';
         
-        return {
-          ...color,
-          sizeQuantities: availableSizes,
-          totalForColor: availableSizes.reduce((sum, sq) => sum + (sq.quantity || 0), 0)
-        };
-      }).filter(color => color.sizeQuantities.length > 0);
+        if (isWeightBased) {
+          const quantity = color.quantity || color.totalQuantity || 0;
+          return {
+            ...color,
+            quantity: quantity,
+            totalForColor: quantity,
+            totalQuantity: quantity,
+            sizeQuantities: []
+          };
+        } else {
+          const availableSizes = (color.sizeQuantities || []).filter(size => {
+            if (size.isAvailable === false) return false;
+            return true;
+          });
+          
+          return {
+            ...color,
+            sizeQuantities: availableSizes,
+            totalForColor: availableSizes.reduce((sum, sq) => sum + (sq.quantity || 0), 0),
+            quantity: 0
+          };
+        }
+      }).filter(color => {
+        if (product.orderUnit === 'kg' || product.orderUnit === 'ton') {
+          return color.quantity > 0;
+        }
+        return color.sizeQuantities.length > 0;
+      });
       
       if (processedColors.length > 0) {
         filteredProducts.push({
           ...product,
           colors: processedColors,
-          totalQuantity: processedColors.reduce((sum, color) => sum + color.totalForColor, 0)
+          totalQuantity: processedColors.reduce((sum, color) => {
+            if (product.orderUnit === 'kg' || product.orderUnit === 'ton') {
+              return sum + (color.quantity || 0);
+            }
+            return sum + (color.totalForColor || 0);
+          }, 0)
         });
-      } else {
-        console.log(`❌ Filtering out product: ${product.productName} (no available colors/sizes left)`);
       }
     }
     
-    console.log(`📊 Filtered products: ${filteredProducts.length} out of ${items.length}`);
     return filteredProducts;
   };
 
   // Calculate unit price based on bulk pricing tiers (for NEW products)
-// Calculate unit price based on bulk pricing tiers (for NEW products)
-const calculateUnitPrice = (productId, quantity) => {
-  const product = productDetails[productId];
-  if (!product) return 0;
-  
-  // If no quantity or quantity below MOQ, return base price
-  if (quantity === 0) return product.pricePerUnit;
-  
-  // Check if quantity meets minimum MOQ
-  if (quantity < product.moq) {
-    return product.pricePerUnit;
-  }
-  
-  // If no bulk pricing tiers, return base price
-  if (!product.quantityBasedPricing || product.quantityBasedPricing.length === 0) {
-    return product.pricePerUnit;
-  }
+  const calculateUnitPrice = (productId, quantity) => {
+    const product = productDetails[productId];
+    if (!product) return 0;
+    return calculateBulkPrice(product, quantity);
+  };
 
-  // Sort tiers by minimum quantity
-  const sortedTiers = [...product.quantityBasedPricing].sort((a, b) => {
-    const aMin = parseInt(a.range.split('-')[0] || a.range.replace('+', ''));
-    const bMin = parseInt(b.range.split('-')[0] || b.range.replace('+', ''));
-    return aMin - bMin;
-  });
-
-  // Find matching tier
-  for (const tier of sortedTiers) {
-    const range = tier.range;
-    if (range.includes('-')) {
-      const [min, max] = range.split('-').map(Number);
-      if (quantity >= min && quantity <= max) {
-        return tier.price;
-      }
-    } else if (range.includes('+')) {
-      const minQty = parseInt(range.replace('+', ''));
-      if (quantity >= minQty) {
-        return tier.price;
-      }
-    }
-  }
-
-  // If no tier matched, check highest tier
-  const highestTier = sortedTiers[sortedTiers.length - 1];
-  if (highestTier && highestTier.range.includes('-') && quantity > parseInt(highestTier.range.split('-')[1])) {
-    return highestTier.price;
-  }
-  
-  // Default to base price
-  return product.pricePerUnit;
-};
-
-
-
-// Recalculate all totals - Use per-color original prices for inquiry products
-// const recalculateTotals = (items) => {
-//   let subtotal = 0;
-  
-//   const updatedItems = items.map(item => {
-//     let itemTotalQty = 0;
-//     let itemTotalPrice = 0;
-    
-//     // For each color, calculate based on its quantities
-//     item.colors.forEach(color => {
-//       // Calculate total quantity for this color
-//       const colorQty = color.sizeQuantities.reduce((sum, sq) => sum + (sq.quantity || 0), 0);
-      
-//       let unitPrice;
-      
-//       // PRIORITY 1: Check if this color has an original unit price from inquiry
-//       if (color.originalUnitPrice !== undefined && color.originalUnitPrice !== null && color.originalUnitPrice > 0) {
-//         // Use the per-color original unit price from inquiry
-//         unitPrice = color.originalUnitPrice;
-//         console.log(`🎨 Using color original price: ${color.color?.code} - ${unitPrice}`);
-//       } 
-//       // PRIORITY 2: Check if product level has originalUnitPrice (fallback)
-//       else if (item.originalUnitPrice !== undefined && item.originalUnitPrice !== null && item.originalUnitPrice > 0) {
-//         unitPrice = item.originalUnitPrice;
-//         console.log(`📦 Using product original price: ${item.productName} - ${unitPrice}`);
-//       } 
-//       // PRIORITY 3: NEW product - calculate based on bulk pricing tiers
-//       else {
-//         unitPrice = calculateUnitPrice(item.productId, colorQty);
-//         console.log(`🆕 Using calculated bulk price: ${item.productName} - ${colorQty} pcs = ${unitPrice}`);
-//       }
-      
-//       const colorTotal = colorQty * unitPrice;
-//       itemTotalQty += colorQty;
-//       itemTotalPrice += colorTotal;
-      
-//       // Update the color's unit price for display
-//       color.unitPrice = unitPrice;
-//     });
-    
-//     subtotal += itemTotalPrice;
-    
-//     return {
-//       ...item,
-//       totalQuantity: itemTotalQty,
-//       unitPrice: item.originalUnitPrice !== undefined && item.originalUnitPrice > 0 ? item.originalUnitPrice : (item.unitPrice || 0),
-//       total: itemTotalPrice
-//     };
-//   });
-  
-//   return { items: updatedItems, subtotal };
-// };
-
+  // Recalculate totals with bulk pricing
+// Recalculate totals with bulk pricing - FIXED to apply to existing colors too
 const recalculateTotals = (items) => {
   let subtotal = 0;
   
@@ -3670,34 +3849,57 @@ const recalculateTotals = (items) => {
     let itemTotalQty = 0;
     let itemTotalPrice = 0;
     
+    const isWeightBased = item.orderUnit === 'kg' || item.orderUnit === 'ton';
+    const product = productDetails[item.productId];
+    
     item.colors.forEach(color => {
-      const colorQty = color.sizeQuantities.reduce((sum, sq) => sum + (sq.quantity || 0), 0);
+      let colorQty = 0;
+      
+      if (isWeightBased) {
+        colorQty = color.quantity || color.totalQuantity || 0;
+      } else {
+        colorQty = color.sizeQuantities.reduce((sum, sq) => sum + (sq.quantity || 0), 0);
+      }
       
       let unitPrice;
       
-      // PRIORITY 1: Use existing unitPrice (user may have edited it)
+      // Priority 1: User manually set price (always respected)
       if (color.userSetUnitPrice !== undefined && color.userSetUnitPrice !== null) {
         unitPrice = color.userSetUnitPrice;
       }
-      // PRIORITY 2: Use originalUnitPrice from inquiry
-      else if (color.originalUnitPrice !== undefined && color.originalUnitPrice !== null && color.originalUnitPrice > 0) {
-        unitPrice = color.originalUnitPrice;
-      } 
-      // PRIORITY 3: Use product level originalUnitPrice
-      else if (item.originalUnitPrice !== undefined && item.originalUnitPrice !== null && item.originalUnitPrice > 0) {
-        unitPrice = item.originalUnitPrice;
-      } 
-      // PRIORITY 4: Calculate based on bulk pricing for new products
+      // Priority 2: If quantity is 0, keep existing price
+      else if (colorQty === 0) {
+        unitPrice = color.unitPrice || 0;
+      }
+      // Priority 3: Apply bulk pricing based on quantity (regardless of original price)
       else {
-        unitPrice = calculateUnitPrice(item.productId, colorQty);
+        // Calculate bulk price for this quantity
+        const bulkPrice = calculateBulkPrice(product, colorQty);
+        
+        // If bulk price is available and different from current price, update it
+        if (bulkPrice > 0 && bulkPrice !== color.unitPrice) {
+          unitPrice = bulkPrice;
+          // Mark that this was auto-calculated (not user edited)
+          color.autoCalculated = true;
+        } 
+        // Otherwise keep existing price
+        else {
+          unitPrice = color.unitPrice || 0;
+        }
       }
       
       const colorTotal = colorQty * unitPrice;
       itemTotalQty += colorQty;
       itemTotalPrice += colorTotal;
       
-      // Store the unit price being used
       color.unitPrice = unitPrice;
+      if (isWeightBased) {
+        color.totalQuantity = colorQty;
+        color.totalForColor = colorQty;
+      } else {
+        color.totalForColor = colorQty;
+        color.totalQuantity = colorQty;
+      }
     });
     
     subtotal += itemTotalPrice;
@@ -3733,7 +3935,7 @@ const recalculateTotals = (items) => {
     setBankingTerms(prev => prev.filter(term => term.id !== id));
   };
 
-  // Fetch the next invoice number when component mounts
+  // Fetch the next invoice number
   useEffect(() => {
     fetchNextInvoiceNumber();
   }, []);
@@ -3743,43 +3945,30 @@ const recalculateTotals = (items) => {
     try {
       const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:5000/api/invoices/next-number', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       
       const data = await response.json();
       if (data.success) {
-        setInvoiceData(prev => ({
-          ...prev,
-          invoiceNumber: data.data
-        }));
-        console.log('Next invoice number:', data.data);
+        setInvoiceData(prev => ({ ...prev, invoiceNumber: data.data }));
       } else {
-        console.error('Failed to fetch next invoice number');
         const date = new Date();
         const year = date.getFullYear().toString().slice(-2);
         const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        setInvoiceData(prev => ({
-          ...prev,
-          invoiceNumber: `INV-${year}${month}-TEMP`
-        }));
+        setInvoiceData(prev => ({ ...prev, invoiceNumber: `INV-${year}${month}-TEMP` }));
       }
     } catch (error) {
       console.error('Error fetching next invoice number:', error);
       const date = new Date();
       const year = date.getFullYear().toString().slice(-2);
       const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      setInvoiceData(prev => ({
-        ...prev,
-        invoiceNumber: `INV-${year}${month}-TEMP`
-      }));
+      setInvoiceData(prev => ({ ...prev, invoiceNumber: `INV-${year}${month}-TEMP` }));
     } finally {
       setLoadingNextNumber(false);
     }
   };
 
-  // Handler functions for dynamic fields
+  // Dynamic fields handlers
   const handleAddField = () => {
     setDynamicFields(prev => [
       ...prev,
@@ -3799,24 +3988,12 @@ const recalculateTotals = (items) => {
     setDynamicFields(prev => prev.filter(fieldItem => fieldItem.id !== id));
   };
 
+  // Load inquiry data from URL params
   useEffect(() => {
     const inquiryId = searchParams.get('inquiryId');
     const inquiryNumber = searchParams.get('inquiryNumber');
     const userIdParam = searchParams.get('userId'); 
     const itemsParam = searchParams.get('items');
-    const totalAmount = parseFloat(searchParams.get('totalAmount') || '0');
-    const specialInstructions = searchParams.get('specialInstructions');
-    
-    console.log('🔍 URL Params - Raw values:', { 
-      inquiryId, 
-      inquiryNumber, 
-      userIdParam, 
-      userIdParamType: typeof userIdParam,
-      userIdParamValue: userIdParam,
-      itemsParam: itemsParam ? 'exists' : 'missing',
-      itemsParamLength: itemsParam?.length,
-      totalAmount 
-    });
 
     if (userIdParam && (userIdParam === '[object Object]' || userIdParam.includes('[object'))) {
       console.error('❌ Invalid userId format in URL params:', userIdParam);
@@ -3840,25 +4017,10 @@ const recalculateTotals = (items) => {
     };
 
     setInvoiceData(prev => {
-      const currentCustomer = prev.customer || {
-        companyName: '',
-        contactPerson: '',
-        email: '',
-        phone: '',
-        whatsapp: '',
-        billingAddress: '',
-        billingCity: '',
-        billingZipCode: '',
-        billingCountry: '',
-        shippingAddress: '',
-        shippingCity: '',
-        shippingZipCode: '',
-        shippingCountry: ''
-      };
+      const currentCustomer = prev.customer || {};
 
       let cleanUserId = userIdParam;
       if (cleanUserId === '[object Object]' || (cleanUserId && cleanUserId.includes('[object'))) {
-        console.warn('⚠️ Cleaning invalid userId:', cleanUserId);
         cleanUserId = '';
       }
 
@@ -3873,117 +4035,64 @@ const recalculateTotals = (items) => {
         }
       };
 
-      console.log('📦 Updated invoiceData:', {
-        userId: updatedData.userId,
-        inquiryId: updatedData.inquiryId,
-        inquiryNumber: updatedData.inquiryNumber
-      });
+      if (itemsParam) {
+        try {
+          const parsedItems = JSON.parse(itemsParam);
+          
+          const availableItems = filterAvailableItems(parsedItems);
+          
+          if (availableItems.length === 0) {
+            toast.warning('No available items found in this inquiry. All products, colors, or sizes are marked as unavailable.', { duration: 5000 });
+          } else if (availableItems.length < parsedItems.length) {
+            toast.info(`${parsedItems.length - availableItems.length} product(s) were removed because they are marked as unavailable.`, { duration: 5000 });
+          }
 
- if (itemsParam) {
-  try {
-    const parsedItems = JSON.parse(itemsParam);
-    
-    console.log('📦 Raw parsed items (before filtering):', parsedItems.map(p => ({
-      name: p.productName,
-      isAvailable: p.isAvailable,
-      colorsCount: p.colors?.length,
-      colors: p.colors?.map(c => ({
-        code: c.color?.code,
-        unitPrice: c.unitPrice,
-        isAvailable: c.isAvailable,
-        totalForColor: c.totalForColor,
-        sizesCount: c.sizeQuantities?.length,
-        sizes: c.sizeQuantities?.map(s => ({ size: s.size, isAvailable: s.isAvailable, qty: s.quantity }))
-      }))
-    })));
-    
-    // FILTER OUT UNAVAILABLE ITEMS
-    const availableItems = filterAvailableItems(parsedItems);
-    
-    console.log('📦 Available items after filtering:', availableItems.map(p => ({
-      name: p.productName,
-      colorsCount: p.colors?.length,
-      colors: p.colors?.map(c => ({
-        code: c.color?.code,
-        unitPrice: c.unitPrice,
-        totalForColor: c.totalForColor,
-        sizesCount: c.sizeQuantities?.length
-      }))
-    })));
-    
-    if (availableItems.length === 0) {
-      toast.warning('No available items found in this inquiry. All products, colors, or sizes are marked as unavailable.', {
-        duration: 5000
-      });
-    } else if (availableItems.length < parsedItems.length) {
-      const filteredCount = parsedItems.length - availableItems.length;
-      toast.info(`${filteredCount} product(s) were removed because they are marked as unavailable. Only available items will be included in the invoice.`, {
-        duration: 5000
-      });
-    }
+          let processedItems = availableItems.map(item => ({
+            ...item,
+            productImage: item.productImage || '',
+            originalUnitPrice: item.unitPrice,
+            unitPrice: item.unitPrice || 0,
+            total: (item.totalQuantity || 0) * (item.unitPrice || 0),
+            colors: (item.colors || []).map(color => ({
+              ...color,
+              originalUnitPrice: color.unitPrice || item.unitPrice,
+              unitPrice: color.unitPrice || item.unitPrice || 0,
+              totalForColor: color.totalForColor || 0,
+              quantity: color.quantity || color.totalQuantity || 0,
+              sizeQuantities: (color.sizeQuantities || []).map(sq => ({
+                size: sq.size,
+                quantity: sq.quantity || 0
+              }))
+            }))
+          }));
 
-    // IMPORTANT: Preserve the per-color original unit prices from inquiry
-    let processedItems = availableItems.map(item => ({
-      ...item,
-      productImage: item.productImage || '',
-      // Store product level original price as fallback
-      originalUnitPrice: item.unitPrice,
-      unitPrice: item.unitPrice || 0,
-      total: (item.totalQuantity || 0) * (item.unitPrice || 0),
-      colors: (item.colors || []).map(color => ({
-        ...color,
-        // CRITICAL: Store the per-color unit price from inquiry
-        originalUnitPrice: color.unitPrice || item.unitPrice,
-        unitPrice: color.unitPrice || item.unitPrice || 0,
-        totalForColor: color.totalForColor || 0,
-        sizeQuantities: (color.sizeQuantities || []).map(sq => ({
-          size: sq.size,
-          quantity: sq.quantity || 0
-        }))
-      }))
-    }));
-
-    // FORCE RECALCULATION using per-color prices
-    const { items: recalculatedItems, subtotal: recalculatedSubtotal } = recalculateTotals(processedItems);
-    
-    updatedData.items = recalculatedItems;
-    updatedData.subtotal = recalculatedSubtotal;
-    
-    console.log('📊 Recalculated subtotal using per-color prices:', recalculatedSubtotal);
-    console.log('📊 Items after recalculation:', recalculatedItems.map(item => ({
-      productName: item.productName,
-      totalQuantity: item.totalQuantity,
-      total: item.total,
-      colors: item.colors.map(c => ({
-        code: c.color?.code,
-        originalUnitPrice: c.originalUnitPrice,
-        unitPrice: c.unitPrice,
-        totalForColor: c.totalForColor
-      }))
-    })));
-    
-    const initialExpandedState = {};
-    availableItems.forEach((_, index) => {
-      initialExpandedState[index] = true;
-    });
-    setExpandedItems(initialExpandedState);
-    
-    availableItems.forEach(item => {
-      if (item.productId) {
-        fetchProductDetails(item.productId);
+          const { items: recalculatedItems, subtotal: recalculatedSubtotal } = recalculateTotals(processedItems);
+          
+          updatedData.items = recalculatedItems;
+          updatedData.subtotal = recalculatedSubtotal;
+          
+          const initialExpandedState = {};
+          availableItems.forEach((_, index) => {
+            initialExpandedState[index] = true;
+          });
+          setExpandedItems(initialExpandedState);
+          
+          availableItems.forEach(item => {
+            if (item.productId) {
+              fetchProductDetails(item.productId);
+            }
+          });
+        } catch (error) {
+          console.error('❌ Error parsing items:', error);
+          toast.error('Failed to load inquiry items');
+        }
       }
-    });
-  } catch (error) {
-    console.error('❌ Error parsing items:', error);
-    toast.error('Failed to load inquiry items');
-  }
-}
 
       return updatedData;
     });
   }, [searchParams]);
 
-  // Fetch product details for available colors and sizes
+  // Fetch product details
   const fetchProductDetails = async (productId) => {
     try {
       const response = await fetch(`http://localhost:5000/api/products/${productId}`);
@@ -3999,27 +4108,24 @@ const recalculateTotals = (items) => {
     }
   };
 
-  // Add this useEffect right after the fetchProductDetails function or near other useEffects
+  // Recalculate totals when product details are loaded
+  useEffect(() => {
+    if (invoiceData.items.length > 0 && Object.keys(productDetails).length > 0) {
+      const timer = setTimeout(() => {
+        const { items, subtotal } = recalculateTotals(invoiceData.items);
+        if (JSON.stringify(items) !== JSON.stringify(invoiceData.items)) {
+          setInvoiceData(prev => ({
+            ...prev,
+            items: items,
+            subtotal: subtotal
+          }));
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [productDetails, invoiceData.items.length]);
 
-// Recalculate totals when product details are loaded or when items change
-useEffect(() => {
-  if (invoiceData.items.length > 0 && Object.keys(productDetails).length > 0) {
-    // Small delay to ensure all product details are loaded
-    const timer = setTimeout(() => {
-      const { items, subtotal } = recalculateTotals(invoiceData.items);
-      if (JSON.stringify(items) !== JSON.stringify(invoiceData.items)) {
-        setInvoiceData(prev => ({
-          ...prev,
-          items: items,
-          subtotal: subtotal
-        }));
-      }
-    }, 100);
-    return () => clearTimeout(timer);
-  }
-}, [productDetails, invoiceData.items.length]);
-
-  // Toggle expand/collapse for an item
+  // Toggle expand/collapse
   const toggleExpand = (itemIndex) => {
     setExpandedItems(prev => ({
       ...prev,
@@ -4027,174 +4133,149 @@ useEffect(() => {
     }));
   };
 
-  // Handle color quantity change - UPDATED
-  const handleColorQuantityChange = (itemIndex, colorIndex, sizeIndex, newQuantity) => {
-    setInvoiceData(prev => {
-      const updatedItems = JSON.parse(JSON.stringify(prev.items));
-      const color = updatedItems[itemIndex].colors[colorIndex];
-      const item = updatedItems[itemIndex];
-      
-      color.sizeQuantities[sizeIndex].quantity = newQuantity;
-      
-      // Recalculate totals (this will recalculate per-color pricing)
-      const { items, subtotal } = recalculateTotals(updatedItems);
-      
-      return {
-        ...prev,
-        items,
-        subtotal
-      };
-    });
-  };
+  // Handle size quantity change (piece-based)
+ // Handle size quantity change (piece-based) - ALWAYS apply bulk pricing on quantity change
+const handleSizeQuantityChange = (itemIndex, colorIndex, sizeIndex, newQuantity) => {
+  setInvoiceData(prev => {
+    const updatedItems = JSON.parse(JSON.stringify(prev.items));
+    const color = updatedItems[itemIndex].colors[colorIndex];
+    const item = updatedItems[itemIndex];
+    const product = productDetails[item.productId];
+    
+    // Update the quantity
+    color.sizeQuantities[sizeIndex].quantity = newQuantity;
+    
+    // Calculate new total quantity for this color
+    const newColorTotal = color.sizeQuantities.reduce((sum, sq) => sum + (sq.quantity || 0), 0);
+    
+    // ALWAYS apply bulk pricing based on new quantity (ignore manual price)
+    if (product && newColorTotal > 0) {
+      const bulkPrice = calculateBulkPrice(product, newColorTotal);
+      if (bulkPrice > 0) {
+        color.unitPrice = bulkPrice;
+        // Remove manual price flag since we're auto-updating
+        delete color.userSetUnitPrice;
+      }
+    } else if (newColorTotal === 0) {
+      // If quantity is zero, reset to base price
+      color.unitPrice = product?.pricePerUnit || 0;
+      delete color.userSetUnitPrice;
+    }
+    
+    const { items, subtotal } = recalculateTotals(updatedItems);
+    return { ...prev, items, subtotal };
+  });
+};
+
+// Handle weight quantity change (kg/ton) - ALWAYS apply bulk pricing on quantity change
+const handleWeightQuantityChange = (itemIndex, colorIndex, newQuantity) => {
+  setInvoiceData(prev => {
+    const updatedItems = JSON.parse(JSON.stringify(prev.items));
+    const color = updatedItems[itemIndex].colors[colorIndex];
+    const item = updatedItems[itemIndex];
+    const product = productDetails[item.productId];
+    
+    // Update the quantity
+    color.quantity = newQuantity;
+    color.totalQuantity = newQuantity;
+    color.totalForColor = newQuantity;
+    
+    // ALWAYS apply bulk pricing based on new quantity (ignore manual price)
+    if (product && newQuantity > 0) {
+      const bulkPrice = calculateBulkPrice(product, newQuantity);
+      if (bulkPrice > 0) {
+        color.unitPrice = bulkPrice;
+        // Remove manual price flag since we're auto-updating
+        delete color.userSetUnitPrice;
+      }
+    } else if (newQuantity === 0) {
+      // If quantity is zero, reset to base price
+      color.unitPrice = product?.pricePerUnit || 0;
+      delete color.userSetUnitPrice;
+    }
+    
+    const { items, subtotal } = recalculateTotals(updatedItems);
+    return { ...prev, items, subtotal };
+  });
+};
 
   // Handle color unit price change
-// const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
-//   setInvoiceData(prev => {
-//     const updatedItems = JSON.parse(JSON.stringify(prev.items));
-//     const color = updatedItems[itemIndex].colors[colorIndex];
-    
-//     // Update the color's unit price
-//     color.unitPrice = newUnitPrice;
-//     // Also update originalUnitPrice if it exists (for inquiry products)
-//     if (color.originalUnitPrice !== undefined) {
-//       color.originalUnitPrice = newUnitPrice;
-//     }
-    
-//     // Recalculate totals
-//     const { items, subtotal } = recalculateTotals(updatedItems);
-    
-//     return {
-//       ...prev,
-//       items,
-//       subtotal
-//     };
-//   });
-// };
-// const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
-//   setInvoiceData(prev => {
-//     const updatedItems = JSON.parse(JSON.stringify(prev.items));
-//     const color = updatedItems[itemIndex].colors[colorIndex];
-    
-//     // Update the color's unit price
-//     color.unitPrice = newUnitPrice;
-    
-//     // Set originalUnitPrice if it doesn't exist (for new colors)
-//     if (color.originalUnitPrice === undefined || color.originalUnitPrice === null) {
-//       color.originalUnitPrice = newUnitPrice;
-//     }
-    
-//     // Recalculate totals with the new price
-//     const { items, subtotal } = recalculateTotals(updatedItems);
-    
-//     return {
-//       ...prev,
-//       items,
-//       subtotal
-//     };
-//   });
-// };
-
+// Handle color unit price change - Manual override (but will be reset on quantity change)
 const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
   setInvoiceData(prev => {
     const updatedItems = JSON.parse(JSON.stringify(prev.items));
     const color = updatedItems[itemIndex].colors[colorIndex];
     
-    // Update the color's unit price
-    color.unitPrice = newUnitPrice;
-    // Mark this as user-set to prevent recalculation from overwriting
-    color.userSetUnitPrice = newUnitPrice;
+    if (newUnitPrice === null || newUnitPrice === undefined) {
+      // Unlock - remove manual price and recalculate bulk
+      delete color.userSetUnitPrice;
+      // Recalculate with bulk pricing
+      const product = productDetails[updatedItems[itemIndex].productId];
+      let colorQty = 0;
+      const isWeightBased = updatedItems[itemIndex].orderUnit === 'kg' || updatedItems[itemIndex].orderUnit === 'ton';
+      if (isWeightBased) {
+        colorQty = color.quantity || 0;
+      } else {
+        colorQty = color.sizeQuantities.reduce((sum, sq) => sum + (sq.quantity || 0), 0);
+      }
+      const bulkPrice = calculateBulkPrice(product, colorQty);
+      color.unitPrice = bulkPrice;
+    } else {
+      // Set manual price (this will be overwritten on next quantity change)
+      color.userSetUnitPrice = newUnitPrice;
+      color.unitPrice = newUnitPrice;
+    }
     
-    // Recalculate totals
     const { items, subtotal } = recalculateTotals(updatedItems);
-    
-    return {
-      ...prev,
-      items,
-      subtotal
-    };
+    return { ...prev, items, subtotal };
   });
 };
 
-  // Add a new color to an item
-  // const handleAddColor = (itemIndex, colorCode, colorName) => {
-  //   setInvoiceData(prev => {
-  //     const updatedItems = JSON.parse(JSON.stringify(prev.items));
-  //     const item = updatedItems[itemIndex];
-  //     const product = productDetails[item.productId];
-      
-  //     if (!product) return prev;
-      
-  //     const colorExists = item.colors.some(c => c.color?.code === colorCode);
-  //     if (colorExists) return prev;
-      
-  //     const sizeQuantities = (product.sizes || []).map(size => ({
-  //       size,
-  //       quantity: 0
-  //     }));
-      
-  //     item.colors.push({
-  //       color: {
-  //         code: colorCode,
-  //         name: colorName || colorCode
-  //       },
-  //       sizeQuantities,
-  //       totalForColor: 0,
-  //       unitPrice: 0 // Will be calculated in recalculateTotals
-  //     });
-      
-  //     // Recalculate totals (this will handle pricing correctly)
-  //     const { items, subtotal } = recalculateTotals(updatedItems);
-      
-  //     return {
-  //       ...prev,
-  //       items,
-  //       subtotal
-  //     };
-  //   });
-  // };
-
+  // Add a new color
   const handleAddColor = (itemIndex, colorCode, colorName) => {
-  setInvoiceData(prev => {
-    const updatedItems = JSON.parse(JSON.stringify(prev.items));
-    const item = updatedItems[itemIndex];
-    const product = productDetails[item.productId];
-    
-    if (!product) return prev;
-    
-    const colorExists = item.colors.some(c => c.color?.code === colorCode);
-    if (colorExists) return prev;
-    
-    const sizeQuantities = (product.sizes || []).map(size => ({
-      size,
-      quantity: 0
-    }));
-    
-    // Calculate initial unit price based on product's base price
-    const initialUnitPrice = product.pricePerUnit || 0;
-    
-    item.colors.push({
-      color: {
-        code: colorCode,
-        name: colorName || colorCode
-      },
-      sizeQuantities,
-      totalForColor: 0,
-      unitPrice: initialUnitPrice,  // Initialize with product's base price
-      originalUnitPrice: null  // Mark as new color (not from inquiry)
+    setInvoiceData(prev => {
+      const updatedItems = JSON.parse(JSON.stringify(prev.items));
+      const item = updatedItems[itemIndex];
+      const product = productDetails[item.productId];
+      
+      if (!product) return prev;
+      
+      const colorExists = item.colors.some(c => c.color?.code === colorCode);
+      if (colorExists) return prev;
+      
+      const isWeightBased = item.orderUnit === 'kg' || item.orderUnit === 'ton';
+      const baseUnitPrice = product.pricePerUnit || 0;
+      
+      if (isWeightBased) {
+        item.colors.push({
+          color: { code: colorCode, name: colorName || colorCode },
+          quantity: 0,
+          totalQuantity: 0,
+          totalForColor: 0,
+          unitPrice: baseUnitPrice,
+          originalUnitPrice: null,
+          userSetUnitPrice: null,
+          sizeQuantities: []
+        });
+      } else {
+        const sizeQuantities = (product.sizes || []).map(size => ({ size, quantity: 0 }));
+        item.colors.push({
+          color: { code: colorCode, name: colorName || colorCode },
+          sizeQuantities,
+          totalForColor: 0,
+          totalQuantity: 0,
+          unitPrice: baseUnitPrice,
+          originalUnitPrice: null,
+          userSetUnitPrice: null
+        });
+      }
+      
+      const { items, subtotal } = recalculateTotals(updatedItems);
+      return { ...prev, items, subtotal };
     });
-    
-    // Recalculate totals
-    const { items, subtotal } = recalculateTotals(updatedItems);
-    
-    return {
-      ...prev,
-      items,
-      subtotal
-    };
-  });
-};
+  };
 
-  // Add a new size to a color
+  // Add a new size (piece-based only)
   const handleAddSize = (itemIndex, colorIndex, size) => {
     setInvoiceData(prev => {
       const updatedItems = JSON.parse(JSON.stringify(prev.items));
@@ -4203,23 +4284,13 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
       const sizeExists = color.sizeQuantities.some(sq => sq.size === size);
       if (sizeExists) return prev;
       
-      color.sizeQuantities.push({
-        size,
-        quantity: 0
-      });
-      
-      // Recalculate totals
+      color.sizeQuantities.push({ size, quantity: 0 });
       const { items, subtotal } = recalculateTotals(updatedItems);
-      
-      return {
-        ...prev,
-        items,
-        subtotal
-      };
+      return { ...prev, items, subtotal };
     });
   };
 
-  // Remove a color from an item
+  // Remove a color
   const handleRemoveColor = (itemIndex, colorIndex) => {
     setInvoiceData(prev => {
       const updatedItems = JSON.parse(JSON.stringify(prev.items));
@@ -4231,149 +4302,88 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
       
       const { items, subtotal } = recalculateTotals(updatedItems);
       
-      return {
-        ...prev,
-        items,
-        subtotal
-      };
+      const newExpandedItems = {};
+      items.forEach((_, index) => { newExpandedItems[index] = true; });
+      setExpandedItems(newExpandedItems);
+      
+      return { ...prev, items, subtotal };
     });
   };
 
-  // Remove a size from a color
+  // Remove a size
   const handleRemoveSize = (itemIndex, colorIndex, sizeIndex) => {
     setInvoiceData(prev => {
       const updatedItems = JSON.parse(JSON.stringify(prev.items));
-      const color = updatedItems[itemIndex].colors[colorIndex];
-      
-      color.sizeQuantities.splice(sizeIndex, 1);
-      
+      updatedItems[itemIndex].colors[colorIndex].sizeQuantities.splice(sizeIndex, 1);
       const { items, subtotal } = recalculateTotals(updatedItems);
-      
-      return {
-        ...prev,
-        items,
-        subtotal
-      };
+      return { ...prev, items, subtotal };
     });
   };
 
-  // Remove a product from invoice
+  // Remove a product
   const handleRemoveProduct = (itemIndex) => {
     setInvoiceData(prev => {
       const updatedItems = JSON.parse(JSON.stringify(prev.items));
       updatedItems.splice(itemIndex, 1);
-      
       const { items, subtotal } = recalculateTotals(updatedItems);
       
       const newExpandedItems = {};
-      items.forEach((_, index) => {
-        newExpandedItems[index] = true;
-      });
+      items.forEach((_, index) => { newExpandedItems[index] = true; });
       setExpandedItems(newExpandedItems);
       
       toast.success('Product removed from invoice');
-      
-      return {
-        ...prev,
-        items,
-        subtotal
-      };
+      return { ...prev, items, subtotal };
     });
   };
 
-  // Add a new product to invoice
-  // const handleAddProduct = (product) => {
-  //   setInvoiceData(prev => {
-  //     const newItem = {
-  //       productId: product._id,
-  //       productName: product.productName,
-  //       productImage: product.images?.[0]?.url,
-  //       colors: [],
-  //       totalQuantity: 0,
-  //       unitPrice: product.pricePerUnit,
-  //       moq: product.moq,
-  //       total: 0,
-  //       originalUnitPrice: null // Mark as NOT from inquiry (will use bulk pricing)
-  //     };
-
-  //     const updatedItems = [...prev.items, newItem];
-      
-  //     fetchProductDetails(product._id);
-      
-  //     const newExpandedItems = {};
-  //     updatedItems.forEach((_, index) => {
-  //       newExpandedItems[index] = true;
-  //     });
-  //     setExpandedItems(newExpandedItems);
-      
-  //     toast.success(`${product.productName} added to invoice`);
-      
-  //     return {
-  //       ...prev,
-  //       items: updatedItems
-  //     };
-  //   });
-  // };
-
+  // Add a new product
   const handleAddProduct = (product) => {
-  setInvoiceData(prev => {
-    const newItem = {
-      productId: product._id,
-      productName: product.productName,
-      productImage: product.images?.[0]?.url,
-      colors: [],  // Start with no colors
-      totalQuantity: 0,
-      unitPrice: product.pricePerUnit,
-      moq: product.moq,
-      total: 0,
-      originalUnitPrice: null  // Mark as new product (not from inquiry)
-    };
+    setInvoiceData(prev => {
+      const newItem = {
+        productId: product._id,
+        productName: product.productName,
+        productImage: product.images?.[0]?.url,
+        orderUnit: product.orderUnit || 'piece',
+        colors: [],
+        totalQuantity: 0,
+        unitPrice: product.pricePerUnit,
+        moq: product.moq,
+        total: 0,
+        originalUnitPrice: null
+      };
 
-    const updatedItems = [...prev.items, newItem];
-    
-    fetchProductDetails(product._id);
-    
-    const newExpandedItems = {};
-    updatedItems.forEach((_, index) => {
-      newExpandedItems[index] = true;
+      const updatedItems = [...prev.items, newItem];
+      
+      fetchProductDetails(product._id);
+      
+      const newExpandedItems = {};
+      updatedItems.forEach((_, index) => { newExpandedItems[index] = true; });
+      setExpandedItems(newExpandedItems);
+      
+      toast.success(`${product.productName} added to invoice`);
+      return { ...prev, items: updatedItems };
     });
-    setExpandedItems(newExpandedItems);
-    
-    toast.success(`${product.productName} added to invoice`);
-    
-    return {
-      ...prev,
-      items: updatedItems
-    };
-  });
-};
+  };
+
+  // Form handlers
   const handleCompanyChange = (field, value) => {
     setInvoiceData(prev => ({
       ...prev,
-      company: {
-        ...prev.company,
-        [field]: value
-      }
+      company: { ...prev.company, [field]: value }
     }));
   };
 
   const handleCustomerChange = (field, value) => {
     setInvoiceData(prev => ({
       ...prev,
-      customer: {
-        ...prev.customer,
-        [field]: value
-      }
+      customer: { ...prev.customer, [field]: value }
     }));
   };
 
   const handleBankDetailsChange = (field, value) => {
     setInvoiceData(prev => ({
       ...prev,
-      bankDetails: {
-        ...(prev.bankDetails || {}),
-        [field]: value
-      }
+      bankDetails: { ...(prev.bankDetails || {}), [field]: value }
     }));
   };
 
@@ -4401,9 +4411,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
       
       const response = await fetch('http://localhost:5000/api/upload/company-logo', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
+        headers: { 'Authorization': `Bearer ${token}` },
         body: formData
       });
 
@@ -4429,9 +4437,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
     if (invoiceData.company.logoPublicId) {
       fetch(`http://localhost:5000/api/upload/delete-logo?publicId=${invoiceData.company.logoPublicId}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       }).catch(err => console.error('Error deleting old logo:', err));
     }
     
@@ -4485,24 +4491,15 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
 
   const handleInputChange = (field, value) => {
     if (field === 'amountPaid') {
-      setInvoiceData(prev => ({
-        ...prev,
-        [field]: value === '' ? '' : parseFloat(value) || 0
-      }));
+      setInvoiceData(prev => ({ ...prev, [field]: value === '' ? '' : parseFloat(value) || 0 }));
     } else {
-      setInvoiceData(prev => ({
-        ...prev,
-        [field]: value
-      }));
+      setInvoiceData(prev => ({ ...prev, [field]: value }));
     }
   };
 
   const handleNumericBlur = (field) => {
     if (invoiceData[field] === '') {
-      setInvoiceData(prev => ({
-        ...prev,
-        [field]: 0
-      }));
+      setInvoiceData(prev => ({ ...prev, [field]: 0 }));
     }
   };
 
@@ -4547,19 +4544,23 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
       const unpaidPercentage = finalTotal > 0 ? Number(((dueAmount / finalTotal) * 100).toFixed(2)) : 0;
 
       const formattedItems = invoiceData.items.map(item => {
+        const isWeightBased = item.orderUnit === 'kg' || item.orderUnit === 'ton';
+        
         return {
           productId: item.productId,
           productName: item.productName,
+          orderUnit: item.orderUnit,
           colors: item.colors.map(color => ({
             color: {
               code: color.color.code,
               name: color.color.name || color.color.code
             },
-            sizeQuantities: color.sizeQuantities.map(sq => ({
+            sizeQuantities: isWeightBased ? [] : color.sizeQuantities.map(sq => ({
               size: sq.size,
               quantity: sq.quantity
             })),
-            totalForColor: color.sizeQuantities.reduce((sum, sq) => sum + (sq.quantity || 0), 0),
+            quantity: isWeightBased ? (color.quantity || 0) : 0,
+            totalForColor: color.totalForColor || 0,
             unitPrice: color.unitPrice || 0
           })),
           totalQuantity: item.totalQuantity,
@@ -4587,48 +4588,10 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
         inquiryId: invoiceData.inquiryId,
         inquiryNumber: invoiceData.inquiryNumber,
         
-        customer: {
-          companyName: invoiceData.customer?.companyName || '',
-          contactPerson: invoiceData.customer?.contactPerson || '',
-          email: invoiceData.customer?.email || '',
-          phone: invoiceData.customer?.phone || '',
-          whatsapp: invoiceData.customer?.whatsapp || '',
-          billingAddress: invoiceData.customer?.billingAddress || '',
-          billingCity: invoiceData.customer?.billingCity || '',
-          billingZipCode: invoiceData.customer?.billingZipCode || '',
-          billingCountry: invoiceData.customer?.billingCountry || '',
-          shippingAddress: invoiceData.customer?.shippingAddress || '',
-          shippingCity: invoiceData.customer?.shippingCity || '',
-          shippingZipCode: invoiceData.customer?.shippingZipCode || '',
-          shippingCountry: invoiceData.customer?.shippingCountry || ''
-        },
-        
-        company: {
-          logo: invoiceData.company?.logo || '',
-          logoPublicId: invoiceData.company?.logoPublicId || '',
-          companyName: invoiceData.company?.companyName || 'Asian Clothify',
-          contactPerson: invoiceData.company?.contactPerson || '',
-          email: invoiceData.company?.email || 'info@asianclothify.com',
-          phone: invoiceData.company?.phone || '+8801305-785685',
-          address: invoiceData.company?.address || '49/10-C, Ground Floor, Genda, Savar, Dhaka, Bangladesh'
-        },
-        
-        bankDetails: {
-          bankName: invoiceData.bankDetails?.bankName || '',
-          accountName: invoiceData.bankDetails?.accountName || '',
-          accountNumber: invoiceData.bankDetails?.accountNumber || '',
-          accountType: invoiceData.bankDetails?.accountType || '',
-          routingNumber: invoiceData.bankDetails?.routingNumber || '',
-          swiftCode: invoiceData.bankDetails?.swiftCode || '',
-          iban: invoiceData.bankDetails?.iban || '',
-          bankAddress: invoiceData.bankDetails?.bankAddress || ''
-        },
-        
-        bankingTerms: validBankingTerms.map(term => ({
-          title: term.title.trim(),
-          value: term.value.trim()
-        })),
-        
+        customer: invoiceData.customer,
+        company: invoiceData.company,
+        bankDetails: invoiceData.bankDetails,
+        bankingTerms: validBankingTerms,
         items: formattedItems,
         
         subtotal: roundedSubtotal,
@@ -4659,15 +4622,6 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
         createdAt: new Date().toISOString()
       };
 
-      console.log('📤 Final invoice payload with banking terms:', {
-        bankingTerms: invoicePayload.bankingTerms,
-        amountPaid: invoicePayload.amountPaid,
-        dueAmount: invoicePayload.dueAmount,
-        paidPercentage: invoicePayload.paidPercentage,
-        unpaidPercentage: invoicePayload.unpaidPercentage,
-        finalTotal: invoicePayload.finalTotal
-      });
-
       const response = await fetch('http://localhost:5000/api/invoices', {
         method: 'POST',
         headers: {
@@ -4678,9 +4632,6 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
       });
 
       const responseText = await response.text();
-      console.log('Response status:', response.status);
-      console.log('Response text:', responseText);
-      
       let data;
       try {
         data = JSON.parse(responseText);
@@ -4707,7 +4658,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
     handleSaveInvoice('sent');
   };
 
-  if (!invoiceData.inquiryId) {
+  if (!invoiceData.inquiryId && invoiceData.items.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="text-center">
@@ -4716,11 +4667,10 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
           <p className="text-sm text-gray-500 mb-4">Please select an inquiry to create an invoice.</p>
           <Link
             href="/admin/inquiries"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#E39A65] text-white rounded-lg hover:bg-[#d48b54] transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#6B4F3A] text-white rounded-lg hover:bg-[#8B6B51] transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Inquiries
-          </Link>
+            Back to Inquiries          </Link>
         </div>
       </div>
     );
@@ -4740,7 +4690,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                 <ArrowLeft className="w-5 h-5 text-gray-600" />
               </Link>
               <div>
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Create Invoice</h1>
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>Create Invoice</h1>
                 <p className="text-xs text-gray-500 mt-0.5">
                   From Inquiry: {invoiceData.inquiryNumber}
                 </p>
@@ -4750,7 +4700,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
               <button
                 onClick={handleSendInvoice}
                 disabled={saving}
-                className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 text-sm bg-[#E39A65] text-white rounded-lg hover:bg-[#d48b54] transition-colors"
+                className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 text-sm bg-[#6B4F3A] text-white rounded-lg hover:bg-[#8B6B51] transition-colors"
               >
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                 Create & Send
@@ -4763,7 +4713,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
       {/* Invoice Information */}
       <div className="container mx-auto px-4 max-w-7xl pt-6">
         <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 mb-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Invoice Information</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>Invoice Information</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1">
@@ -4780,7 +4730,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                 />
                 {loadingNextNumber && (
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <Loader2 className="w-4 h-4 animate-spin text-[#E39A65]" />
+                    <Loader2 className="w-4 h-4 animate-spin text-[#6B4F3A]" />
                   </div>
                 )}
               </div>
@@ -4796,7 +4746,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                 type="date"
                 value={invoiceData.invoiceDate}
                 onChange={(e) => setInvoiceData(prev => ({ ...prev, invoiceDate: e.target.value }))}
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
               />
             </div>
             <div>
@@ -4807,7 +4757,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                 type="date"
                 value={invoiceData.dueDate}
                 onChange={(e) => setInvoiceData(prev => ({ ...prev, dueDate: e.target.value }))}
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
               />
             </div>
           </div>
@@ -4819,7 +4769,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* Company Information */}
           <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Company Information</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>Company Information</h2>
             
             <div className="mb-6">
               <label className="block text-xs font-medium text-gray-500 mb-2">
@@ -4886,9 +4836,9 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                 </label>
                 <input
                   type="text"
-                  value={invoiceData.company?.companyName || 'Asian Clothify'}
+                  value={invoiceData.company?.companyName || 'Jute Craftify'}
                   onChange={(e) => handleCompanyChange('companyName', e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
                 />
               </div>
               <div className="sm:col-span-2">
@@ -4899,7 +4849,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                   type="text"
                   value={invoiceData.company?.contactPerson || ''}
                   onChange={(e) => handleCompanyChange('contactPerson', e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
                 />
               </div>
               <div className="sm:col-span-2">
@@ -4910,7 +4860,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                   type="email"
                   value={invoiceData.company?.email || 'info@asianclothify.com'}
                   onChange={(e) => handleCompanyChange('email', e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
                 />
               </div>
               <div className="sm:col-span-2">
@@ -4919,9 +4869,9 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                 </label>
                 <input
                   type="text"
-                  value={invoiceData.company?.phone || '+8801305-785685'}
+                  value={invoiceData.company?.phone || '+8801871-733305'}
                   onChange={(e) => handleCompanyChange('phone', e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
                 />
               </div>
               <div className="sm:col-span-2">
@@ -4930,9 +4880,9 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                 </label>
                 <input
                   type="text"
-                  value={invoiceData.company?.address || '49/10-C, Ground Floor, Genda, Savar, Dhaka, Bangladesh'}
+                  value={invoiceData.company?.address || '34/6,Mongla, Khulna, Bangladesh, Khulna, Bangladesh'}
                   onChange={(e) => handleCompanyChange('address', e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
                 />
               </div>
             </div>
@@ -4940,7 +4890,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
 
           {/* Customer Information */}
           <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Customer Information</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>Customer Information</h2>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
               <div>
@@ -4951,7 +4901,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                   type="text"
                   value={invoiceData.customer?.companyName || ''}
                   onChange={(e) => handleCustomerChange('companyName', e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
                 />
               </div>
               <div>
@@ -4962,7 +4912,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                   type="text"
                   value={invoiceData.customer?.contactPerson || ''}
                   onChange={(e) => handleCustomerChange('contactPerson', e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
                 />
               </div>
               <div>
@@ -4973,7 +4923,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                   type="email"
                   value={invoiceData.customer?.email || ''}
                   onChange={(e) => handleCustomerChange('email', e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
                 />
               </div>
               <div>
@@ -4984,7 +4934,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                   type="text"
                   value={invoiceData.customer?.phone || ''}
                   onChange={(e) => handleCustomerChange('phone', e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
                 />
               </div>
               <div>
@@ -4995,7 +4945,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                   type="text"
                   value={invoiceData.customer?.whatsapp || ''}
                   onChange={(e) => handleCustomerChange('whatsapp', e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
                 />
               </div>
             </div>
@@ -5012,7 +4962,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                     type="text"
                     value={invoiceData.customer?.billingAddress || ''}
                     onChange={(e) => handleCustomerChange('billingAddress', e.target.value)}
-                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
                   />
                 </div>
                 <div>
@@ -5023,7 +4973,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                     type="text"
                     value={invoiceData.customer?.billingCity || ''}
                     onChange={(e) => handleCustomerChange('billingCity', e.target.value)}
-                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
                   />
                 </div>
                 <div>
@@ -5034,7 +4984,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                     type="text"
                     value={invoiceData.customer?.billingZipCode || ''}
                     onChange={(e) => handleCustomerChange('billingZipCode', e.target.value)}
-                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
                   />
                 </div>
                 <div>
@@ -5045,7 +4995,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                     type="text"
                     value={invoiceData.customer?.billingCountry || ''}
                     onChange={(e) => handleCustomerChange('billingCountry', e.target.value)}
-                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
                   />
                 </div>
               </div>
@@ -5072,7 +5022,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                     type="text"
                     value={invoiceData.customer?.shippingAddress || ''}
                     onChange={(e) => handleCustomerChange('shippingAddress', e.target.value)}
-                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
                   />
                 </div>
                 <div>
@@ -5083,7 +5033,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                     type="text"
                     value={invoiceData.customer?.shippingCity || ''}
                     onChange={(e) => handleCustomerChange('shippingCity', e.target.value)}
-                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
                   />
                 </div>
                 <div>
@@ -5094,7 +5044,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                     type="text"
                     value={invoiceData.customer?.shippingZipCode || ''}
                     onChange={(e) => handleCustomerChange('shippingZipCode', e.target.value)}
-                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
                   />
                 </div>
                 <div>
@@ -5105,7 +5055,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                     type="text"
                     value={invoiceData.customer?.shippingCountry || ''}
                     onChange={(e) => handleCustomerChange('shippingCountry', e.target.value)}
-                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
                   />
                 </div>
               </div>
@@ -5117,10 +5067,10 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
         <div className="mb-6">
           <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Products</h2>
+              <h2 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>Products</h2>
               <button
                 onClick={() => setShowProductSearch(true)}
-                className="flex items-center justify-center gap-2 px-4 py-2 text-sm bg-[#E39A65] text-white rounded-lg hover:bg-[#d48b54] transition-colors"
+                className="flex items-center justify-center gap-2 px-4 py-2 text-sm bg-[#6B4F3A] text-white rounded-lg hover:bg-[#8B6B51] transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 Add Product
@@ -5134,13 +5084,14 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                   const isExpanded = expandedItems[itemIndex] !== false;
                   
                   return (
-                   <ProductItemCard
+                    <ProductItemCard
                       key={`${itemIndex}-${item.productId}`}
                       item={item}
                       itemIndex={itemIndex}
                       product={product}
-                      onUpdate={handleColorQuantityChange}
-                      onUpdateUnitPrice={handleColorUnitPriceChange}  // ← ADD THIS
+                      onUpdate={handleSizeQuantityChange}
+                      onUpdateWeightQuantity={handleWeightQuantityChange}
+                      onUpdateUnitPrice={handleColorUnitPriceChange}
                       onAddColor={handleAddColor}
                       onAddSize={handleAddSize}
                       onRemoveColor={handleRemoveColor}
@@ -5148,6 +5099,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                       onRemoveProduct={handleRemoveProduct}
                       isExpanded={isExpanded}
                       onToggleExpand={() => toggleExpand(itemIndex)}
+                      calculateBulkPrice={calculateBulkPrice}
                     />
                   );
                 })}
@@ -5159,7 +5111,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                 <p className="text-xs text-gray-500 mb-4">Click the "Add Product" button to add products to this invoice</p>
                 <button
                   onClick={() => setShowProductSearch(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-[#E39A65] text-white rounded-lg hover:bg-[#d48b54] transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-[#6B4F3A] text-white rounded-lg hover:bg-[#8B6B51] transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                   Add Product
@@ -5176,8 +5128,8 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
             {/* Bank Details Form */}
             <div className="w-full">
               <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 shadow-sm">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <Landmark className="w-5 h-5 text-[#E39A65]" />
+                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+                  <Landmark className="w-5 h-5 text-[#6B4F3A]" />
                   Bank Details
                 </h2>
                 
@@ -5188,7 +5140,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                       type="text"
                       value={invoiceData.bankDetails?.bankName || ''}
                       onChange={(e) => handleBankDetailsChange('bankName', e.target.value)}
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65]"
+                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A]"
                       placeholder="Enter bank name"
                     />
                   </div>
@@ -5199,7 +5151,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                       type="text"
                       value={invoiceData.bankDetails?.accountName || ''}
                       onChange={(e) => handleBankDetailsChange('accountName', e.target.value)}
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65]"
+                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A]"
                       placeholder="Enter account holder name"
                     />
                   </div>
@@ -5210,7 +5162,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                       type="text"
                       value={invoiceData.bankDetails?.accountNumber || ''}
                       onChange={(e) => handleBankDetailsChange('accountNumber', e.target.value)}
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65]"
+                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A]"
                       placeholder="Enter account number"
                     />
                   </div>
@@ -5221,7 +5173,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                       type="text"
                       value={invoiceData.bankDetails?.accountType || ''}
                       onChange={(e) => handleBankDetailsChange('accountType', e.target.value)}
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65]"
+                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A]"
                       placeholder="e.g., Savings, Checking, Business"
                     />
                   </div>
@@ -5233,7 +5185,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                         type="text"
                         value={invoiceData.bankDetails?.routingNumber || ''}
                         onChange={(e) => handleBankDetailsChange('routingNumber', e.target.value)}
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65]"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A]"
                         placeholder="Routing #"
                       />
                     </div>
@@ -5244,7 +5196,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                         type="text"
                         value={invoiceData.bankDetails?.swiftCode || ''}
                         onChange={(e) => handleBankDetailsChange('swiftCode', e.target.value)}
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65]"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A]"
                         placeholder="SWIFT code"
                       />
                     </div>
@@ -5256,7 +5208,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                       type="text"
                       value={invoiceData.bankDetails?.iban || ''}
                       onChange={(e) => handleBankDetailsChange('iban', e.target.value)}
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65]"
+                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A]"
                       placeholder="IBAN"
                     />
                   </div>
@@ -5267,7 +5219,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                       value={invoiceData.bankDetails?.bankAddress || ''}
                       onChange={(e) => handleBankDetailsChange('bankAddress', e.target.value)}
                       rows="2"
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65]"
+                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A]"
                       placeholder="Enter bank address"
                     />
                   </div>
@@ -5278,7 +5230,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
             {/* Summary Form */}
             <div className="w-full">
               <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 shadow-sm">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Summary</h2>
+                <h2 className="text-lg font-semibold text-gray-900 mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>Summary</h2>
                 
                 <div className="space-y-6">
                   {/* Calculations */}
@@ -5306,7 +5258,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                             min="0"
                             max="100"
                             step="0.01"
-                            className="w-20 px-2 py-1 text-right text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65]"
+                            className="w-20 px-2 py-1 text-right text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A]"
                           />
                         </div>
                       </div>
@@ -5334,7 +5286,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                             min="0"
                             max="100"
                             step="0.01"
-                            className="w-20 px-2 py-1 text-right text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65]"
+                            className="w-20 px-2 py-1 text-right text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A]"
                           />
                         </div>
                       </div>
@@ -5360,7 +5312,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                           onWheel={(e) => e.target.blur()}
                           min="0"
                           step="0.01"
-                          className="w-28 px-2 py-1 text-right text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65]"
+                          className="w-28 px-2 py-1 text-right text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A]"
                         />
                       </div>
                     </div>
@@ -5376,7 +5328,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                   {/* Payment Details */}
                   <div className="space-y-4 pt-3 border-t border-gray-200">
                     <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                      <CreditCard className="w-4 h-4 text-[#E39A65]" />
+                      <CreditCard className="w-4 h-4 text-[#6B4F3A]" />
                       Payment Details
                     </h3>
                     
@@ -5394,7 +5346,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                             min="0"
                             max={finalTotal}
                             step="0.01"
-                            className="w-28 px-2 py-1 text-right text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65]"
+                            className="w-28 px-2 py-1 text-right text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A]"
                           />
                         </div>
                       </div>
@@ -5496,13 +5448,13 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
           <div className="w-full">
             <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 shadow-sm">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-[#E39A65]" />
+                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+                  <FileText className="w-5 h-5 text-[#6B4F3A]" />
                   Banking Terms (Optional)
                 </h2>
                 <button
                   onClick={handleAddBankingTerm}
-                  className="flex items-center justify-center gap-2 px-4 py-2 text-sm bg-[#E39A65] text-white rounded-lg hover:bg-[#d48b54] transition-colors"
+                  className="flex items-center justify-center gap-2 px-4 py-2 text-sm bg-[#6B4F3A] text-white rounded-lg hover:bg-[#8B6B51] transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                   Add Term
@@ -5540,7 +5492,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
           {/* Additional Information */}
           <div className="w-full">
             <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Additional Information</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>Additional Information</h2>
               
               <div className="space-y-6">
                 <div>
@@ -5551,7 +5503,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                     value={invoiceData.notes}
                     onChange={(e) => setInvoiceData(prev => ({ ...prev, notes: e.target.value }))}
                     rows="3"
-                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
                     placeholder="Add any additional notes..."
                   />
                 </div>
@@ -5564,7 +5516,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                     value={invoiceData.terms}
                     onChange={(e) => setInvoiceData(prev => ({ ...prev, terms: e.target.value }))}
                     rows="3"
-                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
                   />
                 </div>
 
@@ -5574,7 +5526,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                     <h3 className="text-sm font-medium text-gray-700">Custom Fields</h3>
                     <button
                       onClick={handleAddField}
-                      className="flex items-center justify-center gap-1 px-3 py-1.5 text-xs bg-[#E39A65] text-white rounded-lg hover:bg-[#d48b54] transition-colors"
+                      className="flex items-center justify-center gap-1 px-3 py-1.5 text-xs bg-[#6B4F3A] text-white rounded-lg hover:bg-[#8B6B51] transition-colors"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       Add Field
@@ -5591,7 +5543,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                               value={field.fieldName}
                               onChange={(e) => handleFieldChange(field.id, 'fieldName', e.target.value)}
                               placeholder="Field name (e.g., PO Number)"
-                              className="w-full px-3 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+                              className="w-full px-3 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
                             />
                           </div>
                           <div className="flex-1 w-full">
@@ -5600,7 +5552,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                               value={field.fieldValue}
                               onChange={(e) => handleFieldChange(field.id, 'fieldValue', e.target.value)}
                               placeholder="Value"
-                              className="w-full px-3 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E39A65] focus:border-transparent"
+                              className="w-full px-3 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent"
                             />
                           </div>
                           <button
@@ -5626,7 +5578,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
                     <button
                       onClick={handleSendInvoice}
                       disabled={saving}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm bg-[#E39A65] text-white rounded-lg hover:bg-[#d48b54] transition-colors"
+                      className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm bg-[#6B4F3A] text-white rounded-lg hover:bg-[#8B6B51] transition-colors"
                     >
                       {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                       Create & Send Invoice

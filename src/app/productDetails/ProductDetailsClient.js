@@ -1566,7 +1566,7 @@ const ColorSelector = ({ colors, selectedColor, onChange }) => {
   );
 };
 
-// Bulk Pricing Table Component
+// Bulk Pricing Table Component - Compact & Responsive with Savings Column
 const BulkPricingTable = ({ pricing = [], unitPrice, moq, orderUnit = 'piece' }) => {
   const [showAllTiers, setShowAllTiers] = useState(false);
   const unitLabel = getUnitLabel(orderUnit);
@@ -1577,42 +1577,82 @@ const BulkPricingTable = ({ pricing = [], unitPrice, moq, orderUnit = 'piece' })
   const hasMoreTiers = pricingData.length > 3;
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <div className="px-4 py-3 bg-[#6B4F3A]">
-        <h3 className="text-white font-semibold text-sm flex items-center gap-2">
-          <Package className="w-4 h-4" />
-          Bulk Pricing - {unitFullLabel}
+    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden w-full">
+      <div className="px-3 py-2 bg-[#6B4F3A]">
+        <h3 className="text-white font-semibold text-xs flex items-center gap-1.5">
+          <Package className="w-3.5 h-3.5" />
+          <span className="truncate">Bulk Pricing - {unitFullLabel}</span>
         </h3>
       </div>
-      <div className="p-3 space-y-2">
-        {displayedTiers.map((tier, index) => {
-          const tierPrice = tier.price || unitPrice;
-          const isBestValue = index === pricingData.length - 1 && pricingData.length > 1;
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="text-left py-1.5 px-2 text-[10px] font-semibold text-gray-700 w-2/5">Qty ({unitLabel})</th>
+              <th className="text-left py-1.5 px-2 text-[10px] font-semibold text-gray-700 w-1/3">Price</th>
+              <th className="text-left py-1.5 px-2 text-[10px] font-semibold text-gray-700 w-1/3">Save</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {displayedTiers.map((tier, index) => {
+              const tierPrice = tier.price || unitPrice;
+              const savings = unitPrice - tierPrice;
+              const savingsPercent = unitPrice > 0 ? ((savings / unitPrice) * 100).toFixed(0) : 0;
+              const isBestValue = index === pricingData.length - 1 && pricingData.length > 1;
 
-          return (
-            <div key={index} className={`flex justify-between items-center p-2 rounded-lg ${isBestValue ? 'bg-[#F5E6D3] border border-[#6B4F3A]/20' : 'bg-gray-50'}`}>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-gray-900">
-                  {tier.range || `${moq}+`} {unitLabel}
-                </span>
-                {isBestValue && (
-                  <span className="px-1.5 py-0.5 bg-[#6B4F3A] text-white text-[10px] font-medium rounded-full">
-                    Best Value
-                  </span>
-                )}
-              </div>
-              <span className="font-bold text-[#6B4F3A] text-sm">
-                {formatPrice(tierPrice)}
-              </span>
-            </div>
-          );
-        })}
-        {hasMoreTiers && (
-          <button onClick={() => setShowAllTiers(!showAllTiers)} className="text-xs text-[#6B4F3A] hover:underline w-full text-center mt-2">
-            {showAllTiers ? 'Show Less ↑' : `Show More (${pricingData.length - 3} more) ↓`}
-          </button>
-        )}
+              return (
+                <tr key={index} className={`${isBestValue ? 'bg-[#fcfaf7]' : 'hover:bg-gray-50'} transition-colors`}>
+                  <td className="py-1.5 px-2">
+                    <div className="flex items-center gap-1 flex-wrap">
+                      <span className="text-xs font-medium text-gray-900">
+                        {tier.range || `${moq}+`}
+                      </span>
+                      {isBestValue && (
+                        <span className="px-1 py-0.5 bg-[#6B4F3A] text-white text-[8px] font-medium rounded-full whitespace-nowrap">
+                          Best
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="py-1.5 px-2">
+                    <span className="font-semibold text-[#6B4F3A] text-xs">
+                      {formatPrice(tierPrice)}
+                    </span>
+                  </td>
+                  <td className="py-1.5 px-2">
+                    {savings > 0 ? (
+                      <div className="flex items-center gap-0.5">
+                        <span className="text-green-600 text-[10px] font-medium">
+                          {formatPrice(savings)}
+                        </span>
+                        <span className="text-green-500 text-[8px]">
+                          ({savingsPercent}%)
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-gray-400 text-[9px]">—</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
+      {hasMoreTiers && (
+        <div className="p-1 border-t border-gray-100">
+          <button 
+            onClick={() => setShowAllTiers(!showAllTiers)} 
+            className="text-[9px] text-[#6B4F3A] hover:underline w-full text-center py-1 flex items-center justify-center gap-1"
+          >
+            {showAllTiers ? (
+              <>Show Less ↑</>
+            ) : (
+              <>Show {pricingData.length - 3} more ↓</>
+            )}
+          </button>
+        </div>
+      )}
     </div>
   );
 };
@@ -1727,13 +1767,19 @@ const InquiryItem = ({ item, index, product, onUpdate, onRemove, showRemove, onC
           {allSizes.map((size) => (
             <div key={size}>
               <label className="block text-[10px] text-gray-500 mb-0.5">{size}</label>
-              <input type="number" min="0" value={sizeQuantities[size] || ''} onChange={(e) => handleSizeQuantityChange(size, parseInt(e.target.value) || 0)} className="w-full px-2 py-1 text-xs border rounded focus:ring-1 focus:ring-[#6B4F3A]" placeholder="0" />
+              <input type="number" min="0" value={sizeQuantities[size] || ''} 
+              onChange={(e) => handleSizeQuantityChange(size, parseInt(e.target.value) || 0)}
+            onWheel={(e) => e.target.blur()}
+               className="w-full px-2 py-1 text-xs border rounded focus:ring-1 focus:ring-[#6B4F3A]" placeholder="0" />
             </div>
           ))}
         </div>
       ) : (
         <div className="mb-2">
-          <input type="number" min="0" value={quantity || ''} onChange={(e) => handleQuantityChange(parseInt(e.target.value) || 0)} className="w-full px-3 py-2 text-sm border rounded focus:ring-1 focus:ring-[#6B4F3A]" placeholder={`Quantity (${unitLabel})`} />
+          <input type="number" min="0" value={quantity || ''}
+           onChange={(e) => handleQuantityChange(parseInt(e.target.value) || 0)} 
+        onWheel={(e) => e.target.blur()}
+           className="w-full px-3 py-2 text-sm border rounded focus:ring-1 focus:ring-[#6B4F3A]" placeholder={`Quantity (${unitLabel})`} />
         </div>
       )}
 
@@ -2325,6 +2371,7 @@ useEffect(() => {
             <textarea
               value={specialInstructions}
               onChange={(e) => setSpecialInstructions(e.target.value)}
+              
               rows="2"
               className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent mb-4"
               placeholder="Special instructions..."

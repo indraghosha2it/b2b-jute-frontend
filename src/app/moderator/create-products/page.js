@@ -1987,14 +1987,25 @@ const TARGETED_CUSTOMERS = [
 ];
 
 // Available tags
+// const AVAILABLE_TAGS = [
+//   'Top Ranking',
+//   'New Arrival',
+//   'Top Deal',
+//   'Best Seller',
+//   'Summer Collection',
+//   'Winter Collection',
+//   'Limited Edition',
+//   'Trending'
+// ];
+
 const AVAILABLE_TAGS = [
-  'Top Ranking',
+  'Best Seller',
   'New Arrival',
   'Top Deal',
-  'Best Seller',
-  'Summer Collection',
-  'Winter Collection',
-  'Limited Edition',
+  'Eco-Friendly',
+  'Hot Export Item',
+  'Customizable',
+  'Premium Quality',
   'Trending'
 ];
 
@@ -2395,64 +2406,186 @@ export default function ModeratorCreateProduct() {
     }
   };
 
+  // const handleMultipleImageSelect = async (e) => {
+  //   const files = Array.from(e.target.files);
+    
+  //   if (files.length === 0) return;
+    
+  //   const currentImagesCount = productImages.filter(img => img.url !== null || img.uploading).length;
+  //   const availableSlots = 6 - currentImagesCount;
+    
+  //   if (files.length > availableSlots) {
+  //     toast.error(`You can only upload ${availableSlots} more image(s). Maximum 6 images total.`);
+  //     return;
+  //   }
+    
+  //   const emptySlots = [];
+  //   for (let i = 0; i < productImages.length; i++) {
+  //     if (!productImages[i].url && !productImages[i].uploading && !productImages[i].preview) {
+  //       emptySlots.push(i);
+  //     }
+  //   }
+    
+  //   const tempImages = [...productImages];
+    
+  //   for (let i = 0; i < files.length && i < emptySlots.length; i++) {
+  //     const file = files[i];
+  //     const slotIndex = emptySlots[i];
+      
+  //     const validation = validateImageFile(file);
+  //     if (!validation.valid) {
+  //       toast.error(`Image ${i + 1}: ${validation.message}`);
+  //       continue;
+  //     }
+      
+  //     const previewUrl = URL.createObjectURL(file);
+      
+  //     tempImages[slotIndex] = {
+  //       file: file,
+  //       preview: previewUrl,
+  //       error: '',
+  //       uploading: true,
+  //       url: null,
+  //       publicId: null
+  //     };
+  //   }
+    
+  //   setProductImages([...tempImages]);
+    
+  //   for (let i = 0; i < files.length && i < emptySlots.length; i++) {
+  //     const file = files[i];
+  //     const slotIndex = emptySlots[i];
+      
+  //     const validation = validateImageFile(file);
+  //     if (!validation.valid) {
+  //       const updatedImages = [...productImages];
+  //       updatedImages[slotIndex] = { file: null, preview: null, error: validation.message, url: null, publicId: null, uploading: false };
+  //       setProductImages(updatedImages);
+  //       continue;
+  //     }
+      
+  //     try {
+  //       const { url, publicId } = await uploadToCloudinary(file);
+        
+  //       setProductImages(prevImages => {
+  //         const updatedImages = [...prevImages];
+  //         updatedImages[slotIndex] = {
+  //           ...updatedImages[slotIndex],
+  //           url: url,
+  //           publicId: publicId,
+  //           uploading: false
+  //         };
+  //         return updatedImages;
+  //       });
+        
+  //       toast.success(`Image ${i + 1} uploaded successfully`);
+  //     } catch (error) {
+  //       console.error('Upload error:', error);
+  //       setProductImages(prevImages => {
+  //         const updatedImages = [...prevImages];
+  //         updatedImages[slotIndex] = {
+  //           ...updatedImages[slotIndex],
+  //           error: 'Failed to upload image',
+  //           uploading: false
+  //         };
+  //         return updatedImages;
+  //       });
+  //       toast.error(`Failed to upload image ${i + 1}`);
+  //     }
+  //   }
+    
+  //   if (fileInputRefs.current['multiple']) {
+  //     fileInputRefs.current['multiple'].value = '';
+  //   }
+  // };
+
+
   const handleMultipleImageSelect = async (e) => {
-    const files = Array.from(e.target.files);
-    
-    if (files.length === 0) return;
-    
-    const currentImagesCount = productImages.filter(img => img.url !== null || img.uploading).length;
-    const availableSlots = 6 - currentImagesCount;
-    
-    if (files.length > availableSlots) {
-      toast.error(`You can only upload ${availableSlots} more image(s). Maximum 6 images total.`);
-      return;
+  const files = Array.from(e.target.files);
+  
+  if (files.length === 0) return;
+  
+  const currentImagesCount = productImages.filter(img => img.url !== null || img.uploading).length;
+  const availableSlots = 6 - currentImagesCount;
+  
+  // First, check if we have enough slots
+  if (files.length > availableSlots) {
+    toast.error(`You can only upload ${availableSlots} more image(s). Maximum 6 images total.`);
+    if (fileInputRefs.current['multiple']) {
+      fileInputRefs.current['multiple'].value = '';
     }
-    
-    const emptySlots = [];
-    for (let i = 0; i < productImages.length; i++) {
-      if (!productImages[i].url && !productImages[i].uploading && !productImages[i].preview) {
-        emptySlots.push(i);
-      }
+    return;
+  }
+  
+  // Separate valid and invalid files
+  const validFiles = [];
+  const invalidFiles = [];
+  
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const validation = validateImageFile(file);
+    if (validation.valid) {
+      validFiles.push({ file, originalIndex: i });
+    } else {
+      invalidFiles.push({ index: i, message: validation.message });
+      toast.error(`Image ${i + 1}: ${validation.message}`);
     }
-    
-    const tempImages = [...productImages];
-    
-    for (let i = 0; i < files.length && i < emptySlots.length; i++) {
-      const file = files[i];
-      const slotIndex = emptySlots[i];
-      
-      const validation = validateImageFile(file);
-      if (!validation.valid) {
-        toast.error(`Image ${i + 1}: ${validation.message}`);
-        continue;
-      }
-      
-      const previewUrl = URL.createObjectURL(file);
-      
-      tempImages[slotIndex] = {
-        file: file,
-        preview: previewUrl,
-        error: '',
-        uploading: true,
-        url: null,
-        publicId: null
-      };
+  }
+  
+  // If no valid files, return early
+  if (validFiles.length === 0) {
+    toast.error('No valid images to upload');
+    if (fileInputRefs.current['multiple']) {
+      fileInputRefs.current['multiple'].value = '';
     }
+    return;
+  }
+  
+  // Find empty slots in productImages
+  const emptySlots = [];
+  for (let i = 0; i < productImages.length; i++) {
+    if (!productImages[i].url && !productImages[i].uploading && !productImages[i].preview) {
+      emptySlots.push(i);
+    }
+  }
+  
+  // Check if we have enough empty slots for valid files
+  if (validFiles.length > emptySlots.length) {
+    toast.error(`Only ${emptySlots.length} slots available. Please remove some images first.`);
+    if (fileInputRefs.current['multiple']) {
+      fileInputRefs.current['multiple'].value = '';
+    }
+    return;
+  }
+  
+  // Create temporary state for uploading
+  const tempImages = [...productImages];
+  
+  for (let i = 0; i < validFiles.length; i++) {
+    const { file } = validFiles[i];
+    const slotIndex = emptySlots[i];
+    const previewUrl = URL.createObjectURL(file);
     
-    setProductImages([...tempImages]);
+    tempImages[slotIndex] = {
+      file: file,
+      preview: previewUrl,
+      error: '',
+      uploading: true,
+      url: null,
+      publicId: null
+    };
+  }
+  
+  setProductImages([...tempImages]);
+  
+  // Upload each valid file sequentially
+  const uploadPromises = [];
+  
+  for (let i = 0; i < validFiles.length; i++) {
+    const { file } = validFiles[i];
+    const slotIndex = emptySlots[i];
     
-    for (let i = 0; i < files.length && i < emptySlots.length; i++) {
-      const file = files[i];
-      const slotIndex = emptySlots[i];
-      
-      const validation = validateImageFile(file);
-      if (!validation.valid) {
-        const updatedImages = [...productImages];
-        updatedImages[slotIndex] = { file: null, preview: null, error: validation.message, url: null, publicId: null, uploading: false };
-        setProductImages(updatedImages);
-        continue;
-      }
-      
+    const uploadPromise = (async () => {
       try {
         const { url, publicId } = await uploadToCloudinary(file);
         
@@ -2467,7 +2600,7 @@ export default function ModeratorCreateProduct() {
           return updatedImages;
         });
         
-        toast.success(`Image ${i + 1} uploaded successfully`);
+        toast.success(`Image uploaded successfully`);
       } catch (error) {
         console.error('Upload error:', error);
         setProductImages(prevImages => {
@@ -2475,32 +2608,76 @@ export default function ModeratorCreateProduct() {
           updatedImages[slotIndex] = {
             ...updatedImages[slotIndex],
             error: 'Failed to upload image',
-            uploading: false
+            uploading: false,
+            preview: null,
+            file: null
           };
           return updatedImages;
         });
-        toast.error(`Failed to upload image ${i + 1}`);
+        toast.error(`Failed to upload one image`);
       }
-    }
+    })();
     
-    if (fileInputRefs.current['multiple']) {
-      fileInputRefs.current['multiple'].value = '';
-    }
-  };
+    uploadPromises.push(uploadPromise);
+  }
+  
+  // Wait for all uploads to complete
+  await Promise.allSettled(uploadPromises);
+  
+  // Show summary of skipped invalid files
+  if (invalidFiles.length > 0) {
+    toast.warning(`${invalidFiles.length} image(s) skipped due to validation errors`);
+  }
+  
+  // Clear the file input
+  if (fileInputRefs.current['multiple']) {
+    fileInputRefs.current['multiple'].value = '';
+  }
+};
+  // const removeImage = (index) => {
+  //   if (productImages[index].preview && productImages[index].preview.startsWith('blob:')) {
+  //     URL.revokeObjectURL(productImages[index].preview);
+  //   }
+    
+  //   const updatedImages = [...productImages];
+  //   updatedImages[index] = { file: null, preview: null, error: '', url: null, publicId: null, uploading: false };
+  //   setProductImages(updatedImages);
+  //   if (fileInputRefs.current[index]) {
+  //     fileInputRefs.current[index].value = '';
+  //   }
+  // };
+
 
   const removeImage = (index) => {
-    if (productImages[index].preview && productImages[index].preview.startsWith('blob:')) {
-      URL.revokeObjectURL(productImages[index].preview);
-    }
-    
-    const updatedImages = [...productImages];
-    updatedImages[index] = { file: null, preview: null, error: '', url: null, publicId: null, uploading: false };
-    setProductImages(updatedImages);
-    if (fileInputRefs.current[index]) {
-      fileInputRefs.current[index].value = '';
-    }
+  // Check if there's an image being uploaded at this index
+  const imageToRemove = productImages[index];
+  
+  // Revoke object URL if it exists (to prevent memory leaks)
+  if (imageToRemove.preview && imageToRemove.preview.startsWith('blob:')) {
+    URL.revokeObjectURL(imageToRemove.preview);
+  }
+  
+  // Reset the image slot completely
+  const updatedImages = [...productImages];
+  updatedImages[index] = { 
+    file: null, 
+    preview: null, 
+    error: '', 
+    url: null, 
+    publicId: null, 
+    uploading: false 
   };
-
+  
+  setProductImages(updatedImages);
+  
+  // Clear the file input value for this slot if it exists
+  if (fileInputRefs.current[index]) {
+    fileInputRefs.current[index].value = '';
+  }
+  
+  // Show success message for removal
+  toast.success(`Image removed from slot ${index + 1}`);
+};
   const moveImage = (fromIndex, toIndex) => {
     const updatedImages = [...productImages];
     const [movedImage] = updatedImages.splice(fromIndex, 1);
@@ -3323,42 +3500,45 @@ export default function ModeratorCreateProduct() {
                               : ''
                           }`}
                         >
-                          {img.preview ? (
-                            <div className="relative rounded-lg overflow-hidden border-2 border-gray-200 h-32 hover:border-[#6B4F3A] transition-colors cursor-grab active:cursor-grabbing">
-                              <div className="absolute top-1 left-1 bg-black/50 rounded px-1.5 py-0.5 z-10">
-                                <GripVertical className="w-3 h-3 text-white" />
-                              </div>
-                              
-                              <img 
-                                src={img.preview} 
-                                alt={`Product ${index + 1}`} 
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                  console.error('Image failed to load');
-                                  e.target.src = 'https://via.placeholder.com/150?text=Error';
-                                }}
-                              />
-                              
-                              {img.uploading && (
-                                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                                  <Loader2 className="w-6 h-6 text-white animate-spin" />
-                                </div>
-                              )}
-                              
-                              <button
-                                type="button"
-                                onClick={() => removeImage(index)}
-                                className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                                disabled={img.uploading}
-                              >
-                                <X className="w-3 h-3" />
-                              </button>
-                              
-                              <span className="absolute bottom-1 left-1 px-1.5 py-0.5 bg-black bg-opacity-60 text-white text-xs rounded z-10">
-                                {index + 1}
-                              </span>
-                            </div>
-                          ) : (
+                       {img.preview ? (
+  <div className="relative rounded-lg overflow-hidden border-2 border-gray-200 h-32 hover:border-[#6B4F3A] transition-colors cursor-grab active:cursor-grabbing">
+    <div className="absolute top-1 left-1 bg-black/50 rounded px-1.5 py-0.5 z-10">
+      <GripVertical className="w-3 h-3 text-white" />
+    </div>
+    
+    <img 
+      src={img.preview} 
+      alt={`Product ${index + 1}`} 
+      className="w-full h-full object-cover"
+      onError={(e) => {
+        console.error('Image failed to load');
+        e.target.src = 'https://via.placeholder.com/150?text=Error';
+      }}
+    />
+    
+    {/* Uploading Overlay - Make sure remove button is ABOVE this */}
+    {img.uploading && (
+      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
+        <Loader2 className="w-6 h-6 text-white animate-spin" />
+      </div>
+    )}
+    
+    {/* Remove Button - Make sure it has higher z-index and is always clickable */}
+    <button
+      type="button"
+      onClick={() => removeImage(index)}
+      className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors z-20"
+      disabled={false}  // Remove the disabled condition
+      title="Remove image"
+    >
+      <X className="w-3 h-3" />
+    </button>
+    
+    <span className="absolute bottom-1 left-1 px-1.5 py-0.5 bg-black bg-opacity-60 text-white text-xs rounded z-10">
+      {index + 1}
+    </span>
+  </div>
+)  : (
                             <div 
                               className={`border-2 border-dashed rounded-lg p-4 text-center h-32 flex flex-col items-center justify-center cursor-pointer ${
                                 img.error ? 'border-red-300 bg-red-50' : 'border-gray-300 bg-gray-50 hover:border-[#6B4F3A] hover:bg-[#F5E6D3]'
