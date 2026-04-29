@@ -2630,7 +2630,7 @@ export default function AdminCreateProduct() {
   // };
 
 
-  const handleMultipleImageSelect = async (e) => {
+const handleMultipleImageSelect = async (e) => {
   const files = Array.from(e.target.files);
   
   if (files.length === 0) return;
@@ -2640,10 +2640,13 @@ export default function AdminCreateProduct() {
   
   if (files.length > availableSlots) {
     toast.error(`You can only upload ${availableSlots} more image(s). Maximum 6 images total.`);
+    if (fileInputRefs.current['multiple']) {
+      fileInputRefs.current['multiple'].value = '';
+    }
     return;
   }
   
-  // First, validate all files and collect valid ones
+  // First, validate all files and collect valid ones WITH THEIR ORIGINAL INDEX
   const validFiles = [];
   const invalidFiles = [];
   
@@ -2651,9 +2654,9 @@ export default function AdminCreateProduct() {
     const file = files[i];
     const validation = validateImageFile(file);
     if (validation.valid) {
-      validFiles.push(file);
+      validFiles.push({ file, originalIndex: i });
     } else {
-      invalidFiles.push({ index: i, message: validation.message });
+      invalidFiles.push({ index: i + 1, message: validation.message });
       toast.error(`Image ${i + 1}: ${validation.message}`);
     }
   }
@@ -2667,7 +2670,7 @@ export default function AdminCreateProduct() {
     return;
   }
   
-  // Find empty slots in productImages
+  // Find empty slots in productImages in order (first empty slot gets first image, etc.)
   const emptySlots = [];
   for (let i = 0; i < productImages.length; i++) {
     if (!productImages[i].url && !productImages[i].uploading && !productImages[i].preview) {
@@ -2678,15 +2681,19 @@ export default function AdminCreateProduct() {
   // Check if we have enough empty slots for valid files
   if (validFiles.length > emptySlots.length) {
     toast.error(`Only ${emptySlots.length} slots available. Please remove some images first.`);
+    if (fileInputRefs.current['multiple']) {
+      fileInputRefs.current['multiple'].value = '';
+    }
     return;
   }
   
-  // Create temporary state for uploading
+  // Create temporary state for uploading - preserve selection order
   const tempImages = [...productImages];
   
-  for (let i = 0; i < validFiles.length && i < emptySlots.length; i++) {
-    const file = validFiles[i];
-    const slotIndex = emptySlots[i];
+  // Assign files to slots in the order they were selected
+  for (let i = 0; i < validFiles.length; i++) {
+    const { file } = validFiles[i];
+    const slotIndex = emptySlots[i]; // This ensures first selected image goes to first empty slot
     const previewUrl = URL.createObjectURL(file);
     
     tempImages[slotIndex] = {
@@ -2701,9 +2708,9 @@ export default function AdminCreateProduct() {
   
   setProductImages([...tempImages]);
   
-  // Upload each valid file individually
-  for (let i = 0; i < validFiles.length && i < emptySlots.length; i++) {
-    const file = validFiles[i];
+  // Upload each valid file in the order they were selected
+  for (let i = 0; i < validFiles.length; i++) {
+    const { file } = validFiles[i];
     const slotIndex = emptySlots[i];
     
     try {
@@ -2749,19 +2756,50 @@ export default function AdminCreateProduct() {
   }
 };
 
-  const removeImage = (index) => {
-    if (productImages[index].preview && productImages[index].preview.startsWith('blob:')) {
-      URL.revokeObjectURL(productImages[index].preview);
-    }
+  // const removeImage = (index) => {
+  //   if (productImages[index].preview && productImages[index].preview.startsWith('blob:')) {
+  //     URL.revokeObjectURL(productImages[index].preview);
+  //   }
     
-    const updatedImages = [...productImages];
-    updatedImages[index] = { file: null, preview: null, error: '', url: null, publicId: null, uploading: false };
-    setProductImages(updatedImages);
-    if (fileInputRefs.current[index]) {
-      fileInputRefs.current[index].value = '';
-    }
-  };
+  //   const updatedImages = [...productImages];
+  //   updatedImages[index] = { file: null, preview: null, error: '', url: null, publicId: null, uploading: false };
+  //   setProductImages(updatedImages);
+  //   if (fileInputRefs.current[index]) {
+  //     fileInputRefs.current[index].value = '';
+  //   }
+  // };
 
+
+  const removeImage = (index) => {
+  // Check if there's an image being uploaded at this index
+  const imageToRemove = productImages[index];
+  
+  // Revoke object URL if it exists (to prevent memory leaks)
+  if (imageToRemove.preview && imageToRemove.preview.startsWith('blob:')) {
+    URL.revokeObjectURL(imageToRemove.preview);
+  }
+  
+  // Reset the image slot completely
+  const updatedImages = [...productImages];
+  updatedImages[index] = { 
+    file: null, 
+    preview: null, 
+    error: '', 
+    url: null, 
+    publicId: null, 
+    uploading: false 
+  };
+  
+  setProductImages(updatedImages);
+  
+  // Clear the file input value for this slot if it exists
+  if (fileInputRefs.current[index]) {
+    fileInputRefs.current[index].value = '';
+  }
+  
+  // Show success message for removal
+  toast.success(`Image removed from slot ${index + 1}`);
+};
   const moveImage = (fromIndex, toIndex) => {
     const updatedImages = [...productImages];
     const [movedImage] = updatedImages.splice(fromIndex, 1);
@@ -3559,81 +3597,90 @@ export default function AdminCreateProduct() {
                     </div>
 
                     {/* Image Preview Grid with Drag and Drop */}
-                    <div className="grid grid-cols-2 gap-4">
-                      {productImages.map((img, index) => (
-                        <div
-                          key={index}
-                          draggable={img.preview !== null}
-                          onDragStart={() => img.preview && handleDragStart(index)}
-                          onDragOver={(e) => img.preview && handleDragOverWithFeedback(e, index)}
-                          onDragLeave={handleDragLeave}
-                          onDrop={() => img.preview && handleDropWithFeedback(index)}
-                          onDragEnd={handleDragEnd}
-                          className={`transition-all duration-200 ${
-                            draggedIndex === index ? 'opacity-50 scale-95' : ''
-                          } ${
-                            dragOverIndex === index && draggedIndex !== index && draggedIndex !== null 
-                              ? 'ring-2 ring-[#6B4F3A] ring-offset-2 rounded-lg' 
-                              : ''
-                          }`}
-                        >
-                          {img.preview ? (
-                            <div className="relative rounded-lg overflow-hidden border-2 border-gray-200 h-32 hover:border-[#6B4F3A] transition-colors cursor-grab active:cursor-grabbing">
-                              <div className="absolute top-1 left-1 bg-black/50 rounded px-1.5 py-0.5 z-10">
-                                <GripVertical className="w-3 h-3 text-white" />
-                              </div>
-                              
-                              <img 
-                                src={img.preview} 
-                                alt={`Product ${index + 1}`} 
-                                className="w-full h-full object-cover"
-                              />
-                              
-                              {img.uploading && (
-                                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                                  <Loader2 className="w-6 h-6 text-white animate-spin" />
-                                </div>
-                              )}
-                              
-                              <button
-                                type="button"
-                                onClick={() => removeImage(index)}
-                                className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                                disabled={img.uploading}
-                              >
-                                <X className="w-3 h-3" />
-                              </button>
-                              
-                              <span className="absolute bottom-1 left-1 px-1.5 py-0.5 bg-black bg-opacity-60 text-white text-xs rounded z-10">
-                                {index + 1}
-                              </span>
-                            </div>
-                          ) : (
-                            <div 
-                              className={`border-2 border-dashed rounded-lg p-4 text-center h-32 flex flex-col items-center justify-center cursor-pointer ${
-                                img.error ? 'border-red-300 bg-red-50' : 'border-gray-300 bg-gray-50 hover:border-[#6B4F3A] hover:bg-[#F5E6D3]'
-                              }`}
-                              onClick={() => fileInputRefs.current[index]?.click()}
-                            >
-                              <input 
-                                type="file" 
-                                ref={el => fileInputRefs.current[index] = el}
-                                className="hidden" 
-                                accept="image/jpeg,image/jpg,image/png,image/webp" 
-                                onChange={(e) => handleImageChange(e, index)} 
-                              />
-                              <ImageIcon className={`w-6 h-6 mx-auto mb-2 ${img.error ? 'text-red-400' : 'text-gray-400'}`} />
-                              <p className={`text-xs ${img.error ? 'text-red-600' : 'text-gray-600'}`}>
-                                Slot {index + 1}
-                              </p>
-                              {img.error && (
-                                <p className="text-xs text-red-600 mt-1">{img.error}</p>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
+                  {/* Image Preview Grid with Drag and Drop */}
+<div className="grid grid-cols-2 gap-4">
+  {productImages.map((img, index) => (
+    <div
+      key={index}
+      draggable={img.preview !== null}
+      onDragStart={() => img.preview && handleDragStart(index)}
+      onDragOver={(e) => img.preview && handleDragOverWithFeedback(e, index)}
+      onDragLeave={handleDragLeave}
+      onDrop={() => img.preview && handleDropWithFeedback(index)}
+      onDragEnd={handleDragEnd}
+      className={`transition-all duration-200 ${
+        draggedIndex === index ? 'opacity-50 scale-95' : ''
+      } ${
+        dragOverIndex === index && draggedIndex !== index && draggedIndex !== null 
+          ? 'ring-2 ring-[#6B4F3A] ring-offset-2 rounded-lg' 
+          : ''
+      }`}
+    >
+      {img.preview ? (
+        <div className="relative rounded-lg overflow-hidden border-2 border-gray-200 h-40 hover:border-[#6B4F3A] transition-colors cursor-grab active:cursor-grabbing">
+          <div className="absolute top-1 left-1 bg-black/50 rounded px-1.5 py-0.5 z-10">
+            <GripVertical className="w-3 h-3 text-white" />
+          </div>
+          
+          <img 
+            src={img.preview} 
+            alt={`Product ${index + 1}`} 
+            className="w-full h-full object-contain bg-gray-100"
+            onError={(e) => {
+              console.error('Image failed to load');
+              e.target.src = 'https://via.placeholder.com/150?text=Error';
+            }}
+          />
+          
+          {/* Uploading Overlay */}
+          {img.uploading && (
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
+              <Loader2 className="w-6 h-6 text-white animate-spin" />
+            </div>
+          )}
+          
+          {/* Remove Button */}
+          <button
+            type="button"
+            onClick={() => removeImage(index)}
+            className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors z-20"
+            disabled={false}
+            title="Remove image"
+          >
+            <X className="w-3 h-3" />
+          </button>
+          
+          <span className="absolute bottom-1 left-1 px-1.5 py-0.5 bg-black bg-opacity-60 text-white text-xs rounded z-10">
+            {index + 1}
+          </span>
+        </div>
+      ) : (
+        <div 
+          className={`border-2 border-dashed rounded-lg p-4 text-center h-40 flex flex-col items-center justify-center cursor-pointer ${
+            img.error ? 'border-red-300 bg-red-50' : 'border-gray-300 bg-gray-50 hover:border-[#6B4F3A] hover:bg-[#F5E6D3]'
+          }`}
+          onClick={() => fileInputRefs.current[index]?.click()}
+        >
+          <input 
+            type="file" 
+            ref={el => fileInputRefs.current[index] = el}
+            className="hidden" 
+            accept="image/jpeg,image/jpg,image/png,image/webp" 
+            onChange={(e) => handleImageChange(e, index)} 
+          />
+          <ImageIcon className={`w-8 h-8 mx-auto mb-2 ${img.error ? 'text-red-400' : 'text-gray-400'}`} />
+          <p className={`text-xs ${img.error ? 'text-red-600' : 'text-gray-600'}`}>
+            Slot {index + 1}
+          </p>
+          <p className="text-[10px] text-gray-400 mt-1">Click to upload</p>
+          {img.error && (
+            <p className="text-xs text-red-600 mt-1">{img.error}</p>
+          )}
+        </div>
+      )}
+    </div>
+  ))}
+</div>
                     
                     {/* Upload Progress Summary */}
                     {productImages.some(img => img.uploading) && (
@@ -3828,6 +3875,7 @@ export default function AdminCreateProduct() {
                           value={formData.moq}
                           onChange={handleChange}
                           onWheel={(e) => e.target.blur()}
+                          
                           min="1"
                           className="flex-1 px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition"
                         />
@@ -3842,16 +3890,17 @@ export default function AdminCreateProduct() {
                         {getPricePerLabel()} ($) <span className="text-red-500">*</span>
                       </label>
                       <div className="flex items-center gap-2">
-                        <input
-                          type="number"
-                          name="pricePerUnit"
-                          value={formData.pricePerUnit}
-                          onChange={handleChange}
-                          onWheel={(e) => e.target.blur()}
-                          min="0"
-                          step="0.01"
-                          className="flex-1 px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition"
-                        />
+                      <input
+  type="number"
+  name="pricePerUnit"
+  value={formData.pricePerUnit === 0 ? '' : formData.pricePerUnit}
+  onChange={handleChange}
+  onWheel={(e) => e.target.blur()}
+  min="0"
+  step="0.01"
+  placeholder="0.00"
+  className="flex-1 px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition"
+/>
                         <span className="text-sm text-gray-500">$</span>
                       </div>
                       {errors.pricePerUnit && <p className="text-xs text-red-600 mt-1">{errors.pricePerUnit}</p>}
@@ -3896,16 +3945,16 @@ export default function AdminCreateProduct() {
                             <label className="block text-xs font-medium text-gray-600 mb-1.5">
                               Price Per {orderUnit === 'ton' ? 'MT ($)' : orderUnit === 'kg' ? 'KG ($)' : 'Unit ($)'}
                             </label>
-                            <input
-                              type="number"
-                              value={tier.price}
-                              onChange={(e) => handlePricingChange(index, 'price', e.target.value)}
-                              onWheel={(e) => e.target.blur()}
-                              placeholder="0.00"
-                              min="0"
-                              step="0.01"
-                              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition"
-                            />
+                           <input
+  type="number"
+  value={tier.price === 0 ? '' : tier.price}
+  onChange={(e) => handlePricingChange(index, 'price', e.target.value)}
+  onWheel={(e) => e.target.blur()}
+  placeholder="0.00"
+  min="0"
+  step="0.01"
+  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition"
+/>
                           </div>
                           {formData.quantityBasedPricing.length > 1 && (
                             <div className="flex items-end h-[62px]">

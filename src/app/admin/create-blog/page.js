@@ -37,16 +37,15 @@ import '@mantine/core/styles.css';
 
 // Blog categories
 const BLOG_CATEGORIES = [
-  { value: 'fashion-trends', label: 'Fashion Trends', icon: '👗' },
-  { value: 'wholesale-guide', label: 'Wholesale Guide', icon: '📦' },
-  { value: 'industry-news', label: 'Industry News', icon: '📰' },
-  { value: 'style-tips', label: 'Style Tips', icon: '✨' },
-  { value: 'business-tips', label: 'Business Tips', icon: '💼' },
-  { value: 'fabric-and-quality', label: 'Fabric and Quality', icon: '🧵' },
+  { value: 'eco-sustainability', label: 'Eco & Sustainability', icon: '🌿' },
+  { value: 'jute-product-guides', label: 'Jute Product Guides', icon: '📚' },
+  { value: 'manufacturing-process', label: 'Manufacturing & Process', icon: '🏭' },
+  { value: 'bulk-buying-export', label: 'Bulk Buying & Export', icon: '🚢' },
+  { value: 'jute-industry-trends', label: 'Jute Industry Trends', icon: '📈' },
+  { value: 'jute-craft-diy', label: 'Jute Craft & DIY', icon: '✂️' },
+  { value: 'product-spotlights', label: 'Product Spotlights', icon: '⭐' },
   { value: 'customer-stories', label: 'Customer Stories', icon: '👥' },
-  { value: 'case-studies', label: 'Case Studies', icon: '📊' },
-  { value: 'product-guide', label: 'Product Guide', icon: '📖' },
-  { value: 'others', label: 'Others', icon: '📌' }
+  { value: 'business-insights', label: 'Business Insights', icon: '💡' }
 ];
 
 // YouTube helper functions
@@ -292,7 +291,7 @@ export default function CreateBlog() {
   // Form state
   const [formData, setFormData] = useState({
     title: '',
-    author: 'Asian Clothify',
+    author: 'Jute Craftify',
     category: '',
     publishDate: new Date().toISOString().split('T')[0],
     excerpt: '',

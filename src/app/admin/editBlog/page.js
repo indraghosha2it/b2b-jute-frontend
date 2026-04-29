@@ -1,6 +1,5 @@
 
 
-
 // 'use client';
 
 // import { useState, useEffect, useRef } from 'react';
@@ -23,7 +22,8 @@
 //   Type,
 //   Globe,
 //   ImagePlus,
-//   Video
+//   Video,
+//   Youtube
 // } from 'lucide-react';
 // import NextLink from 'next/link';
 // import { toast } from 'sonner';
@@ -50,7 +50,7 @@
 //   { value: 'others', label: 'Others', icon: '📌' }
 // ];
 
-// // Cloudinary upload function
+// // Cloudinary upload function for images
 // const uploadToCloudinary = async (file, folder = 'blogs') => {
 //   const formData = new FormData();
 //   formData.append('file', file);
@@ -81,36 +81,38 @@
 //   }
 // };
 
-// // Cloudinary video upload function
-// const uploadVideoToCloudinary = async (file) => {
-//   const formData = new FormData();
-//   formData.append('file', file);
-//   formData.append('upload_preset', 'b2b-products');
-//   formData.append('folder', 'blogs/videos');
-//   formData.append('resource_type', 'video');
+// // YouTube helper functions
+// const getYouTubeVideoId = (url) => {
+//   if (!url) return null;
   
-//   try {
-//     const response = await fetch(
-//       `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload`,
-//       {
-//         method: 'POST',
-//         body: formData,
-//       }
-//     );
-    
-//     const data = await response.json();
-//     if (data.secure_url) {
-//       return {
-//         url: data.secure_url,
-//         publicId: data.public_id,
-//       };
-//     } else {
-//       throw new Error('Upload failed');
+//   const patterns = [
+//     /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?/\s]+)/,
+//     /youtube\.com\/embed\/([^/?]+)/,
+//     /youtube\.com\/v\/([^/?]+)/,
+//     /youtube\.com\/shorts\/([^/?]+)/
+//   ];
+  
+//   for (const pattern of patterns) {
+//     const match = url.match(pattern);
+//     if (match && match[1]) {
+//       return match[1];
 //     }
-//   } catch (error) {
-//     console.error('Cloudinary video upload error:', error);
-//     throw error;
 //   }
+//   return null;
+// };
+
+// const getYouTubeThumbnail = (videoId) => {
+//   if (!videoId) return null;
+//   return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+// };
+
+// const validateYoutubeUrl = (url) => {
+//   if (!url) return { valid: true, error: null };
+//   const videoId = getYouTubeVideoId(url);
+//   return { 
+//     valid: !!videoId, 
+//     error: videoId ? null : 'Please enter a valid YouTube URL'
+//   };
 // };
 
 // // ========== PARAGRAPH SECTION COMPONENT ==========
@@ -167,7 +169,7 @@
 //             value={paragraph.header || ''}
 //             onChange={(e) => onUpdate(index, 'header', e.target.value)}
 //             placeholder="e.g., Why Choose Bulk Ordering?"
-//             className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition ${
+//             className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#7F6149] focus:border-transparent outline-none transition ${
 //               errors[`paragraph_${index}_header`] ? 'border-red-500' : 'border-gray-300'
 //             }`}
 //           />
@@ -219,53 +221,8 @@
 //           )}
 //         </div>
 
-//         {/* Section Image (Optional) */}
-//         <div>
-//           <label className="block text-sm font-medium text-gray-600 mb-1.5">
-//             Section Image (Optional)
-//           </label>
-//           {paragraph.imagePreview ? (
-//             <div className="relative rounded-lg overflow-hidden border border-gray-200">
-//               <img 
-//                 src={paragraph.imagePreview} 
-//                 alt={`Section ${index + 1}`} 
-//                 className="w-full h-32 object-cover"
-//               />
-//               {paragraph.imageUploading && (
-//                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-//                   <Loader2 className="w-6 h-6 text-white animate-spin" />
-//                 </div>
-//               )}
-//               <button
-//                 type="button"
-//                 onClick={() => onUpdate(index, 'imageFile', null)}
-//                 className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-//                 disabled={paragraph.imageUploading}
-//               >
-//                 <X className="w-3 h-3" />
-//               </button>
-//             </div>
-//           ) : (
-//             <div className="flex items-center gap-2">
-//               <input
-//                 type="file"
-//                 ref={imageInputRef}
-//                 className="hidden"
-//                 accept="image/jpeg,image/jpg,image/png,image/webp"
-//                 onChange={handleImageUpload}
-//               />
-//               <button
-//                 type="button"
-//                 onClick={() => imageInputRef.current?.click()}
-//                 className="flex items-center gap-2 px-3 py-2 text-sm text-[#E39A65] border border-dashed border-[#E39A65] rounded-lg hover:bg-orange-50 transition-colors"
-//                 disabled={paragraph.imageUploading}
-//               >
-//                 <ImagePlus className="w-4 h-4" />
-//                 {paragraph.imageUploading ? 'Uploading...' : 'Add Image'}
-//               </button>
-//             </div>
-//           )}
-//         </div>
+    
+    
 //       </div>
 //     </div>
 //   );
@@ -283,7 +240,6 @@
   
 //   // Refs for file inputs
 //   const featuredImageRef = useRef(null);
-//   const videoInputRef = useRef(null);
 
 //   // Form state
 //   const [formData, setFormData] = useState({
@@ -313,16 +269,13 @@
 //     existingPublicId: null
 //   });
 
-//   // Video state with Cloudinary URL
-//   const [videoFile, setVideoFile] = useState({
-//     file: null,
-//     preview: null,
-//     url: null,
-//     publicId: null,
-//     uploading: false,
+//   // YouTube video state
+//   const [youtubeVideo, setYoutubeVideo] = useState({
+//     url: '',
+//     videoId: null,
+//     thumbnail: null,
 //     error: '',
-//     existingUrl: null,
-//     existingPublicId: null
+//     existingVideo: null
 //   });
 
 //   // Thumbnail images state
@@ -338,9 +291,7 @@
 
 //   // Allowed file types
 //   const allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-//   const allowedVideoTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo'];
 //   const maxImageSize = 5 * 1024 * 1024; // 5MB
-//   const maxVideoSize = 50 * 1024 * 1024; // 50MB
 
 //   // Set mounted state
 //   useEffect(() => {
@@ -426,17 +377,14 @@
 //             });
 //           }
 
-//           // Set video if exists
-//           if (blog.videoUrl) {
-//             setVideoFile({
-//               file: null,
-//               preview: blog.videoUrl,
-//               url: blog.videoUrl,
-//               publicId: blog.videoPublicId,
-//               uploading: false,
+//           // Set YouTube video if exists
+//           if (blog.youtubeVideo && blog.youtubeVideo.videoId) {
+//             setYoutubeVideo({
+//               url: blog.youtubeVideo.url,
+//               videoId: blog.youtubeVideo.videoId,
+//               thumbnail: blog.youtubeVideo.thumbnail,
 //               error: '',
-//               existingUrl: blog.videoUrl,
-//               existingPublicId: blog.videoPublicId
+//               existingVideo: blog.youtubeVideo
 //             });
 //           }
 
@@ -517,45 +465,39 @@
 //     return { valid: true };
 //   };
 
-//   // Validate video file
-//   const validateVideoFile = (file) => {
-//     const fileExtension = file.name.split('.').pop().toLowerCase();
-//     const allowedExtensions = ['mp4', 'webm', 'mov', 'avi', 'mpeg', 'mkv'];
+//   // YouTube URL handler
+//   const handleYoutubeUrlChange = (e) => {
+//     const url = e.target.value;
+//     const validation = validateYoutubeUrl(url);
     
-//     if (!allowedExtensions.includes(fileExtension)) {
-//       return {
-//         valid: false,
-//         message: `Invalid format: .${fileExtension}. Allowed: ${allowedExtensions.join(', ')}`
-//       };
+//     if (validation.valid && url) {
+//       const videoId = getYouTubeVideoId(url);
+//       setYoutubeVideo({
+//         url,
+//         videoId,
+//         thumbnail: getYouTubeThumbnail(videoId),
+//         error: '',
+//         existingVideo: null
+//       });
+//     } else {
+//       setYoutubeVideo({
+//         url,
+//         videoId: null,
+//         thumbnail: null,
+//         error: validation.error || '',
+//         existingVideo: null
+//       });
 //     }
+//   };
 
-//     if (file.type) {
-//       const allowedMimeTypes = [
-//         'video/mp4', 
-//         'video/webm', 
-//         'video/quicktime', 
-//         'video/x-msvideo', 
-//         'video/mpeg',
-//         'video/x-matroska'
-//       ];
-      
-//       if (!allowedMimeTypes.includes(file.type)) {
-//         return {
-//           valid: false,
-//           message: `Invalid video type: ${file.type}. Allowed: MP4, WebM, MOV, AVI, MPEG`
-//         };
-//       }
-//     }
-
-//     if (file.size > maxVideoSize) {
-//       const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
-//       return {
-//         valid: false,
-//         message: `Video too large: ${fileSizeMB}MB. Max: 50MB`
-//       };
-//     }
-
-//     return { valid: true };
+//   const removeYoutubeVideo = () => {
+//     setYoutubeVideo({
+//       url: '',
+//       videoId: null,
+//       thumbnail: null,
+//       error: '',
+//       existingVideo: null
+//     });
 //   };
 
 //   // ========== FEATURED IMAGE HANDLERS ==========
@@ -613,65 +555,6 @@
 //     setFeaturedImage({ file: null, preview: null, url: null, publicId: null, uploading: false, error: '', existingUrl: null, existingPublicId: null });
 //     if (featuredImageRef.current) {
 //       featuredImageRef.current.value = '';
-//     }
-//   };
-
-//   // ========== VIDEO HANDLERS ==========
-
-//   const handleVideoChange = async (e) => {
-//     const file = e.target.files[0];
-//     if (!file) return;
-
-//     const validation = validateVideoFile(file);
-//     if (!validation.valid) {
-//       setVideoFile(prev => ({ ...prev, error: validation.message }));
-//       toast.error(validation.message);
-//       return;
-//     }
-
-//     const videoUrl = URL.createObjectURL(file);
-//     setVideoFile({
-//       file,
-//       preview: videoUrl,
-//       url: null,
-//       publicId: null,
-//       uploading: true,
-//       error: '',
-//       existingUrl: null,
-//       existingPublicId: null
-//     });
-
-//     try {
-//       const { url, publicId } = await uploadVideoToCloudinary(file);
-//       setVideoFile({
-//         file,
-//         preview: videoUrl,
-//         url,
-//         publicId,
-//         uploading: false,
-//         error: '',
-//         existingUrl: null,
-//         existingPublicId: null
-//       });
-//       toast.success('Video uploaded successfully');
-//     } catch (error) {
-//       console.error('Upload error:', error);
-//       setVideoFile(prev => ({
-//         ...prev,
-//         uploading: false,
-//         error: 'Failed to upload video'
-//       }));
-//       toast.error('Failed to upload video');
-//     }
-//   };
-
-//   const removeVideo = () => {
-//     if (videoFile.preview && videoFile.preview.startsWith('blob:')) {
-//       URL.revokeObjectURL(videoFile.preview);
-//     }
-//     setVideoFile({ file: null, preview: null, url: null, publicId: null, uploading: false, error: '', existingUrl: null, existingPublicId: null });
-//     if (videoInputRef.current) {
-//       videoInputRef.current.value = '';
 //     }
 //   };
 
@@ -891,7 +774,7 @@
 //   const handleSubmit = async (e) => {
 //     e.preventDefault();
 
-//     if (featuredImage.uploading || videoFile.uploading || newThumbnailImages.some(img => img.uploading)) {
+//     if (featuredImage.uploading || newThumbnailImages.some(img => img.uploading)) {
 //       toast.error('Please wait for all uploads to complete');
 //       return;
 //     }
@@ -925,9 +808,12 @@
 //       const featuredImageUrl = featuredImage.url || featuredImage.existingUrl;
 //       const featuredImagePublicId = featuredImage.publicId || featuredImage.existingPublicId;
 
-//       // Get video URL (new or existing)
-//       const videoUrl = videoFile.url || videoFile.existingUrl;
-//       const videoPublicId = videoFile.publicId || videoFile.existingPublicId;
+//       // Process YouTube video (new or existing)
+//       const youtubeVideoData = youtubeVideo.videoId ? {
+//         url: youtubeVideo.url,
+//         videoId: youtubeVideo.videoId,
+//         thumbnail: youtubeVideo.thumbnail
+//       } : null;
 
 //       // Process thumbnail images
 //       const existingThumbnailsToKeep = existingThumbnails.map(thumb => ({
@@ -959,8 +845,7 @@
 //         metaKeywords: formData.metaKeywords || '',
 //         featuredImageUrl,
 //         featuredImagePublicId,
-//         videoUrl: videoUrl || null,
-//         videoPublicId: videoPublicId || null,
+//         youtubeVideo: youtubeVideoData,
 //         thumbnailImages: allThumbnails,
 //         imagesToDelete: thumbnailsToDelete
 //       };
@@ -1001,7 +886,7 @@
 //   if (isLoading) {
 //     return (
 //       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-//         <Loader2 className="w-8 h-8 animate-spin text-[#E39A65]" />
+//         <Loader2 className="w-8 h-8 animate-spin text-[#7F6149]" />
 //       </div>
 //     );
 //   }
@@ -1050,7 +935,7 @@
 //                     type="text"
 //                     value={formData.title}
 //                     onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-//                     className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition ${
+//                     className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#7F6149] focus:border-transparent outline-none transition ${
 //                       errors.title ? 'border-red-500' : 'border-gray-300'
 //                     }`}
 //                     placeholder="e.g., Top Fashion Trends for 2026"
@@ -1093,7 +978,7 @@
 //                           setFormData(prev => ({ ...prev, category: e.target.value }));
 //                           if (errors.category) setErrors(prev => ({ ...prev, category: null }));
 //                         }}
-//                         className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition ${
+//                         className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#7F6149] focus:border-transparent outline-none transition ${
 //                           errors.category ? 'border-red-500' : 'border-gray-300'
 //                         }`}
 //                       >
@@ -1120,7 +1005,7 @@
 //                         type="date"
 //                         value={formData.publishDate}
 //                         onChange={(e) => setFormData(prev => ({ ...prev, publishDate: e.target.value }))}
-//                         className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition"
+//                         className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7F6149] focus:border-transparent outline-none transition"
 //                       />
 //                     </div>
 //                   </div>
@@ -1135,7 +1020,7 @@
 //                     value={formData.excerpt}
 //                     onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
 //                     rows="4"
-//                     className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition resize-none ${
+//                     className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#7F6149] focus:border-transparent outline-none transition resize-none ${
 //                       errors.excerpt ? 'border-red-500' : 'border-gray-300'
 //                     }`}
 //                     placeholder="Brief summary of your blog post..."
@@ -1156,7 +1041,7 @@
 //                         type="checkbox"
 //                         checked={formData.featured}
 //                         onChange={(e) => setFormData(prev => ({ ...prev, featured: e.target.checked }))}
-//                         className="w-4 h-4 text-[#E39A65] border-gray-300 rounded focus:ring-[#E39A65]"
+//                         className="w-4 h-4 text-[#7F6149] border-gray-300 rounded focus:ring-[#7F6149]"
 //                       />
 //                       <span>Mark as Featured Post</span>
 //                     </label>
@@ -1177,12 +1062,12 @@
 //                         onChange={(e) => setTagInput(e.target.value)}
 //                         onKeyDown={handleTagKeyDown}
 //                         placeholder="Enter tags (press Enter or comma to add)"
-//                         className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition"
+//                         className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7F6149] focus:border-transparent outline-none transition"
 //                       />
 //                       <button
 //                         type="button"
 //                         onClick={addTag}
-//                         className="px-4 py-2 bg-[#E39A65] text-white text-sm font-medium rounded-lg hover:bg-[#d48b54] transition-colors"
+//                         className="px-4 py-2 bg-[#7F6149] text-white text-sm font-medium rounded-lg hover:bg-[#85664D] transition-colors"
 //                       >
 //                         Add
 //                       </button>
@@ -1215,13 +1100,13 @@
 //                 </div>
 //               </div>
 
-//               {/* Right Column - Images */}
+//               {/* Right Column - Images & Video */}
 //               <div className="space-y-6">
 //                 {/* Featured Image (Required) */}
 //                 <div className="bg-white rounded-xl shadow-sm border border-gray-200">
 //                   <div className="p-5 border-b border-gray-200">
 //                     <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-//                       <ImageIcon className="w-5 h-5 text-[#E39A65]" />
+//                       <ImageIcon className="w-5 h-5 text-[#7F6149]" />
 //                       Featured Image <span className="text-red-500">*</span>
 //                     </h2>
 //                     <p className="text-xs text-gray-500 mt-1">Main blog image (JPG, PNG, WebP, max 5MB)</p>
@@ -1259,7 +1144,7 @@
 //                     ) : (
 //                       <div 
 //                         className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer ${
-//                           featuredImage.error ? 'border-red-300 bg-red-50' : 'border-gray-300 hover:border-[#E39A65] hover:bg-orange-50'
+//                           featuredImage.error ? 'border-red-300 bg-red-50' : 'border-gray-300 hover:border-[#7F6149] hover:bg-orange-50'
 //                         }`}
 //                         onClick={() => featuredImageRef.current?.click()}
 //                       >
@@ -1286,63 +1171,111 @@
 //                   </div>
 //                 </div>
 
-//                 {/* Video Upload (Optional) */}
+//                 {/* YouTube Video (Optional) */}
 //                 <div className="bg-white rounded-xl shadow-sm border border-gray-200">
 //                   <div className="p-5 border-b border-gray-200">
 //                     <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-//                       <Video className="w-5 h-5 text-[#E39A65]" />
-//                       Video (Optional)
+//                       <Youtube className="w-5 h-5 text-red-600" />
+//                       YouTube Video (Optional)
 //                     </h2>
-//                     <p className="text-xs text-gray-500 mt-1">Upload a video to accompany your blog post (MP4, WebM, MOV - max 50MB)</p>
+//                     <p className="text-xs text-gray-500 mt-1">Add or update YouTube video for your blog post</p>
 //                   </div>
                   
 //                   <div className="p-5">
-//                     {!videoFile.preview ? (
-//                       <div 
-//                         className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center transition-colors cursor-pointer hover:border-[#E39A65] hover:bg-orange-50"
-//                         onClick={() => videoInputRef.current?.click()}
-//                       >
-//                         <input 
-//                           type="file" 
-//                           ref={videoInputRef}
-//                           className="hidden" 
-//                           accept="video/mp4,video/webm,video/quicktime,video/x-msvideo,video/mpeg,.mp4,.webm,.mov,.avi,.mpeg" 
-//                           onChange={handleVideoChange} 
-//                         />
-//                         <Video className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-//                         <p className="text-sm font-medium text-gray-600">
-//                           Click to upload video
-//                         </p>
-//                         <p className="text-xs text-gray-500 mt-1">
-//                           MP4, WebM, MOV up to 50MB
-//                         </p>
-//                       </div>
-//                     ) : (
-//                       <div className="relative rounded-lg overflow-hidden border border-gray-200 bg-gray-900">
-//                         <video 
-//                           src={videoFile.preview} 
-//                           controls
-//                           className="w-full h-auto max-h-64"
-//                         >
-//                           Your browser does not support the video tag.
-//                         </video>
-//                         {videoFile.uploading && (
-//                           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-//                             <Loader2 className="w-6 h-6 text-white animate-spin" />
+//                     {/* Show existing video if present */}
+//                     {youtubeVideo.existingVideo && !youtubeVideo.videoId && (
+//                       <div className="mb-4">
+//                         <p className="text-xs font-medium text-gray-600 mb-2">Current video:</p>
+//                         <div className="relative rounded-lg overflow-hidden border border-gray-200 bg-gray-900">
+//                           <div className="relative pb-[56.25%] h-0">
+//                             <iframe
+//                               src={`https://www.youtube.com/embed/${youtubeVideo.existingVideo.videoId}`}
+//                               title="YouTube video player"
+//                               frameBorder="0"
+//                               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+//                               allowFullScreen
+//                               className="absolute top-0 left-0 w-full h-full"
+//                             ></iframe>
 //                           </div>
-//                         )}
+//                           <button
+//                             type="button"
+//                             onClick={removeYoutubeVideo}
+//                             className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors z-10"
+//                           >
+//                             <X className="w-4 h-4" />
+//                           </button>
+//                         </div>
+//                       </div>
+//                     )}
+
+//                     {/* YouTube URL Input */}
+//                     {!youtubeVideo.videoId && (
+//                       <div className="space-y-3">
+//                         <div>
+//                           <label className="block text-sm font-medium text-gray-700 mb-1">
+//                             YouTube URL
+//                           </label>
+//                           <input
+//                             type="text"
+//                             value={youtubeVideo.url}
+//                             onChange={handleYoutubeUrlChange}
+//                             placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..."
+//                             className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#7F6149] focus:border-transparent outline-none transition ${
+//                               youtubeVideo.error ? 'border-red-500' : 'border-gray-300'
+//                             }`}
+//                           />
+//                           {youtubeVideo.error && (
+//                             <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
+//                               <AlertCircle className="w-3 h-3" />
+//                               {youtubeVideo.error}
+//                             </p>
+//                           )}
+//                           {!youtubeVideo.error && youtubeVideo.url && (
+//                             <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
+//                               ✓ Valid YouTube URL
+//                             </p>
+//                           )}
+//                         </div>
+                        
+//                         <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+//                           <Youtube className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+//                           <p className="text-sm font-medium text-gray-600">
+//                             Enter a YouTube URL above to add or replace video
+//                           </p>
+//                           <p className="text-xs text-gray-500 mt-1">
+//                             Supports YouTube links, shorts, and embed URLs
+//                           </p>
+//                           <div className="mt-3 text-xs text-gray-400">
+//                             <p>Examples:</p>
+//                             <p>• https://www.youtube.com/watch?v=...</p>
+//                             <p>• https://youtu.be/...</p>
+//                             <p>• https://www.youtube.com/shorts/...</p>
+//                           </div>
+//                         </div>
+//                       </div>
+//                     )}
+
+//                     {/* Show new video preview */}
+//                     {youtubeVideo.videoId && (
+//                       <div className="relative rounded-lg overflow-hidden border border-gray-200 bg-gray-900">
+//                         <div className="relative pb-[56.25%] h-0">
+//                           <iframe
+//                             src={`https://www.youtube.com/embed/${youtubeVideo.videoId}`}
+//                             title="YouTube video player"
+//                             frameBorder="0"
+//                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+//                             allowFullScreen
+//                             className="absolute top-0 left-0 w-full h-full"
+//                           ></iframe>
+//                         </div>
 //                         <button
 //                           type="button"
-//                           onClick={removeVideo}
-//                           className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-//                           disabled={videoFile.uploading}
+//                           onClick={removeYoutubeVideo}
+//                           className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors z-10"
 //                         >
 //                           <X className="w-4 h-4" />
 //                         </button>
 //                       </div>
-//                     )}
-//                     {videoFile.error && (
-//                       <p className="text-xs text-red-600 mt-2">{videoFile.error}</p>
 //                     )}
 //                   </div>
 //                 </div>
@@ -1351,7 +1284,7 @@
 //                 <div className="bg-white rounded-xl shadow-sm border border-gray-200">
 //                   <div className="p-5 border-b border-gray-200">
 //                     <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-//                       <ImagePlus className="w-5 h-5 text-[#E39A65]" />
+//                       <ImagePlus className="w-5 h-5 text-[#7F6149]" />
 //                       Thumbnail Images
 //                     </h2>
 //                     <p className="text-xs text-gray-500 mt-1">Additional images for gallery (optional)</p>
@@ -1416,7 +1349,7 @@
 
 //                     {/* Upload Button */}
 //                     <div 
-//                       className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center transition-colors cursor-pointer hover:border-[#E39A65] hover:bg-orange-50"
+//                       className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center transition-colors cursor-pointer hover:border-[#7F6149] hover:bg-orange-50"
 //                       onClick={() => document.getElementById('thumbnailImages')?.click()}
 //                     >
 //                       <input 
@@ -1445,7 +1378,7 @@
 //               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
 //                 <div className="p-5 border-b border-gray-200">
 //                   <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-//                     <BookOpen className="w-5 h-5 text-[#E39A65]" />
+//                     <BookOpen className="w-5 h-5 text-[#7F6149]" />
 //                     Main Content <span className="text-red-500">*</span>
 //                   </h2>
 //                   <p className="text-xs text-gray-500 mt-1">Write your main blog content with rich text formatting</p>
@@ -1502,7 +1435,7 @@
 //               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
 //                 <div className="p-5 border-b border-gray-200">
 //                   <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-//                     <Plus className="w-5 h-5 text-[#E39A65]" />
+//                     <Plus className="w-5 h-5 text-[#7F6149]" />
 //                     Additional Sections
 //                   </h2>
 //                   <p className="text-xs text-gray-500 mt-1">
@@ -1527,7 +1460,7 @@
 //                   <button
 //                     type="button"
 //                     onClick={addParagraph}
-//                     className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-[#E39A65] border-2 border-dashed border-[#E39A65]/30 rounded-lg hover:bg-orange-50 hover:border-[#E39A65] transition-colors"
+//                     className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-[#7F6149] border-2 border-dashed border-[#7F6149]/30 rounded-lg hover:bg-orange-50 hover:border-[#7F6149] transition-colors"
 //                   >
 //                     <Plus className="w-4 h-4" />
 //                     Add New Section
@@ -1541,7 +1474,7 @@
 //               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
 //                 <div className="p-5 border-b border-gray-200">
 //                   <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-//                     <Globe className="w-5 h-5 text-[#E39A65]" />
+//                     <Globe className="w-5 h-5 text-[#7F6149]" />
 //                     SEO Settings
 //                   </h2>
 //                   <p className="text-xs text-gray-500 mt-1">Optimize your blog post for search engines</p>
@@ -1556,7 +1489,7 @@
 //                       type="text"
 //                       value={formData.metaTitle}
 //                       onChange={(e) => setFormData(prev => ({ ...prev, metaTitle: e.target.value }))}
-//                       className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition"
+//                       className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7F6149] focus:border-transparent outline-none transition"
 //                       placeholder="Leave empty to use blog title"
 //                     />
 //                     <p className="text-xs text-gray-500 mt-1">
@@ -1572,7 +1505,7 @@
 //                       value={formData.metaDescription}
 //                       onChange={(e) => setFormData(prev => ({ ...prev, metaDescription: e.target.value }))}
 //                       rows="3"
-//                       className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition resize-none"
+//                       className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7F6149] focus:border-transparent outline-none transition resize-none"
 //                       placeholder="Brief description for search engines"
 //                     />
 //                     <p className="text-xs text-gray-500 mt-1">
@@ -1588,7 +1521,7 @@
 //                       type="text"
 //                       value={formData.metaKeywords}
 //                       onChange={(e) => setFormData(prev => ({ ...prev, metaKeywords: e.target.value }))}
-//                       className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition"
+//                       className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7F6149] focus:border-transparent outline-none transition"
 //                       placeholder="fashion, wholesale, clothing, trends (comma separated)"
 //                     />
 //                   </div>
@@ -1607,7 +1540,7 @@
 //               <button
 //                 type="submit"
 //                 disabled={isSubmitting}
-//                 className="flex items-center gap-2 px-6 py-3 bg-[#E39A65] text-white font-medium rounded-lg hover:bg-[#d48b54] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+//                 className="flex items-center gap-2 px-6 py-3 bg-[#7F6149] text-white font-medium rounded-lg hover:bg-[#85664D] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
 //               >
 //                 {isSubmitting ? (
 //                   <>
@@ -1628,6 +1561,9 @@
 //     </MantineProvider>
 //   );
 // }
+
+
+
 
 
 'use client';
@@ -1668,16 +1604,15 @@ import '@mantine/core/styles.css';
 
 // Blog categories
 const BLOG_CATEGORIES = [
-  { value: 'fashion-trends', label: 'Fashion Trends', icon: '👗' },
-  { value: 'wholesale-guide', label: 'Wholesale Guide', icon: '📦' },
-  { value: 'industry-news', label: 'Industry News', icon: '📰' },
-  { value: 'style-tips', label: 'Style Tips', icon: '✨' },
-  { value: 'business-tips', label: 'Business Tips', icon: '💼' },
-  { value: 'fabric-and-quality', label: 'Fabric and Quality', icon: '🧵' },
+  { value: 'eco-sustainability', label: 'Eco & Sustainability', icon: '🌿' },
+  { value: 'jute-product-guides', label: 'Jute Product Guides', icon: '📚' },
+  { value: 'manufacturing-process', label: 'Manufacturing & Process', icon: '🏭' },
+  { value: 'bulk-buying-export', label: 'Bulk Buying & Export', icon: '🚢' },
+  { value: 'jute-industry-trends', label: 'Jute Industry Trends', icon: '📈' },
+  { value: 'jute-craft-diy', label: 'Jute Craft & DIY', icon: '✂️' },
+  { value: 'product-spotlights', label: 'Product Spotlights', icon: '⭐' },
   { value: 'customer-stories', label: 'Customer Stories', icon: '👥' },
-  { value: 'case-studies', label: 'Case Studies', icon: '📊' },
-  { value: 'product-guide', label: 'Product Guide', icon: '📖' },
-  { value: 'others', label: 'Others', icon: '📌' }
+  { value: 'business-insights', label: 'Business Insights', icon: '💡' }
 ];
 
 // Cloudinary upload function for images
@@ -1799,7 +1734,7 @@ const ParagraphSection = ({ index, paragraph, onUpdate, onRemove, onImageUpload,
             value={paragraph.header || ''}
             onChange={(e) => onUpdate(index, 'header', e.target.value)}
             placeholder="e.g., Why Choose Bulk Ordering?"
-            className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition ${
+            className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#7F6149] focus:border-transparent outline-none transition ${
               errors[`paragraph_${index}_header`] ? 'border-red-500' : 'border-gray-300'
             }`}
           />
@@ -2516,7 +2451,7 @@ export default function AdminEditBlog() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#E39A65]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#7F6149]" />
       </div>
     );
   }
@@ -2565,7 +2500,7 @@ export default function AdminEditBlog() {
                     type="text"
                     value={formData.title}
                     onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                    className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition ${
+                    className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#7F6149] focus:border-transparent outline-none transition ${
                       errors.title ? 'border-red-500' : 'border-gray-300'
                     }`}
                     placeholder="e.g., Top Fashion Trends for 2026"
@@ -2608,7 +2543,7 @@ export default function AdminEditBlog() {
                           setFormData(prev => ({ ...prev, category: e.target.value }));
                           if (errors.category) setErrors(prev => ({ ...prev, category: null }));
                         }}
-                        className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition ${
+                        className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#7F6149] focus:border-transparent outline-none transition ${
                           errors.category ? 'border-red-500' : 'border-gray-300'
                         }`}
                       >
@@ -2635,7 +2570,7 @@ export default function AdminEditBlog() {
                         type="date"
                         value={formData.publishDate}
                         onChange={(e) => setFormData(prev => ({ ...prev, publishDate: e.target.value }))}
-                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7F6149] focus:border-transparent outline-none transition"
                       />
                     </div>
                   </div>
@@ -2650,7 +2585,7 @@ export default function AdminEditBlog() {
                     value={formData.excerpt}
                     onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
                     rows="4"
-                    className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition resize-none ${
+                    className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#7F6149] focus:border-transparent outline-none transition resize-none ${
                       errors.excerpt ? 'border-red-500' : 'border-gray-300'
                     }`}
                     placeholder="Brief summary of your blog post..."
@@ -2671,7 +2606,7 @@ export default function AdminEditBlog() {
                         type="checkbox"
                         checked={formData.featured}
                         onChange={(e) => setFormData(prev => ({ ...prev, featured: e.target.checked }))}
-                        className="w-4 h-4 text-[#E39A65] border-gray-300 rounded focus:ring-[#E39A65]"
+                        className="w-4 h-4 text-[#7F6149] border-gray-300 rounded focus:ring-[#7F6149]"
                       />
                       <span>Mark as Featured Post</span>
                     </label>
@@ -2692,12 +2627,12 @@ export default function AdminEditBlog() {
                         onChange={(e) => setTagInput(e.target.value)}
                         onKeyDown={handleTagKeyDown}
                         placeholder="Enter tags (press Enter or comma to add)"
-                        className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition"
+                        className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7F6149] focus:border-transparent outline-none transition"
                       />
                       <button
                         type="button"
                         onClick={addTag}
-                        className="px-4 py-2 bg-[#E39A65] text-white text-sm font-medium rounded-lg hover:bg-[#d48b54] transition-colors"
+                        className="px-4 py-2 bg-[#7F6149] text-white text-sm font-medium rounded-lg hover:bg-[#85664D] transition-colors"
                       >
                         Add
                       </button>
@@ -2736,7 +2671,7 @@ export default function AdminEditBlog() {
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                   <div className="p-5 border-b border-gray-200">
                     <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                      <ImageIcon className="w-5 h-5 text-[#E39A65]" />
+                      <ImageIcon className="w-5 h-5 text-[#7F6149]" />
                       Featured Image <span className="text-red-500">*</span>
                     </h2>
                     <p className="text-xs text-gray-500 mt-1">Main blog image (JPG, PNG, WebP, max 5MB)</p>
@@ -2774,7 +2709,7 @@ export default function AdminEditBlog() {
                     ) : (
                       <div 
                         className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer ${
-                          featuredImage.error ? 'border-red-300 bg-red-50' : 'border-gray-300 hover:border-[#E39A65] hover:bg-orange-50'
+                          featuredImage.error ? 'border-red-300 bg-red-50' : 'border-gray-300 hover:border-[#7F6149] hover:bg-orange-50'
                         }`}
                         onClick={() => featuredImageRef.current?.click()}
                       >
@@ -2850,7 +2785,7 @@ export default function AdminEditBlog() {
                             value={youtubeVideo.url}
                             onChange={handleYoutubeUrlChange}
                             placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..."
-                            className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition ${
+                            className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#7F6149] focus:border-transparent outline-none transition ${
                               youtubeVideo.error ? 'border-red-500' : 'border-gray-300'
                             }`}
                           />
@@ -2914,7 +2849,7 @@ export default function AdminEditBlog() {
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                   <div className="p-5 border-b border-gray-200">
                     <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                      <ImagePlus className="w-5 h-5 text-[#E39A65]" />
+                      <ImagePlus className="w-5 h-5 text-[#7F6149]" />
                       Thumbnail Images
                     </h2>
                     <p className="text-xs text-gray-500 mt-1">Additional images for gallery (optional)</p>
@@ -2979,7 +2914,7 @@ export default function AdminEditBlog() {
 
                     {/* Upload Button */}
                     <div 
-                      className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center transition-colors cursor-pointer hover:border-[#E39A65] hover:bg-orange-50"
+                      className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center transition-colors cursor-pointer hover:border-[#7F6149] hover:bg-orange-50"
                       onClick={() => document.getElementById('thumbnailImages')?.click()}
                     >
                       <input 
@@ -3008,7 +2943,7 @@ export default function AdminEditBlog() {
               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                 <div className="p-5 border-b border-gray-200">
                   <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                    <BookOpen className="w-5 h-5 text-[#E39A65]" />
+                    <BookOpen className="w-5 h-5 text-[#7F6149]" />
                     Main Content <span className="text-red-500">*</span>
                   </h2>
                   <p className="text-xs text-gray-500 mt-1">Write your main blog content with rich text formatting</p>
@@ -3065,7 +3000,7 @@ export default function AdminEditBlog() {
               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                 <div className="p-5 border-b border-gray-200">
                   <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                    <Plus className="w-5 h-5 text-[#E39A65]" />
+                    <Plus className="w-5 h-5 text-[#7F6149]" />
                     Additional Sections
                   </h2>
                   <p className="text-xs text-gray-500 mt-1">
@@ -3090,7 +3025,7 @@ export default function AdminEditBlog() {
                   <button
                     type="button"
                     onClick={addParagraph}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-[#E39A65] border-2 border-dashed border-[#E39A65]/30 rounded-lg hover:bg-orange-50 hover:border-[#E39A65] transition-colors"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-[#7F6149] border-2 border-dashed border-[#7F6149]/30 rounded-lg hover:bg-orange-50 hover:border-[#7F6149] transition-colors"
                   >
                     <Plus className="w-4 h-4" />
                     Add New Section
@@ -3104,7 +3039,7 @@ export default function AdminEditBlog() {
               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                 <div className="p-5 border-b border-gray-200">
                   <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                    <Globe className="w-5 h-5 text-[#E39A65]" />
+                    <Globe className="w-5 h-5 text-[#7F6149]" />
                     SEO Settings
                   </h2>
                   <p className="text-xs text-gray-500 mt-1">Optimize your blog post for search engines</p>
@@ -3119,7 +3054,7 @@ export default function AdminEditBlog() {
                       type="text"
                       value={formData.metaTitle}
                       onChange={(e) => setFormData(prev => ({ ...prev, metaTitle: e.target.value }))}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7F6149] focus:border-transparent outline-none transition"
                       placeholder="Leave empty to use blog title"
                     />
                     <p className="text-xs text-gray-500 mt-1">
@@ -3135,7 +3070,7 @@ export default function AdminEditBlog() {
                       value={formData.metaDescription}
                       onChange={(e) => setFormData(prev => ({ ...prev, metaDescription: e.target.value }))}
                       rows="3"
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition resize-none"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7F6149] focus:border-transparent outline-none transition resize-none"
                       placeholder="Brief description for search engines"
                     />
                     <p className="text-xs text-gray-500 mt-1">
@@ -3151,7 +3086,7 @@ export default function AdminEditBlog() {
                       type="text"
                       value={formData.metaKeywords}
                       onChange={(e) => setFormData(prev => ({ ...prev, metaKeywords: e.target.value }))}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7F6149] focus:border-transparent outline-none transition"
                       placeholder="fashion, wholesale, clothing, trends (comma separated)"
                     />
                   </div>
@@ -3170,7 +3105,7 @@ export default function AdminEditBlog() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex items-center gap-2 px-6 py-3 bg-[#E39A65] text-white font-medium rounded-lg hover:bg-[#d48b54] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                className="flex items-center gap-2 px-6 py-3 bg-[#7F6149] text-white font-medium rounded-lg hover:bg-[#85664D] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
               >
                 {isSubmitting ? (
                   <>
