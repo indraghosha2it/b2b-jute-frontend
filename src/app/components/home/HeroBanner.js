@@ -31,6 +31,17 @@ export default function HeroSection() {
     },
   ];
 
+  // Scroll to CTA section function
+const scrollToQuoteSection = () => {
+  const quoteSection = document.getElementById('request-quote');
+  if (quoteSection) {
+    quoteSection.scrollIntoView({ 
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }
+};
+
   useEffect(() => {
     setIsVisible(true);
     
@@ -126,20 +137,20 @@ export default function HeroSection() {
               }`}
             >
               {/* Request a Quote Button - Primary */}
-              <Link
-                href="/contact"
-                className="group relative inline-flex items-center justify-center px-3 md:px-5 py-1.5 md:py-2 text-xs md:text-sm font-semibold rounded-lg overflow-hidden transition-all duration-300 transform hover:scale-105 focus:ring-2 focus:ring-[#3A7D44] focus:ring-offset-2"
-              >
-                <span className="absolute inset-0 bg-gradient-to-r from-[#3A7D44] to-[#2D5E35]"></span>
-                <span className="absolute inset-0 bg-gradient-to-r from-[#2D5E35] to-[#3A7D44] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent"></span>
-                <span className="relative flex items-center gap-1 md:gap-2 text-white">
-                  <svg className="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  Request a Quote
-                </span>
-              </Link>
+           <button
+  onClick={scrollToQuoteSection}
+  className="group relative inline-flex items-center justify-center px-3 md:px-5 py-1.5 md:py-2 text-xs md:text-sm font-semibold rounded-lg overflow-hidden transition-all duration-300 transform hover:scale-105 focus:ring-2 focus:ring-[#3A7D44] focus:ring-offset-2"
+>
+  <span className="absolute inset-0 bg-gradient-to-r from-[#3A7D44] to-[#2D5E35]"></span>
+  <span className="absolute inset-0 bg-gradient-to-r from-[#2D5E35] to-[#3A7D44] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+  <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent"></span>
+  <span className="relative flex items-center gap-1 md:gap-2 text-white">
+    <svg className="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    </svg>
+    Request a Quote
+  </span>
+</button>
 
               {/* View Products Button - Secondary */}
               <Link

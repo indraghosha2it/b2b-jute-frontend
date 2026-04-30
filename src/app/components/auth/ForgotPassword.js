@@ -72,13 +72,13 @@ export default function ForgotPassword({ onOTPSent, onBack }) {
             Email Address
           </label>
           <div className="relative group">
-            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[#d9884e] transition-colors" />
+            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[#6B4F3A] transition-colors" />
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d9884e] focus:border-transparent bg-gray-50 focus:bg-white transition-all"
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent bg-gray-50 focus:bg-white transition-all"
               placeholder="your@email.com"
             />
           </div>
@@ -87,7 +87,7 @@ export default function ForgotPassword({ onOTPSent, onBack }) {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full py-3 px-4 bg-gradient-to-r from-[#d9884e] to-[#e6a87c] text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-[#d9884e]/25 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
+          className="w-full py-3 px-4 bg-gradient-to-r from-[#6B4F3A] to-[#7c5c44] text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-[#6B4F3A]/25 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
         >
           {isSubmitting ? (
             <>
@@ -105,7 +105,7 @@ export default function ForgotPassword({ onOTPSent, onBack }) {
         <button
           type="button"
           onClick={onBack}
-          className="w-full text-sm text-gray-500 hover:text-[#d9884e] transition-colors"
+          className="w-full text-sm text-gray-500 hover:text-[#6B4F3A] transition-colors"
         >
           ← Back to Login
         </button>

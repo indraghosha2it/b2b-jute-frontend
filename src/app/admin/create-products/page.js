@@ -1,4 +1,10 @@
 
+
+
+
+
+
+
 // 'use client';
 
 // import { useState, useEffect, useRef } from 'react';
@@ -465,104 +471,262 @@
 //     }
 //   };
 
-//   const handleMultipleImageSelect = async (e) => {
-//     const files = Array.from(e.target.files);
+//   // const handleMultipleImageSelect = async (e) => {
+//   //   const files = Array.from(e.target.files);
     
-//     if (files.length === 0) return;
+//   //   if (files.length === 0) return;
     
-//     const currentImagesCount = productImages.filter(img => img.url !== null || img.uploading).length;
-//     const availableSlots = 6 - currentImagesCount;
+//   //   const currentImagesCount = productImages.filter(img => img.url !== null || img.uploading).length;
+//   //   const availableSlots = 6 - currentImagesCount;
     
-//     if (files.length > availableSlots) {
-//       toast.error(`You can only upload ${availableSlots} more image(s). Maximum 6 images total.`);
-//       return;
-//     }
+//   //   if (files.length > availableSlots) {
+//   //     toast.error(`You can only upload ${availableSlots} more image(s). Maximum 6 images total.`);
+//   //     return;
+//   //   }
     
-//     const emptySlots = [];
-//     for (let i = 0; i < productImages.length; i++) {
-//       if (!productImages[i].url && !productImages[i].uploading && !productImages[i].preview) {
-//         emptySlots.push(i);
-//       }
-//     }
+//   //   const emptySlots = [];
+//   //   for (let i = 0; i < productImages.length; i++) {
+//   //     if (!productImages[i].url && !productImages[i].uploading && !productImages[i].preview) {
+//   //       emptySlots.push(i);
+//   //     }
+//   //   }
     
-//     const tempImages = [...productImages];
+//   //   const tempImages = [...productImages];
     
-//     for (let i = 0; i < files.length && i < emptySlots.length; i++) {
-//       const file = files[i];
-//       const slotIndex = emptySlots[i];
+//   //   for (let i = 0; i < files.length && i < emptySlots.length; i++) {
+//   //     const file = files[i];
+//   //     const slotIndex = emptySlots[i];
       
-//       const validation = validateImageFile(file);
-//       if (!validation.valid) {
-//         toast.error(`Image ${i + 1}: ${validation.message}`);
-//         continue;
-//       }
+//   //     const validation = validateImageFile(file);
+//   //     if (!validation.valid) {
+//   //       toast.error(`Image ${i + 1}: ${validation.message}`);
+//   //       continue;
+//   //     }
       
-//       const previewUrl = URL.createObjectURL(file);
+//   //     const previewUrl = URL.createObjectURL(file);
       
-//       tempImages[slotIndex] = {
-//         file: file,
-//         preview: previewUrl,
-//         error: '',
-//         uploading: true,
-//         url: null,
-//         publicId: null
-//       };
-//     }
+//   //     tempImages[slotIndex] = {
+//   //       file: file,
+//   //       preview: previewUrl,
+//   //       error: '',
+//   //       uploading: true,
+//   //       url: null,
+//   //       publicId: null
+//   //     };
+//   //   }
     
-//     setProductImages([...tempImages]);
+//   //   setProductImages([...tempImages]);
     
-//     for (let i = 0; i < files.length && i < emptySlots.length; i++) {
-//       const file = files[i];
-//       const slotIndex = emptySlots[i];
+//   //   for (let i = 0; i < files.length && i < emptySlots.length; i++) {
+//   //     const file = files[i];
+//   //     const slotIndex = emptySlots[i];
       
-//       try {
-//         const { url, publicId } = await uploadToCloudinary(file);
+//   //     try {
+//   //       const { url, publicId } = await uploadToCloudinary(file);
         
-//         setProductImages(prevImages => {
-//           const updatedImages = [...prevImages];
-//           updatedImages[slotIndex] = {
-//             ...updatedImages[slotIndex],
-//             url: url,
-//             publicId: publicId,
-//             uploading: false
-//           };
-//           return updatedImages;
-//         });
+//   //       setProductImages(prevImages => {
+//   //         const updatedImages = [...prevImages];
+//   //         updatedImages[slotIndex] = {
+//   //           ...updatedImages[slotIndex],
+//   //           url: url,
+//   //           publicId: publicId,
+//   //           uploading: false
+//   //         };
+//   //         return updatedImages;
+//   //       });
         
-//         toast.success(`Image ${i + 1} uploaded successfully`);
-//       } catch (error) {
-//         console.error('Upload error:', error);
-//         setProductImages(prevImages => {
-//           const updatedImages = [...prevImages];
-//           updatedImages[slotIndex] = {
-//             ...updatedImages[slotIndex],
-//             error: 'Failed to upload image',
-//             uploading: false
-//           };
-//           return updatedImages;
-//         });
-//         toast.error(`Failed to upload image ${i + 1}`);
-//       }
-//     }
+//   //       toast.success(`Image ${i + 1} uploaded successfully`);
+//   //     } catch (error) {
+//   //       console.error('Upload error:', error);
+//   //       setProductImages(prevImages => {
+//   //         const updatedImages = [...prevImages];
+//   //         updatedImages[slotIndex] = {
+//   //           ...updatedImages[slotIndex],
+//   //           error: 'Failed to upload image',
+//   //           uploading: false
+//   //         };
+//   //         return updatedImages;
+//   //       });
+//   //       toast.error(`Failed to upload image ${i + 1}`);
+//   //     }
+//   //   }
     
+//   //   if (fileInputRefs.current['multiple']) {
+//   //     fileInputRefs.current['multiple'].value = '';
+//   //   }
+//   // };
+
+
+// const handleMultipleImageSelect = async (e) => {
+//   const files = Array.from(e.target.files);
+  
+//   if (files.length === 0) return;
+  
+//   const currentImagesCount = productImages.filter(img => img.url !== null || img.uploading).length;
+//   const availableSlots = 6 - currentImagesCount;
+  
+//   if (files.length > availableSlots) {
+//     toast.error(`You can only upload ${availableSlots} more image(s). Maximum 6 images total.`);
 //     if (fileInputRefs.current['multiple']) {
 //       fileInputRefs.current['multiple'].value = '';
 //     }
-//   };
+//     return;
+//   }
+  
+//   // First, validate all files and collect valid ones WITH THEIR ORIGINAL INDEX
+//   const validFiles = [];
+//   const invalidFiles = [];
+  
+//   for (let i = 0; i < files.length; i++) {
+//     const file = files[i];
+//     const validation = validateImageFile(file);
+//     if (validation.valid) {
+//       validFiles.push({ file, originalIndex: i });
+//     } else {
+//       invalidFiles.push({ index: i + 1, message: validation.message });
+//       toast.error(`Image ${i + 1}: ${validation.message}`);
+//     }
+//   }
+  
+//   // If no valid files, return early
+//   if (validFiles.length === 0) {
+//     toast.error('No valid images to upload');
+//     if (fileInputRefs.current['multiple']) {
+//       fileInputRefs.current['multiple'].value = '';
+//     }
+//     return;
+//   }
+  
+//   // Find empty slots in productImages in order (first empty slot gets first image, etc.)
+//   const emptySlots = [];
+//   for (let i = 0; i < productImages.length; i++) {
+//     if (!productImages[i].url && !productImages[i].uploading && !productImages[i].preview) {
+//       emptySlots.push(i);
+//     }
+//   }
+  
+//   // Check if we have enough empty slots for valid files
+//   if (validFiles.length > emptySlots.length) {
+//     toast.error(`Only ${emptySlots.length} slots available. Please remove some images first.`);
+//     if (fileInputRefs.current['multiple']) {
+//       fileInputRefs.current['multiple'].value = '';
+//     }
+//     return;
+//   }
+  
+//   // Create temporary state for uploading - preserve selection order
+//   const tempImages = [...productImages];
+  
+//   // Assign files to slots in the order they were selected
+//   for (let i = 0; i < validFiles.length; i++) {
+//     const { file } = validFiles[i];
+//     const slotIndex = emptySlots[i]; // This ensures first selected image goes to first empty slot
+//     const previewUrl = URL.createObjectURL(file);
+    
+//     tempImages[slotIndex] = {
+//       file: file,
+//       preview: previewUrl,
+//       error: '',
+//       uploading: true,
+//       url: null,
+//       publicId: null
+//     };
+//   }
+  
+//   setProductImages([...tempImages]);
+  
+//   // Upload each valid file in the order they were selected
+//   for (let i = 0; i < validFiles.length; i++) {
+//     const { file } = validFiles[i];
+//     const slotIndex = emptySlots[i];
+    
+//     try {
+//       const { url, publicId } = await uploadToCloudinary(file);
+      
+//       setProductImages(prevImages => {
+//         const updatedImages = [...prevImages];
+//         updatedImages[slotIndex] = {
+//           ...updatedImages[slotIndex],
+//           url: url,
+//           publicId: publicId,
+//           uploading: false
+//         };
+//         return updatedImages;
+//       });
+      
+//       toast.success(`Image uploaded successfully`);
+//     } catch (error) {
+//       console.error('Upload error:', error);
+//       setProductImages(prevImages => {
+//         const updatedImages = [...prevImages];
+//         updatedImages[slotIndex] = {
+//           ...updatedImages[slotIndex],
+//           error: 'Failed to upload image',
+//           uploading: false,
+//           preview: null,
+//           file: null
+//         };
+//         return updatedImages;
+//       });
+//       toast.error(`Failed to upload one image`);
+//     }
+//   }
+  
+//   // Show summary of skipped invalid files
+//   if (invalidFiles.length > 0) {
+//     toast.warning(`${invalidFiles.length} image(s) skipped due to validation errors`);
+//   }
+  
+//   // Clear the file input
+//   if (fileInputRefs.current['multiple']) {
+//     fileInputRefs.current['multiple'].value = '';
+//   }
+// };
+
+//   // const removeImage = (index) => {
+//   //   if (productImages[index].preview && productImages[index].preview.startsWith('blob:')) {
+//   //     URL.revokeObjectURL(productImages[index].preview);
+//   //   }
+    
+//   //   const updatedImages = [...productImages];
+//   //   updatedImages[index] = { file: null, preview: null, error: '', url: null, publicId: null, uploading: false };
+//   //   setProductImages(updatedImages);
+//   //   if (fileInputRefs.current[index]) {
+//   //     fileInputRefs.current[index].value = '';
+//   //   }
+//   // };
+
 
 //   const removeImage = (index) => {
-//     if (productImages[index].preview && productImages[index].preview.startsWith('blob:')) {
-//       URL.revokeObjectURL(productImages[index].preview);
-//     }
-    
-//     const updatedImages = [...productImages];
-//     updatedImages[index] = { file: null, preview: null, error: '', url: null, publicId: null, uploading: false };
-//     setProductImages(updatedImages);
-//     if (fileInputRefs.current[index]) {
-//       fileInputRefs.current[index].value = '';
-//     }
+//   // Check if there's an image being uploaded at this index
+//   const imageToRemove = productImages[index];
+  
+//   // Revoke object URL if it exists (to prevent memory leaks)
+//   if (imageToRemove.preview && imageToRemove.preview.startsWith('blob:')) {
+//     URL.revokeObjectURL(imageToRemove.preview);
+//   }
+  
+//   // Reset the image slot completely
+//   const updatedImages = [...productImages];
+//   updatedImages[index] = { 
+//     file: null, 
+//     preview: null, 
+//     error: '', 
+//     url: null, 
+//     publicId: null, 
+//     uploading: false 
 //   };
-
+  
+//   setProductImages(updatedImages);
+  
+//   // Clear the file input value for this slot if it exists
+//   if (fileInputRefs.current[index]) {
+//     fileInputRefs.current[index].value = '';
+//   }
+  
+//   // Show success message for removal
+//   toast.success(`Image removed from slot ${index + 1}`);
+// };
 //   const moveImage = (fromIndex, toIndex) => {
 //     const updatedImages = [...productImages];
 //     const [movedImage] = updatedImages.splice(fromIndex, 1);
@@ -1360,81 +1524,90 @@
 //                     </div>
 
 //                     {/* Image Preview Grid with Drag and Drop */}
-//                     <div className="grid grid-cols-2 gap-4">
-//                       {productImages.map((img, index) => (
-//                         <div
-//                           key={index}
-//                           draggable={img.preview !== null}
-//                           onDragStart={() => img.preview && handleDragStart(index)}
-//                           onDragOver={(e) => img.preview && handleDragOverWithFeedback(e, index)}
-//                           onDragLeave={handleDragLeave}
-//                           onDrop={() => img.preview && handleDropWithFeedback(index)}
-//                           onDragEnd={handleDragEnd}
-//                           className={`transition-all duration-200 ${
-//                             draggedIndex === index ? 'opacity-50 scale-95' : ''
-//                           } ${
-//                             dragOverIndex === index && draggedIndex !== index && draggedIndex !== null 
-//                               ? 'ring-2 ring-[#6B4F3A] ring-offset-2 rounded-lg' 
-//                               : ''
-//                           }`}
-//                         >
-//                           {img.preview ? (
-//                             <div className="relative rounded-lg overflow-hidden border-2 border-gray-200 h-32 hover:border-[#6B4F3A] transition-colors cursor-grab active:cursor-grabbing">
-//                               <div className="absolute top-1 left-1 bg-black/50 rounded px-1.5 py-0.5 z-10">
-//                                 <GripVertical className="w-3 h-3 text-white" />
-//                               </div>
-                              
-//                               <img 
-//                                 src={img.preview} 
-//                                 alt={`Product ${index + 1}`} 
-//                                 className="w-full h-full object-cover"
-//                               />
-                              
-//                               {img.uploading && (
-//                                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-//                                   <Loader2 className="w-6 h-6 text-white animate-spin" />
-//                                 </div>
-//                               )}
-                              
-//                               <button
-//                                 type="button"
-//                                 onClick={() => removeImage(index)}
-//                                 className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-//                                 disabled={img.uploading}
-//                               >
-//                                 <X className="w-3 h-3" />
-//                               </button>
-                              
-//                               <span className="absolute bottom-1 left-1 px-1.5 py-0.5 bg-black bg-opacity-60 text-white text-xs rounded z-10">
-//                                 {index + 1}
-//                               </span>
-//                             </div>
-//                           ) : (
-//                             <div 
-//                               className={`border-2 border-dashed rounded-lg p-4 text-center h-32 flex flex-col items-center justify-center cursor-pointer ${
-//                                 img.error ? 'border-red-300 bg-red-50' : 'border-gray-300 bg-gray-50 hover:border-[#6B4F3A] hover:bg-[#F5E6D3]'
-//                               }`}
-//                               onClick={() => fileInputRefs.current[index]?.click()}
-//                             >
-//                               <input 
-//                                 type="file" 
-//                                 ref={el => fileInputRefs.current[index] = el}
-//                                 className="hidden" 
-//                                 accept="image/jpeg,image/jpg,image/png,image/webp" 
-//                                 onChange={(e) => handleImageChange(e, index)} 
-//                               />
-//                               <ImageIcon className={`w-6 h-6 mx-auto mb-2 ${img.error ? 'text-red-400' : 'text-gray-400'}`} />
-//                               <p className={`text-xs ${img.error ? 'text-red-600' : 'text-gray-600'}`}>
-//                                 Slot {index + 1}
-//                               </p>
-//                               {img.error && (
-//                                 <p className="text-xs text-red-600 mt-1">{img.error}</p>
-//                               )}
-//                             </div>
-//                           )}
-//                         </div>
-//                       ))}
-//                     </div>
+//                   {/* Image Preview Grid with Drag and Drop */}
+// <div className="grid grid-cols-2 gap-4">
+//   {productImages.map((img, index) => (
+//     <div
+//       key={index}
+//       draggable={img.preview !== null}
+//       onDragStart={() => img.preview && handleDragStart(index)}
+//       onDragOver={(e) => img.preview && handleDragOverWithFeedback(e, index)}
+//       onDragLeave={handleDragLeave}
+//       onDrop={() => img.preview && handleDropWithFeedback(index)}
+//       onDragEnd={handleDragEnd}
+//       className={`transition-all duration-200 ${
+//         draggedIndex === index ? 'opacity-50 scale-95' : ''
+//       } ${
+//         dragOverIndex === index && draggedIndex !== index && draggedIndex !== null 
+//           ? 'ring-2 ring-[#6B4F3A] ring-offset-2 rounded-lg' 
+//           : ''
+//       }`}
+//     >
+//       {img.preview ? (
+//         <div className="relative rounded-lg overflow-hidden border-2 border-gray-200 h-40 hover:border-[#6B4F3A] transition-colors cursor-grab active:cursor-grabbing">
+//           <div className="absolute top-1 left-1 bg-black/50 rounded px-1.5 py-0.5 z-10">
+//             <GripVertical className="w-3 h-3 text-white" />
+//           </div>
+          
+//           <img 
+//             src={img.preview} 
+//             alt={`Product ${index + 1}`} 
+//             className="w-full h-full object-contain bg-gray-100"
+//             onError={(e) => {
+//               console.error('Image failed to load');
+//               e.target.src = 'https://via.placeholder.com/150?text=Error';
+//             }}
+//           />
+          
+//           {/* Uploading Overlay */}
+//           {img.uploading && (
+//             <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
+//               <Loader2 className="w-6 h-6 text-white animate-spin" />
+//             </div>
+//           )}
+          
+//           {/* Remove Button */}
+//           <button
+//             type="button"
+//             onClick={() => removeImage(index)}
+//             className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors z-20"
+//             disabled={false}
+//             title="Remove image"
+//           >
+//             <X className="w-3 h-3" />
+//           </button>
+          
+//           <span className="absolute bottom-1 left-1 px-1.5 py-0.5 bg-black bg-opacity-60 text-white text-xs rounded z-10">
+//             {index + 1}
+//           </span>
+//         </div>
+//       ) : (
+//         <div 
+//           className={`border-2 border-dashed rounded-lg p-4 text-center h-40 flex flex-col items-center justify-center cursor-pointer ${
+//             img.error ? 'border-red-300 bg-red-50' : 'border-gray-300 bg-gray-50 hover:border-[#6B4F3A] hover:bg-[#F5E6D3]'
+//           }`}
+//           onClick={() => fileInputRefs.current[index]?.click()}
+//         >
+//           <input 
+//             type="file" 
+//             ref={el => fileInputRefs.current[index] = el}
+//             className="hidden" 
+//             accept="image/jpeg,image/jpg,image/png,image/webp" 
+//             onChange={(e) => handleImageChange(e, index)} 
+//           />
+//           <ImageIcon className={`w-8 h-8 mx-auto mb-2 ${img.error ? 'text-red-400' : 'text-gray-400'}`} />
+//           <p className={`text-xs ${img.error ? 'text-red-600' : 'text-gray-600'}`}>
+//             Slot {index + 1}
+//           </p>
+//           <p className="text-[10px] text-gray-400 mt-1">Click to upload</p>
+//           {img.error && (
+//             <p className="text-xs text-red-600 mt-1">{img.error}</p>
+//           )}
+//         </div>
+//       )}
+//     </div>
+//   ))}
+// </div>
                     
 //                     {/* Upload Progress Summary */}
 //                     {productImages.some(img => img.uploading) && (
@@ -1629,6 +1802,7 @@
 //                           value={formData.moq}
 //                           onChange={handleChange}
 //                           onWheel={(e) => e.target.blur()}
+                          
 //                           min="1"
 //                           className="flex-1 px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition"
 //                         />
@@ -1643,16 +1817,17 @@
 //                         {getPricePerLabel()} ($) <span className="text-red-500">*</span>
 //                       </label>
 //                       <div className="flex items-center gap-2">
-//                         <input
-//                           type="number"
-//                           name="pricePerUnit"
-//                           value={formData.pricePerUnit}
-//                           onChange={handleChange}
-//                           onWheel={(e) => e.target.blur()}
-//                           min="0"
-//                           step="0.01"
-//                           className="flex-1 px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition"
-//                         />
+//                       <input
+//   type="number"
+//   name="pricePerUnit"
+//   value={formData.pricePerUnit === 0 ? '' : formData.pricePerUnit}
+//   onChange={handleChange}
+//   onWheel={(e) => e.target.blur()}
+//   min="0"
+//   step="0.01"
+//   placeholder="0.00"
+//   className="flex-1 px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition"
+// />
 //                         <span className="text-sm text-gray-500">$</span>
 //                       </div>
 //                       {errors.pricePerUnit && <p className="text-xs text-red-600 mt-1">{errors.pricePerUnit}</p>}
@@ -1697,16 +1872,16 @@
 //                             <label className="block text-xs font-medium text-gray-600 mb-1.5">
 //                               Price Per {orderUnit === 'ton' ? 'MT ($)' : orderUnit === 'kg' ? 'KG ($)' : 'Unit ($)'}
 //                             </label>
-//                             <input
-//                               type="number"
-//                               value={tier.price}
-//                               onChange={(e) => handlePricingChange(index, 'price', e.target.value)}
-//                               onWheel={(e) => e.target.blur()}
-//                               placeholder="0.00"
-//                               min="0"
-//                               step="0.01"
-//                               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition"
-//                             />
+//                            <input
+//   type="number"
+//   value={tier.price === 0 ? '' : tier.price}
+//   onChange={(e) => handlePricingChange(index, 'price', e.target.value)}
+//   onWheel={(e) => e.target.blur()}
+//   placeholder="0.00"
+//   min="0"
+//   step="0.01"
+//   className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition"
+// />
 //                           </div>
 //                           {formData.quantityBasedPricing.length > 1 && (
 //                             <div className="flex items-end h-[62px]">
@@ -2071,6 +2246,10 @@
 //     </MantineProvider>
 //   );
 // }
+
+
+
+
 
 
 
@@ -2846,15 +3025,20 @@ const handleMultipleImageSelect = async (e) => {
     }
   };
 
-  const handleOrderUnitChange = (unit) => {
-    setOrderUnit(unit);
-    setFormData(prev => ({ 
-      ...prev, 
-      orderUnit: unit,
-      moq: unit === 'ton' ? 1 : 100,
-      pricePerUnit: 0
-    }));
-  };
+const handleOrderUnitChange = (unit) => {
+  setOrderUnit(unit);
+  
+  // Clear sizes when unit is not 'piece'
+  const updatedSizes = unit !== 'piece' ? [] : formData.sizes;
+  
+  setFormData(prev => ({ 
+    ...prev, 
+    orderUnit: unit,
+    moq: unit === 'ton' ? 1 : 100,
+    pricePerUnit: 0,
+    sizes: updatedSizes  // Clear sizes for kg/ton
+  }));
+};
 
   const handlePricingChange = (index, field, value) => {
     const updatedPricing = [...formData.quantityBasedPricing];
@@ -3119,98 +3303,101 @@ const handleMultipleImageSelect = async (e) => {
     return Object.keys(newErrors).length === 0 && isAdditionalInfoValid;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const uploading = productImages.some(img => img.uploading === true);
-    if (uploading) {
-      toast.error('Please wait for all images to finish uploading');
-      return;
+  const uploading = productImages.some(img => img.uploading === true);
+  if (uploading) {
+    toast.error('Please wait for all images to finish uploading');
+    return;
+  }
+
+  const hasEmptyPrice = formData.quantityBasedPricing.some(tier => tier.price === '');
+  if (hasEmptyPrice) {
+    toast.error('Please fill in all price fields in Quantity Based Pricing');
+    return;
+  }
+
+  if (!validateForm()) {
+    toast.error('Please fix the errors in the form');
+    return;
+  }
+
+  setIsSubmitting(true);
+
+  try {
+    const token = localStorage.getItem('token');
+    
+    const imageUrls = productImages
+      .filter(img => img.url !== null)
+      .map(img => img.url);
+    
+    const processedPricing = formData.quantityBasedPricing.map(tier => ({
+      ...tier,
+      price: tier.price === '' ? 0 : parseFloat(tier.price)
+    }));
+
+    const processedAdditionalInfo = formData.additionalInfo.filter(
+      info => info.fieldName.trim() !== '' && info.fieldValue.trim() !== ''
+    );
+
+    const processedCustomizationOptions = formData.customizationOptions.filter(
+      option => option.title.trim() !== '' && option.value.trim() !== ''
+    );
+
+    // Only include sizes if order unit is 'piece', otherwise send empty array
+    const filteredSizes = orderUnit === 'piece' 
+      ? formData.sizes.filter(s => s.trim() !== '')
+      : [];
+
+    const payload = {
+      productName: formData.productName,
+      description: formData.description,
+      instruction: formData.instruction || '',
+      category: formData.category,
+      subcategory: formData.subcategory || '',
+      childSubcategory: formData.childSubcategory || '',
+      targetedCustomer: formData.targetedCustomer,
+      fabric: formData.fabric,
+      weightPerUnit: formData.weightPerUnit || '',
+      orderUnit: orderUnit,
+      moq: formData.moq,
+      pricePerUnit: formData.pricePerUnit,
+      quantityBasedPricing: processedPricing,
+      sizes: filteredSizes,  // This will be empty array for kg/ton
+      colors: formData.colors,
+      additionalInfo: processedAdditionalInfo,
+      customizationOptions: processedCustomizationOptions,
+      images: imageUrls,
+      isFeatured: formData.isFeatured,
+      tags: formData.tags,
+      metaSettings: formData.metaSettings
+    };
+
+    const response = await fetch('http://localhost:5000/api/products', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      toast.success('Product created successfully!');
+      router.push('/admin/all-products');
+    } else {
+      toast.error(data.error || 'Failed to create product');
     }
-
-    const hasEmptyPrice = formData.quantityBasedPricing.some(tier => tier.price === '');
-    if (hasEmptyPrice) {
-      toast.error('Please fill in all price fields in Quantity Based Pricing');
-      return;
-    }
-
-    if (!validateForm()) {
-      toast.error('Please fix the errors in the form');
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      const token = localStorage.getItem('token');
-      
-      const imageUrls = productImages
-        .filter(img => img.url !== null)
-        .map(img => img.url);
-      
-      const processedPricing = formData.quantityBasedPricing.map(tier => ({
-        ...tier,
-        price: tier.price === '' ? 0 : parseFloat(tier.price)
-      }));
-
-      const processedAdditionalInfo = formData.additionalInfo.filter(
-        info => info.fieldName.trim() !== '' && info.fieldValue.trim() !== ''
-      );
-
-      const processedCustomizationOptions = formData.customizationOptions.filter(
-        option => option.title.trim() !== '' && option.value.trim() !== ''
-      );
-
-      const filteredSizes = formData.sizes.filter(s => s.trim() !== '');
-
-      const payload = {
-        productName: formData.productName,
-        description: formData.description,
-        instruction: formData.instruction || '',
-        category: formData.category,
-        subcategory: formData.subcategory || '',
-        childSubcategory: formData.childSubcategory || '',
-        targetedCustomer: formData.targetedCustomer,
-        fabric: formData.fabric,
-        weightPerUnit: formData.weightPerUnit || '',
-        orderUnit: orderUnit,
-        moq: formData.moq,
-        pricePerUnit: formData.pricePerUnit,
-        quantityBasedPricing: processedPricing,
-        sizes: filteredSizes,
-        colors: formData.colors,
-        additionalInfo: processedAdditionalInfo,
-        customizationOptions: processedCustomizationOptions,
-        images: imageUrls,
-        isFeatured: formData.isFeatured,
-        tags: formData.tags,
-        metaSettings: formData.metaSettings
-      };
-
-      const response = await fetch('http://localhost:5000/api/products', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        toast.success('Product created successfully!');
-        router.push('/admin/all-products');
-      } else {
-        toast.error(data.error || 'Failed to create product');
-      }
-    } catch (error) {
-      console.error('Error creating product:', error);
-      toast.error('Network error. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  } catch (error) {
+    console.error('Error creating product:', error);
+    toast.error('Network error. Please try again.');
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const getSelectedCustomerIcon = () => {
     const customer = TARGETED_CUSTOMERS.find(c => c.value === formData.targetedCustomer);
@@ -3701,120 +3888,135 @@ const handleMultipleImageSelect = async (e) => {
             </div>
 
             {/* Sizes and Colors */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-                <div className="p-5 border-b border-gray-200">
-                  <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2" style={{ fontFamily: 'Playfair Display, serif' }}>
-                    <Ruler className="w-5 h-5" style={{ color: '#6B4F3A' }} />
-                    Sizes <span className="text-gray-400 text-sm font-normal">(Optional)</span>
-                  </h2>
-                  <p className="text-xs text-gray-500 mt-1">Add sizes if applicable for this product</p>
-                </div>
-                <div className="p-5">
-                  <div className="space-y-2">
-                    {formData.sizes.map((size, index) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          value={size}
-                          onChange={(e) => handleSizeChange(index, e.target.value)}
-                          placeholder={`Size ${index + 1} (optional)`}
-                          className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition"
-                        />
-                        {formData.sizes.length > 1 && (
-                          <button
-                            type="button"
-                            onClick={() => removeSize(index)}
-                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                    <button
-                      type="button"
-                      onClick={addSize}
-                      className="w-full flex items-center justify-center gap-1 px-3 py-2 mt-2 text-xs font-medium border border-dashed rounded-lg transition-colors"
-                      style={{ color: '#6B4F3A', borderColor: '#6B4F3A' }}
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      Add Size (Optional)
-                    </button>
-                    <p className="text-xs text-gray-400 text-center mt-2">
-                      Leave empty if this product doesn't have sizes
-                    </p>
-                  </div>
-                </div>
-              </div>
+         {/* Sizes and Colors */}
+<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+  {/* Sizes - Only show for 'piece' unit */}
+ {/* Sizes - Only show for 'piece' unit */}
+{orderUnit === 'piece' ? (
+  <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+    <div className="p-5 border-b border-gray-200">
+      <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+        <Ruler className="w-5 h-5" style={{ color: '#6B4F3A' }} />
+        Sizes <span className="text-gray-400 text-sm font-normal">(Optional)</span>
+      </h2>
+      <p className="text-xs text-gray-500 mt-1">Sizes available only for piece-based products</p>
+    </div>
+    <div className="p-5">
+      <div className="space-y-2">
+        {formData.sizes.map((size, index) => (
+          <div key={index} className="flex items-center gap-2">
+            <input
+              type="text"
+              value={size}
+              onChange={(e) => handleSizeChange(index, e.target.value)}
+              placeholder={`Size ${index + 1}`}
+              className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none transition"
+            />
+            {formData.sizes.length > 1 && (
+              <button
+                type="button"
+                onClick={() => removeSize(index)}
+                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={addSize}
+          className="w-full flex items-center justify-center gap-1 px-3 py-2 mt-2 text-xs font-medium border border-dashed rounded-lg transition-colors"
+          style={{ color: '#6B4F3A', borderColor: '#6B4F3A' }}
+        >
+          <Plus className="w-3.5 h-3.5" />
+          Add Size
+        </button>
+        <p className="text-xs text-gray-400 text-center mt-2">
+          Add custom sizes for this product
+        </p>
+      </div>
+    </div>
+  </div>
+) : (
+  <div className="bg-gray-50 rounded-xl border border-gray-200 p-5 text-center">
+    <Ruler className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+    <p className="text-sm text-gray-500">Sizes are not available for {orderUnit === 'kg' ? 'KG' : 'Metric Ton'} based products</p>
+    <p className="text-xs text-gray-400 mt-1">Please select "Pieces / Units" to add size options</p>
+  </div>
+)}
 
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-                <div className="p-5 border-b border-gray-200">
-                  <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2" style={{ fontFamily: 'Playfair Display, serif' }}>
-                    <Palette className="w-5 h-5" style={{ color: '#6B4F3A' }} />
-                    Colors <span className="text-red-500">*</span>
-                  </h2>
+  {/* Colors - Always show */}
+  <div className={`bg-white rounded-xl shadow-sm border border-gray-200 ${orderUnit !== 'piece' ? 'lg:col-span-2' : ''}`}>
+    <div className="p-5 border-b border-gray-200">
+      <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+        <Palette className="w-5 h-5" style={{ color: '#6B4F3A' }} />
+        Colors <span className="text-red-500">*</span>
+      </h2>
+      {orderUnit !== 'piece' && (
+        <p className="text-xs text-gray-500 mt-1">Colors configuration for weight-based products (kg/ton)</p>
+      )}
+    </div>
+    <div className="p-5">
+      {errors.colors && (
+        <p className="text-xs text-red-600 mb-3 flex items-center gap-1">
+          <AlertCircle className="w-3 h-3" />
+          {errors.colors}
+        </p>
+      )}
+      <div className="space-y-3">
+        {formData.colors.map((color, index) => (
+          <div key={index} className="relative">
+            <div className="flex items-center gap-2 w-full">
+              <div 
+                className="flex-1 flex items-center gap-2 bg-gray-50 rounded-lg border border-gray-200 p-1 cursor-pointer hover:border-[#6B4F3A] transition-colors"
+                onClick={(e) => openColorPicker(index, e)}
+              >
+                <div 
+                  className="w-10 h-10 rounded-lg border-2 border-gray-200 flex-shrink-0"
+                  style={{ backgroundColor: color.code }}
+                />
+                <div className="flex-1 font-mono text-sm text-gray-600">
+                  {color.code}
                 </div>
-                <div className="p-5">
-                  {errors.colors && (
-                    <p className="text-xs text-red-600 mb-3 flex items-center gap-1">
-                      <AlertCircle className="w-3 h-3" />
-                      {errors.colors}
-                    </p>
-                  )}
-                  <div className="space-y-3">
-                    {formData.colors.map((color, index) => (
-                      <div key={index} className="relative">
-                        <div className="flex items-center gap-2 w-full">
-                          <div 
-                            className="flex-1 flex items-center gap-2 bg-gray-50 rounded-lg border border-gray-200 p-1 cursor-pointer hover:border-[#6B4F3A] transition-colors"
-                            onClick={(e) => openColorPicker(index, e)}
-                          >
-                            <div 
-                              className="w-10 h-10 rounded-lg border-2 border-gray-200 flex-shrink-0"
-                              style={{ backgroundColor: color.code }}
-                            />
-                            <div className="flex-1 font-mono text-sm text-gray-600">
-                              {color.code}
-                            </div>
-                            <ChevronDown className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                          </div>
-                          {formData.colors.length > 1 && (
-                            <button
-                              type="button"
-                              onClick={() => removeColor(index)}
-                              className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          )}
-                        </div>
-                        {showColorPicker && currentColorIndex === index && (
-                          <div ref={colorPickerRef} className="absolute right-0 mt-2 z-50">
-                            <div className="bg-white rounded-lg shadow-xl border border-gray-200 p-3">
-                              <SketchPicker
-                                color={color.code}
-                                onChange={(color) => handleColorChange(index, 'code', color.hex)}
-                                presetColors={PREDEFINED_COLORS}
-                              />
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                    <button
-                      type="button"
-                      onClick={addColor}
-                      className="w-full flex items-center justify-center gap-1 px-3 py-2 mt-2 text-xs font-medium border border-dashed rounded-lg transition-colors"
-                      style={{ color: '#6B4F3A', borderColor: '#6B4F3A' }}
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      Add Color
-                    </button>
-                  </div>
+                <ChevronDown className="w-4 h-4 text-gray-500 flex-shrink-0" />
+              </div>
+              {formData.colors.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeColor(index)}
+                  className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+            {showColorPicker && currentColorIndex === index && (
+              <div ref={colorPickerRef} className="absolute right-0 mt-2 z-50">
+                <div className="bg-white rounded-lg shadow-xl border border-gray-200 p-3">
+                  <SketchPicker
+                    color={color.code}
+                    onChange={(color) => handleColorChange(index, 'code', color.hex)}
+                    presetColors={PREDEFINED_COLORS}
+                  />
                 </div>
               </div>
-            </div>
+            )}
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={addColor}
+          className="w-full flex items-center justify-center gap-1 px-3 py-2 mt-2 text-xs font-medium border border-dashed rounded-lg transition-colors"
+          style={{ color: '#6B4F3A', borderColor: '#6B4F3A' }}
+        >
+          <Plus className="w-3.5 h-3.5" />
+          Add Color
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
             {/* Order Unit Selection */}
             <div className="mb-6">

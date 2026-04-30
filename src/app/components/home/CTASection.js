@@ -1,3 +1,6 @@
+
+
+
 'use client';
 
 import { motion, useInView } from 'framer-motion';
@@ -17,7 +20,8 @@ import {
   Phone,
   Package,
   MessageCircle,
-  HelpCircle
+  HelpCircle,
+  Globe
 } from 'lucide-react';
 
 export default function CTASection() {
@@ -29,6 +33,8 @@ export default function CTASection() {
     company: '',
     email: '',
     phone: '',
+    country: '',
+    inquiryType: 'wholesale',
     productInterest: '',
     message: ''
   });
@@ -50,33 +56,93 @@ export default function CTASection() {
       ...formData,
       [name]: value
     });
+    
+    // Show custom inquiry field when "other" is selected
+    if (name === 'inquiryType') {
+      setShowCustomInquiryField(value === 'other');
+      if (value !== 'other') {
+        setCustomInquiryText('');
+      }
+    }
+  };
+
+  const handleCustomInquiryChange = (e) => {
+    setCustomInquiryText(e.target.value);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    let finalInquiryType = formData.inquiryType;
+    if (formData.inquiryType === 'other' && customInquiryText.trim()) {
+      finalInquiryType = customInquiryText.trim();
+    }
+    
     setFormStatus({ submitted: true, success: false, message: 'Sending...' });
     setIsSubmitting(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const response = await fetch('http://localhost:5000/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          company: formData.company,
+          country: formData.country,
+          inquiryType: finalInquiryType,
+          message: formData.message,
+          productInterest: formData.productInterest
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setFormStatus({
+          submitted: true,
+          success: true,
+          message: data.message || 'Thank you! Your inquiry has been sent. We\'ll contact you within 24 hours.'
+        });
+        
+        // Reset form
+        setFormData({ 
+          name: '', 
+          company: '', 
+          email: '', 
+          phone: '',
+          country: '',
+          inquiryType: 'wholesale',
+          productInterest: '', 
+          message: '' 
+        });
+        setCustomInquiryText('');
+        setShowCustomInquiryField(false);
+        
+        // Auto-hide success message after 5 seconds
+        setTimeout(() => {
+          setFormStatus({ submitted: false, success: false, message: '' });
+        }, 5000);
+      } else {
+        throw new Error(data.error || 'Failed to send message');
+      }
+    } catch (error) {
+      console.error('Contact form error:', error);
       setFormStatus({
         submitted: true,
-        success: true,
-        message: 'Thank you! Your inquiry has been sent. We\'ll contact you within 24 hours.'
+        success: false,
+        message: error.message || 'Failed to send message. Please try again later.'
       });
-      setFormData({ 
-        name: '', 
-        company: '', 
-        email: '', 
-        phone: '', 
-        productInterest: '', 
-        message: '' 
-      });
+      
       setTimeout(() => {
         setFormStatus({ submitted: false, success: false, message: '' });
       }, 5000);
-    }, 1500);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const containerVariants = {
@@ -96,7 +162,7 @@ export default function CTASection() {
   };
 
   return (
-    <section ref={sectionRef} className="py-8 md:py-12 lg:py-14 bg-gradient-to-r from-[#6B4F3A] to-[#4A7C59] overflow-hidden relative">
+    <section id="request-quote" ref={sectionRef} className="py-8 md:py-12 lg:py-14 bg-gradient-to-r from-[#6B4F3A] to-[#4A7C59] overflow-hidden relative">
       {/* Background Pattern - Simplified for mobile */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
@@ -237,12 +303,12 @@ export default function CTASection() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="bg-white rounded-xl shadow-lg p-4 md:p-5 lg:p-6"
           >
-            <div className="mb-3 md:mb-4">
-              <span className="bg-[#F5E6D3] text-[#3bc24f] text-[9px] md:text-[10px] font-semibold px-2 py-0.5 md:px-2.5 md:py-0.5 rounded-full mb-1.5 md:mb-2 inline-block font-sans">
+            <div className="mb-2 md:mb-3">
+              <span className="bg-[#F5E6D3] text-[#3bc24f] text-[9px] md:text-[10px] font-semibold px-2 py-0.5 md:px-2.5 md:py-0.5 rounded-full mb-1 md:mb-1.5 inline-block font-sans">
                 📝 REQUEST QUOTE
               </span>
-              <h3 className="text-base md:text-lg font-bold text-[#6B4F3A] mb-0.5 font-serif">Get a Quote</h3>
-              <p className="text-[9px] md:text-[10px] text-gray-600 font-sans">Fill the form, get response in 24 hours</p>
+              <h3 className="text-base md:text-lg font-bold text-[#6B4F3A] mb-0 font-serif">Get a Quote</h3>
+              <p className="text-[8px] md:text-[9px] text-gray-600 font-sans">Fill the form, get response in 24 hours</p>
             </div>
             
             {formStatus.submitted && formStatus.success ? (
@@ -264,110 +330,206 @@ export default function CTASection() {
                 </button>
               </motion.div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-2.5 md:space-y-3">
-                <div className="grid sm:grid-cols-2 gap-2 md:gap-3">
+              <form onSubmit={handleSubmit} className="space-y-2 md:space-y-2.5">
+                <div className="grid sm:grid-cols-2 gap-1.5 md:gap-2">
                   <div>
-                    <label className="block text-[9px] md:text-[10px] font-semibold text-gray-700 mb-0.5 font-sans">
+                    <label className="block text-[8px] md:text-[9px] font-semibold text-gray-700 mb-0.5 font-sans">
                       Full Name <span className="text-[#3bc24f]">*</span>
                     </label>
                     <div className="relative">
-                      <User className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400 w-2.5 h-2.5 md:w-3 md:h-3" />
+                      <User className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-2 h-2 md:w-2.5 md:h-2.5" />
                       <input
                         type="text"
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
                         required
-                        className="w-full pl-7 md:pl-8 pr-2.5 py-1 text-[10px] md:text-xs border border-gray-300 rounded-md focus:ring-2 focus:ring-[#3bc24f] focus:border-transparent outline-none transition font-sans"
+                        className="w-full pl-6 md:pl-7 pr-2 py-0.5 text-[9px] md:text-[10px] border border-gray-300 rounded-md focus:ring-1 focus:ring-[#3bc24f] focus:border-transparent outline-none transition font-sans"
                         placeholder="John Doe"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-[9px] md:text-[10px] font-semibold text-gray-700 mb-0.5 font-sans">
+                    <label className="block text-[8px] md:text-[9px] font-semibold text-gray-700 mb-0.5 font-sans">
                       Company Name
                     </label>
                     <div className="relative">
-                      <Building className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400 w-2.5 h-2.5 md:w-3 md:h-3" />
+                      <Building className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-2 h-2 md:w-2.5 md:h-2.5" />
                       <input
                         type="text"
                         name="company"
                         value={formData.company}
                         onChange={handleChange}
-                        className="w-full pl-7 md:pl-8 pr-2.5 py-1 text-[10px] md:text-xs border border-gray-300 rounded-md focus:ring-2 focus:ring-[#3bc24f] focus:border-transparent outline-none transition font-sans"
+                        className="w-full pl-6 md:pl-7 pr-2 py-0.5 text-[9px] md:text-[10px] border border-gray-300 rounded-md focus:ring-1 focus:ring-[#3bc24f] focus:border-transparent outline-none transition font-sans"
                         placeholder="Your Company"
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="grid sm:grid-cols-2 gap-2 md:gap-3">
+                <div className="grid sm:grid-cols-2 gap-1.5 md:gap-2">
                   <div>
-                    <label className="block text-[9px] md:text-[10px] font-semibold text-gray-700 mb-0.5 font-sans">
+                    <label className="block text-[8px] md:text-[9px] font-semibold text-gray-700 mb-0.5 font-sans">
                       Email <span className="text-[#3bc24f]">*</span>
                     </label>
                     <div className="relative">
-                      <Mail className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400 w-2.5 h-2.5 md:w-3 md:h-3" />
+                      <Mail className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-2 h-2 md:w-2.5 md:h-2.5" />
                       <input
                         type="email"
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
                         required
-                        className="w-full pl-7 md:pl-8 pr-2.5 py-1 text-[10px] md:text-xs border border-gray-300 rounded-md focus:ring-2 focus:ring-[#3bc24f] focus:border-transparent outline-none transition font-sans"
+                        className="w-full pl-6 md:pl-7 pr-2 py-0.5 text-[9px] md:text-[10px] border border-gray-300 rounded-md focus:ring-1 focus:ring-[#3bc24f] focus:border-transparent outline-none transition font-sans"
                         placeholder="info@company.com"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-[9px] md:text-[10px] font-semibold text-gray-700 mb-0.5 font-sans">
+                    <label className="block text-[8px] md:text-[9px] font-semibold text-gray-700 mb-0.5 font-sans">
                       Phone/WhatsApp <span className="text-[#3bc24f]">*</span>
                     </label>
                     <div className="relative">
-                      <Phone className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400 w-2.5 h-2.5 md:w-3 md:h-3" />
+                      <Phone className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-2 h-2 md:w-2.5 md:h-2.5" />
                       <input
                         type="tel"
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
                         required
-                        className="w-full pl-7 md:pl-8 pr-2.5 py-1 text-[10px] md:text-xs border border-gray-300 rounded-md focus:ring-2 focus:ring-[#3bc24f] focus:border-transparent outline-none transition font-sans"
+                        className="w-full pl-6 md:pl-7 pr-2 py-0.5 text-[9px] md:text-[10px] border border-gray-300 rounded-md focus:ring-1 focus:ring-[#3bc24f] focus:border-transparent outline-none transition font-sans"
                         placeholder="+880 1871-733305"
                       />
                     </div>
                   </div>
                 </div>
 
+                {/* Country Field */}
+                <div className="grid sm:grid-cols-2 gap-1.5 md:gap-2">
+                  <div>
+                    <label className="block text-[8px] md:text-[9px] font-semibold text-gray-700 mb-0.5 font-sans">
+                      Country <span className="text-[#3bc24f]">*</span>
+                    </label>
+                    <div className="relative">
+                      <Globe className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-2 h-2 md:w-2.5 md:h-2.5" />
+                      <select
+                        name="country"
+                        value={formData.country}
+                        onChange={handleChange}
+                        required
+                        className="w-full pl-6 md:pl-7 pr-2 py-0.5 text-[9px] md:text-[10px] border border-gray-300 rounded-md focus:ring-1 focus:ring-[#3bc24f] focus:border-transparent outline-none transition bg-white font-sans"
+                      >
+                        <option value="">Select Country</option>
+                        <option value="Bangladesh">Bangladesh</option>
+                        <option value="India">India</option>
+                        <option value="United States">United States</option>
+                        <option value="United Kingdom">United Kingdom</option>
+                        <option value="Canada">Canada</option>
+                        <option value="Australia">Australia</option>
+                        <option value="Germany">Germany</option>
+                        <option value="France">France</option>
+                        <option value="Japan">Japan</option>
+                        <option value="China">China</option>
+                        <option value="Pakistan">Pakistan</option>
+                        <option value="Sri Lanka">Sri Lanka</option>
+                        <option value="Nepal">Nepal</option>
+                        <option value="UAE">UAE</option>
+                        <option value="Saudi Arabia">Saudi Arabia</option>
+                        <option value="Qatar">Qatar</option>
+                        <option value="Kuwait">Kuwait</option>
+                        <option value="Oman">Oman</option>
+                        <option value="Bahrain">Bahrain</option>
+                        <option value="Malaysia">Malaysia</option>
+                        <option value="Singapore">Singapore</option>
+                        <option value="Indonesia">Indonesia</option>
+                        <option value="Thailand">Thailand</option>
+                        <option value="Vietnam">Vietnam</option>
+                        <option value="South Korea">South Korea</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Inquiry Type */}
+                  <div>
+                    <label className="block text-[8px] md:text-[9px] font-semibold text-gray-700 mb-0.5 font-sans">
+                      Inquiry Type <span className="text-[#3bc24f]">*</span>
+                    </label>
+                    <div className="relative">
+                      <HelpCircle className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-2 h-2 md:w-2.5 md:h-2.5" />
+                      <select
+                        name="inquiryType"
+                        value={formData.inquiryType}
+                        onChange={handleChange}
+                        required
+                        className="w-full pl-6 md:pl-7 pr-2 py-0.5 text-[9px] md:text-[10px] border border-gray-300 rounded-md focus:ring-1 focus:ring-[#3bc24f] focus:border-transparent outline-none transition bg-white font-sans"
+                      >
+                        <option value="wholesale">Wholesale Inquiry</option>
+                        <option value="custom">Custom Manufacturing</option>
+                        <option value="sample">Sample Request</option>
+                        <option value="partnership">Partnership</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Custom Inquiry Field - Only shows when "Other" is selected */}
+                {showCustomInquiryField && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="relative"
+                  >
+                    <label className="block text-[8px] md:text-[9px] font-semibold text-gray-700 mb-0.5 font-sans">
+                      Specify Inquiry Type <span className="text-[#3bc24f]">*</span>
+                    </label>
+                    <div className="relative">
+                      <HelpCircle className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-2 h-2 md:w-2.5 md:h-2.5" />
+                      <input
+                        type="text"
+                        value={customInquiryText}
+                        onChange={handleCustomInquiryChange}
+                        required
+                        className="w-full pl-6 md:pl-7 pr-2 py-0.5 text-[9px] md:text-[10px] border border-gray-300 rounded-md focus:ring-1 focus:ring-[#3bc24f] focus:border-transparent outline-none transition font-sans"
+                        placeholder="e.g., Bulk Export, Franchise, etc."
+                      />
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Product Interest */}
                 <div>
-                  <label className="block text-[9px] md:text-[10px] font-semibold text-gray-700 mb-0.5 font-sans">
+                  <label className="block text-[8px] md:text-[9px] font-semibold text-gray-700 mb-0.5 font-sans">
                     Product Interest
                   </label>
                   <div className="relative">
-                    <Package className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400 w-2.5 h-2.5 md:w-3 md:h-3" />
+                    <Package className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-2 h-2 md:w-2.5 md:h-2.5" />
                     <input
                       type="text"
                       name="productInterest"
                       value={formData.productInterest}
                       onChange={handleChange}
-                      className="w-full pl-7 md:pl-8 pr-2.5 py-1 text-[10px] md:text-xs border border-gray-300 rounded-md focus:ring-2 focus:ring-[#3bc24f] focus:border-transparent outline-none transition font-sans"
-                      placeholder="e.g., Jute Bags, Raw Fiber"
+                      className="w-full pl-6 md:pl-7 pr-2 py-0.5 text-[9px] md:text-[10px] border border-gray-300 rounded-md focus:ring-1 focus:ring-[#3bc24f] focus:border-transparent outline-none transition font-sans"
+                      placeholder="Jute Bags, Raw Fiber"
                     />
                   </div>
                 </div>
 
+                {/* Message */}
                 <div>
-                  <label className="block text-[9px] md:text-[10px] font-semibold text-gray-700 mb-0.5 font-sans">
+                  <label className="block text-[8px] md:text-[9px] font-semibold text-gray-700 mb-0.5 font-sans">
                     Message <span className="text-[#3bc24f]">*</span>
                   </label>
                   <div className="relative">
-                    <MessageCircle className="absolute left-2.5 top-2 text-gray-400 w-2.5 h-2.5 md:w-3 md:h-3" />
+                    <MessageCircle className="absolute left-2 top-1.5 text-gray-400 w-2 h-2 md:w-2.5 md:h-2.5" />
                     <textarea
                       name="message"
                       value={formData.message}
                       onChange={handleChange}
                       required
-                      rows={2}
-                      className="w-full pl-7 md:pl-8 pr-2.5 py-1 text-[10px] md:text-xs border border-gray-300 rounded-md focus:ring-2 focus:ring-[#3bc24f] focus:border-transparent outline-none transition resize-none font-sans"
+                      rows={1}
+                      className="w-full pl-6 md:pl-7 pr-2 py-0.5 text-[9px] md:text-[10px] border border-gray-300 rounded-md focus:ring-1 focus:ring-[#3bc24f] focus:border-transparent outline-none transition resize-none font-sans"
                       placeholder="Tell us about your requirements..."
                     />
                   </div>
@@ -376,19 +538,19 @@ export default function CTASection() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-[#3bc24f] to-[#2da63f] text-white font-semibold py-1.5 md:py-2 rounded-md hover:from-[#2da63f] hover:to-[#3bc24f] transition-all duration-300 flex items-center justify-center gap-1.5 disabled:opacity-70 text-[10px] md:text-xs font-sans"
+                  className="w-full bg-gradient-to-r from-[#3bc24f] to-[#2da63f] text-white font-semibold py-1 md:py-1.5 rounded-md hover:from-[#2da63f] hover:to-[#3bc24f] transition-all duration-300 flex items-center justify-center gap-1.5 disabled:opacity-70 text-[9px] md:text-[10px] font-sans"
                 >
                   {isSubmitting ? (
                     'Sending...'
                   ) : (
                     <>
                       Request Quote Now
-                      <Send className="w-2.5 h-2.5 md:w-3 md:h-3" />
+                      <Send className="w-2 h-2 md:w-2.5 md:h-2.5" />
                     </>
                   )}
                 </button>
 
-                <p className="text-[7px] md:text-[8px] text-gray-400 text-center font-sans">
+                <p className="text-[6px] md:text-[7px] text-gray-400 text-center font-sans">
                   We'll respond within 24 hours. Your info is safe with us.
                 </p>
               </form>

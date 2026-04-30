@@ -404,7 +404,7 @@ export default function SupplyChainTimeline() {
   ];
 
   return (
-    <section ref={sectionRef} className="py-16 md:py-20 lg:py-24 bg-gradient-to-b from-white via-[#FAF7F2] to-white overflow-hidden">
+    <section ref={sectionRef} className="py-6 md:py-10 lg:py-12 bg-gradient-to-b from-white via-[#FAF7F2] to-white overflow-hidden">
       <div className="container mx-auto px-4 max-w-7xl">
         {/* Section Header */}
         <motion.div

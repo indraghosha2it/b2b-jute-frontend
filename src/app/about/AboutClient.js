@@ -567,12 +567,12 @@ export default function AboutPage() {
                 >
                   Browse Products
                 </Link>
-                <Link
-                  href="/contact"
-                  className="px-8 py-3 border-2 border-white text-white rounded-lg font-semibold hover:bg-white hover:text-[#6B4F3A] transition-all duration-300 font-sans"
-                >
-                  Request a Quote
-                </Link>
+             <Link
+  href="/contact#request-quote-contact"
+  className="px-8 py-3 border-2 border-white text-white rounded-lg font-semibold hover:bg-white hover:text-[#6B4F3A] transition-all duration-300 font-sans"
+>
+  Request a Quote
+</Link>
               </div>
               <div className="flex flex-wrap justify-center gap-4 mt-8 text-sm text-[#F5E6D3] font-sans">
                 <span>✓ Quick Response</span>

@@ -390,7 +390,7 @@ export default function TermsPage() {
               </p>
               <div className="flex flex-wrap gap-4 justify-center">
                 <Link
-                  href="/contact"
+                  href="/contact#request-quote-contact"
                   className="inline-flex items-center gap-2 bg-[#3A7D44] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#2d6336] transition-all duration-300 font-sans"
                 >
                   <Send className="w-4 h-4" />

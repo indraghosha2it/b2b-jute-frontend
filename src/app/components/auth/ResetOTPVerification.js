@@ -108,7 +108,7 @@ const handleSubmit = async (e) => {
     toast.dismiss(loadingToast);
 
     if (!response.ok) {
-      console.error('❌ Verification failed:', data);
+     
       toast.error('Verification Failed', {
         description: data.error || 'Invalid OTP'
       });
@@ -184,7 +184,7 @@ const handleSubmit = async (e) => {
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Enter Reset Code</h2>
         <p className="text-gray-600">
           We've sent a 6-digit code to<br />
-          <span className="font-semibold" style={{ color: '#d9884e' }}>{email}</span>
+          <span className="font-semibold" style={{ color: '#6B4F3A' }}>{email}</span>
         </p>
       </div>
 
@@ -201,7 +201,7 @@ const handleSubmit = async (e) => {
               onChange={(e) => handleChange(index, e.target.value)}
               onKeyDown={(e) => handleKeyDown(index, e)}
               onPaste={index === 0 ? handlePaste : undefined}
-              className="w-12 h-12 text-center text-xl font-semibold border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d9884e] focus:border-[#d9884e]"
+              className="w-12 h-12 text-center text-xl font-semibold border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-[#6B4F3A]"
               required
             />
           ))}
@@ -209,7 +209,7 @@ const handleSubmit = async (e) => {
 
         <div className="text-center">
           <p className="text-sm text-gray-500">
-            Time remaining: <span className="font-semibold" style={{ color: '#d9884e' }}>{formatTime(timer)}</span>
+            Time remaining: <span className="font-semibold" style={{ color: '#6B4F3A' }}>{formatTime(timer)}</span>
           </p>
         </div>
 
@@ -217,7 +217,7 @@ const handleSubmit = async (e) => {
           type="submit"
           disabled={isSubmitting}
           className="w-full py-3 text-white rounded-lg hover:opacity-90 transition-all font-medium"
-          style={{ background: 'linear-gradient(135deg, #d9884e 0%, #e6a87c 100%)' }}
+          style={{ background: 'linear-gradient(135deg, #6B4F3A 0%, #e6a87c 100%)' }}
         >
           {isSubmitting ? (
             <span className="flex items-center justify-center gap-2">
@@ -247,7 +247,7 @@ const handleSubmit = async (e) => {
                 ? 'hover:underline' 
                 : 'text-gray-400 cursor-not-allowed'
             }`}
-            style={canResend ? { color: '#d9884e' } : {}}
+            style={canResend ? { color: '#6B4F3A' } : {}}
           >
             Resend OTP
           </button>

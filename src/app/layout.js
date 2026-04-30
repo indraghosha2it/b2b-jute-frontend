@@ -9,6 +9,7 @@ import { Toaster } from "sonner";
 import LayoutContent from "./components/layout/LayoutContent";
 
 import ScrollToTop from "./components/layout/ScrollToTop";
+import PromotionalModalWrapper from "./components/PromotionalModalWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -101,7 +102,10 @@ export default function RootLayout({ children }) {
         />
       
         <ScrollToTop />
+        <PromotionalModalWrapper />
       </body>
     </html>
   );
 }
+
+

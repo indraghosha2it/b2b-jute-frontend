@@ -126,7 +126,7 @@ export default function ResetPassword({ email, otp, onBack }) {
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Reset Password</h2>
         <p className="text-gray-600">
           Create a new password for<br />
-          <span className="font-semibold text-[#d9884e]">{email}</span>
+          <span className="font-semibold text-[#6B4F3A]">{email}</span>
         </p>
       </div>
 
@@ -143,7 +143,7 @@ export default function ResetPassword({ email, otp, onBack }) {
               onChange={(e) => setPassword(e.target.value)}
               required
               autoComplete="new-password"
-              className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d9884e] focus:border-transparent bg-gray-50 focus:bg-white"
+              className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent bg-gray-50 focus:bg-white"
               placeholder="Min. 8 characters with letters & numbers"
             />
             <button
@@ -168,7 +168,7 @@ export default function ResetPassword({ email, otp, onBack }) {
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
               autoComplete="new-password"
-              className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d9884e] focus:border-transparent bg-gray-50 focus:bg-white"
+              className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent bg-gray-50 focus:bg-white"
               placeholder="Re-enter password"
             />
             <button
@@ -200,7 +200,7 @@ export default function ResetPassword({ email, otp, onBack }) {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full py-3 px-4 bg-gradient-to-r from-[#d9884e] to-[#e6a87c] text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-[#d9884e]/25 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
+          className="w-full py-3 px-4 bg-gradient-to-r from-[#6B4F3A] to-[#836046] text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-[#6B4F3A]/25 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
         >
           {isSubmitting ? (
             <>
@@ -218,7 +218,7 @@ export default function ResetPassword({ email, otp, onBack }) {
         <button
           type="button"
           onClick={onBack}
-          className="w-full text-sm text-gray-500 hover:text-[#d9884e] transition-colors"
+          className="w-full text-sm text-gray-500 hover:text-[#6B4F3A] transition-colors"
         >
           ← Back
         </button>

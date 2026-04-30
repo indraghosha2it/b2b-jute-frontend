@@ -39,7 +39,7 @@ export default function AlibabaTrustSection() {
   };
 
   return (
-    <section ref={sectionRef} className="py-16 md:py-20 bg-white relative overflow-hidden">
+    <section ref={sectionRef} className=" bg-white relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-[0.02] pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-[#FF6B12] rounded-full blur-3xl" />

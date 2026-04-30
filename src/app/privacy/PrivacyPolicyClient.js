@@ -832,7 +832,7 @@ export default function PrivacyPolicyPage() {
                   Browse Products
                 </Link>
                 <Link
-                  href="/contact"
+                  href="/contact#request-quote-contact"
                   className="px-8 py-3 border-2 border-[#6B4F3A] text-[#6B4F3A] rounded-lg font-semibold hover:bg-[#6B4F3A] hover:text-white transition-all duration-300 font-sans"
                 >
                   Request a Quote
