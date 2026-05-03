@@ -389,17 +389,7 @@ export default function FeaturedProducts() {
                           <span className="text-[11px] md:text-sm font-medium whitespace-nowrap">
                             {tag.name}
                           </span>
-                          {productCount > 0 && (
-                            <span className={`
-                              text-[9px] md:text-xs px-1 py-0.5 rounded-full transition-all duration-300
-                              ${isActive 
-                                ? `bg-[${COLORS.primary}] text-white` 
-                                : 'bg-gray-100 text-gray-500 group-hover:bg-gray-200'
-                              }
-                            `}>
-                              {productCount}
-                            </span>
-                          )}
+                      
                         </div>
                         
                         <motion.div
@@ -496,15 +486,16 @@ export default function FeaturedProducts() {
                         />
                         
                         {/* Top Right Action Icons - Smaller for mobile */}
-                        <motion.div 
-                          className="absolute top-2 right-2 flex flex-col gap-1.5 z-30"
-                          initial={{ opacity: 0, x: 10 }}
-                          animate={{ 
-                            opacity: isHovered ? 1 : 0,
-                            x: isHovered ? 0 : 10
-                          }}
-                          transition={{ duration: 0.2 }}
-                        >
+                       {/* Top Right Action Icons - Always visible on mobile */}
+<motion.div 
+  className="absolute top-2 right-2 flex flex-col gap-1.5 z-30"
+  initial={{ opacity: 0, x: 10 }}
+  animate={{ 
+    opacity: isMobile ? 1 : (isHovered ? 1 : 0), 
+    x: isMobile ? 0 : (isHovered ? 0 : 10) 
+  }}
+  transition={{ duration: 0.2 }}
+>
                           <div
                             onClick={(e) => {
                               e.stopPropagation();
@@ -643,15 +634,17 @@ export default function FeaturedProducts() {
                       </div>
 
                       {/* Add to Inquiry Button - Compact */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          window.location.href = `/productDetails?id=${product._id}#inquiry-form`;
-                        }}
-                        className="w-full py-1.5 md:py-2 text-center text-[9px] md:text-[10px] font-medium text-white bg-[#6B4F3A] hover:bg-[#8B6B51] transition-colors"
-                      >
-                        Add to Inquiry
-                      </button>
+                     {/* Add to Inquiry Button */}
+<button
+  onClick={(e) => {
+    e.stopPropagation();
+    window.location.href = `/productDetails?id=${product._id}#inquiry-form`;
+  }}
+  className="w-full py-1.5 md:py-2 text-center text-[9px] md:text-[10px] font-medium text-white bg-[#6B4F3A] hover:bg-[#8B6B51] transition-colors flex items-center justify-center gap-1.5"
+>
+  <ShoppingCart className="w-3 h-3 md:w-3.5 md:h-3.5" />
+  Add to Inquiry
+</button>
                     </motion.div>
                   );
                 })}

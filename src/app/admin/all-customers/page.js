@@ -409,7 +409,7 @@
 //         <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 //           <div>
 //             <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-//               <Users className="w-6 h-6" style={{ color: '#E39A65' }} />
+//               <Users className="w-6 h-6" style={{ color: '#755841' }} />
 //               All Customers
 //             </h1>
 //             <p className="text-sm text-gray-600 mt-1">
@@ -420,13 +420,13 @@
 //           <div className="flex items-center gap-2">
 //             <button
 //               onClick={() => setCreateModal({ isOpen: true })}
-//               className="flex items-center gap-2 px-4 py-2 bg-[#E39A65] text-white rounded-lg hover:bg-[#d48b54] transition-colors shadow-sm"
+//               className="flex items-center gap-2 px-4 py-2 bg-[#755841] text-white rounded-lg hover:bg-[#8c725d] transition-colors shadow-sm"
 //             >
 //               <UserPlus className="w-4 h-4" />
 //               Add Customer
 //             </button>
 //             <span className="text-sm bg-white px-3 py-1 rounded-full shadow-sm border border-gray-200">
-//               Total: <span className="font-semibold" style={{ color: '#E39A65' }}>{customers.length}</span>
+//               Total: <span className="font-semibold" style={{ color: '#755841' }}>{customers.length}</span>
 //             </span>
 //           </div>
 //         </div>
@@ -440,14 +440,14 @@
 //               placeholder="Search by name, email, phone, company..."
 //               value={searchTerm}
 //               onChange={(e) => setSearchTerm(e.target.value)}
-//               className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+//               className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
 //             />
 //           </div>
           
 //           <select
 //             value={selectedCountry}
 //             onChange={(e) => setSelectedCountry(e.target.value)}
-//             className="px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65] bg-white text-sm"
+//             className="px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841] bg-white text-sm"
 //           >
 //             <option value="all">All Countries</option>
 //             {countries.map(country => (
@@ -458,7 +458,7 @@
 //           <select
 //             value={selectedBusinessType}
 //             onChange={(e) => setSelectedBusinessType(e.target.value)}
-//             className="px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65] bg-white text-sm"
+//             className="px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841] bg-white text-sm"
 //           >
 //             <option value="all">All Business Types</option>
 //             {businessTypes.map(type => (
@@ -499,7 +499,7 @@
 //                   <tr>
 //                     <td colSpan="7" className="px-4 py-12 text-center">
 //                       <div className="flex justify-center items-center gap-2">
-//                         <RefreshCw className="w-5 h-5 animate-spin" style={{ color: '#E39A65' }} />
+//                         <RefreshCw className="w-5 h-5 animate-spin" style={{ color: '#755841' }} />
 //                         <span className="text-gray-500">Loading customers...</span>
 //                       </div>
 //                     </td>
@@ -519,7 +519,7 @@
 //                     <tr key={customer._id} className="hover:bg-gray-50 transition-colors">
 //                       <td className="px-4 py-3">
 //                         <div className="flex items-center gap-2">
-//                           <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#E39A65] to-[#f5b485] flex items-center justify-center text-white font-semibold text-sm">
+//                           <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#755841] to-[#f5b485] flex items-center justify-center text-white font-semibold text-sm">
 //                             {customer.contactPerson?.charAt(0) || customer.companyName?.charAt(0)}
 //                           </div>
 //                           <div>
@@ -580,7 +580,7 @@
 //                         <div className="flex items-center justify-end gap-1">
 //                           <button
 //                             onClick={() => setViewModal({ isOpen: true, customer })}
-//                             className="p-1.5 text-gray-600 hover:text-[#E39A65] hover:bg-orange-50 rounded-lg transition-colors"
+//                             className="p-1.5 text-gray-600 hover:text-[#755841] hover:bg-orange-50 rounded-lg transition-colors"
 //                             title="View details"
 //                           >
 //                             <Eye className="w-4 h-4" />
@@ -700,7 +700,7 @@
 //               exit={{ opacity: 0, scale: 0.95 }}
 //               className="bg-white rounded-xl max-w-2xl w-full shadow-xl overflow-hidden"
 //             >
-//               <div className="px-5 py-3 bg-gradient-to-r from-[#E39A65] to-[#f5b485] flex items-center justify-between">
+//               <div className="px-5 py-3 bg-gradient-to-r from-[#755841] to-[#f5b485] flex items-center justify-between">
 //                 <div className="flex items-center gap-2">
 //                   <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
 //                     <Eye className="w-4 h-4 text-white" />
@@ -870,7 +870,7 @@
 //               className="bg-white rounded-xl max-w-3xl w-full shadow-xl overflow-hidden max-h-[90vh] flex flex-col"
 //             >
 //               {/* Modal Header */}
-//               <div className="px-5 py-3 bg-gradient-to-r from-[#E39A65] to-[#f5b485] flex items-center justify-between flex-shrink-0">
+//               <div className="px-5 py-3 bg-gradient-to-r from-[#755841] to-[#f5b485] flex items-center justify-between flex-shrink-0">
 //                 <div className="flex items-center gap-2">
 //                   <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
 //                     <UserPlus className="w-4 h-4 text-white" />
@@ -900,7 +900,7 @@
 //                         value={createForm.companyName}
 //                         onChange={handleCreateChange}
 //                         required
-//                         className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+//                         className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
 //                         placeholder="Enter company name"
 //                       />
 //                     </div>
@@ -916,7 +916,7 @@
 //                         value={createForm.contactPerson}
 //                         onChange={handleCreateChange}
 //                         required
-//                         className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+//                         className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
 //                         placeholder="Full name"
 //                       />
 //                     </div>
@@ -932,7 +932,7 @@
 //                         value={createForm.email}
 //                         onChange={handleCreateChange}
 //                         required
-//                         className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+//                         className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
 //                         placeholder="customer@example.com"
 //                       />
 //                     </div>
@@ -948,7 +948,7 @@
 //                         value={createForm.phone}
 //                         onChange={handleCreateChange}
 //                         required
-//                         className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+//                         className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
 //                         placeholder="+1 234 567 8900"
 //                       />
 //                     </div>
@@ -964,7 +964,7 @@
 //                         value={createForm.whatsapp}
 //                         onChange={handleCreateChange}
 //                         required
-//                         className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+//                         className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
 //                         placeholder="+1 234 567 8900"
 //                       />
 //                     </div>
@@ -980,7 +980,7 @@
 //                         value={createForm.country}
 //                         onChange={handleCreateChange}
 //                         required
-//                         className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+//                         className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
 //                         placeholder="Country"
 //                       />
 //                     </div>
@@ -996,7 +996,7 @@
 //                         value={createForm.city}
 //                         onChange={handleCreateChange}
 //                         required
-//                         className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+//                         className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
 //                         placeholder="City"
 //                       />
 //                     </div>
@@ -1012,7 +1012,7 @@
 //                         value={createForm.address}
 //                         onChange={handleCreateChange}
 //                         required
-//                         className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+//                         className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
 //                         placeholder="Street address"
 //                       />
 //                     </div>
@@ -1028,7 +1028,7 @@
 //                         value={createForm.zipCode}
 //                         onChange={handleCreateChange}
 //                         required
-//                         className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+//                         className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
 //                         placeholder="ZIP code"
 //                       />
 //                     </div>
@@ -1048,13 +1048,13 @@
 //                           onChange={handleCreateChange}
 //                           required
 //                           minLength="8"
-//                           className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65] pr-10"
+//                           className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841] pr-10"
 //                           placeholder="Min. 8 characters"
 //                         />
 //                         <button
 //                           type="button"
 //                           onClick={() => setShowPassword(!showPassword)}
-//                           className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#E39A65]"
+//                           className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#755841]"
 //                         >
 //                           {showPassword ? '👁️' : '👁️‍🗨️'}
 //                         </button>
@@ -1074,13 +1074,13 @@
 //                           onChange={handleCreateChange}
 //                           required
 //                           minLength="8"
-//                           className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65] pr-10"
+//                           className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841] pr-10"
 //                           placeholder="Re-enter password"
 //                         />
 //                         <button
 //                           type="button"
 //                           onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-//                           className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#E39A65]"
+//                           className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#755841]"
 //                         >
 //                           {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
 //                         </button>
@@ -1114,7 +1114,7 @@
 //                     <button
 //                       type="submit"
 //                       disabled={isCreating}
-//                       className="px-4 py-2 bg-[#E39A65] text-white rounded-lg text-sm font-medium hover:bg-[#d48b54] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+//                       className="px-4 py-2 bg-[#755841] text-white rounded-lg text-sm font-medium hover:bg-[#8c725d] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
 //                     >
 //                       {isCreating ? (
 //                         <>
@@ -1625,7 +1625,7 @@ export default function AllCustomers() {
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              <Users className="w-6 h-6" style={{ color: '#E39A65' }} />
+              <Users className="w-6 h-6" style={{ color: '#755841' }} />
               All Customers
             </h1>
             <p className="text-sm text-gray-600 mt-1">
@@ -1636,13 +1636,13 @@ export default function AllCustomers() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setCreateModal({ isOpen: true })}
-              className="flex items-center gap-2 px-4 py-2 bg-[#E39A65] text-white rounded-lg hover:bg-[#d48b54] transition-colors shadow-sm"
+              className="flex items-center gap-2 px-4 py-2 bg-[#755841] text-white rounded-lg hover:bg-[#8c725d] transition-colors shadow-sm"
             >
               <UserPlus className="w-4 h-4" />
               Add Customer
             </button>
             <span className="text-sm bg-white px-3 py-1 rounded-full shadow-sm border border-gray-200">
-              Total: <span className="font-semibold" style={{ color: '#E39A65' }}>{customers.length}</span>
+              Total: <span className="font-semibold" style={{ color: '#755841' }}>{customers.length}</span>
             </span>
           </div>
         </div>
@@ -1656,14 +1656,14 @@ export default function AllCustomers() {
               placeholder="Search by name, email, phone, company..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
             />
           </div>
           
           <select
             value={selectedCountry}
             onChange={(e) => setSelectedCountry(e.target.value)}
-            className="px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65] bg-white text-sm"
+            className="px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841] bg-white text-sm"
           >
             <option value="all">All Countries</option>
             {countries.map(country => (
@@ -1674,7 +1674,7 @@ export default function AllCustomers() {
           {/* <select
             value={selectedBusinessType}
             onChange={(e) => setSelectedBusinessType(e.target.value)}
-            className="px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65] bg-white text-sm"
+            className="px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841] bg-white text-sm"
           >
             <option value="all">All Business Types</option>
             {businessTypes.map(type => (
@@ -1717,7 +1717,7 @@ export default function AllCustomers() {
                   <tr>
                     <td colSpan="7" className="px-4 py-12 text-center">
                       <div className="flex justify-center items-center gap-2">
-                        <RefreshCw className="w-5 h-5 animate-spin" style={{ color: '#E39A65' }} />
+                        <RefreshCw className="w-5 h-5 animate-spin" style={{ color: '#755841' }} />
                         <span className="text-gray-500">Loading customers...</span>
                       </div>
                     </td>
@@ -1737,7 +1737,7 @@ export default function AllCustomers() {
                     <tr key={customer._id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#E39A65] to-[#f5b485] flex items-center justify-center text-white font-semibold text-sm">
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#755841] to-[#f5b485] flex items-center justify-center text-white font-semibold text-sm">
                             {customer.contactPerson?.charAt(0) || customer.companyName?.charAt(0)}
                           </div>
                           <div>
@@ -1813,7 +1813,7 @@ export default function AllCustomers() {
                         <div className="flex items-center justify-end gap-1">
                           <button
                             onClick={() => setViewModal({ isOpen: true, customer })}
-                            className="p-1.5 text-gray-600 hover:text-[#E39A65] hover:bg-orange-50 rounded-lg transition-colors"
+                            className="p-1.5 text-gray-600 hover:text-[#755841] hover:bg-orange-50 rounded-lg transition-colors"
                             title="View details"
                           >
                             <Eye className="w-4 h-4" />
@@ -1947,7 +1947,7 @@ export default function AllCustomers() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="bg-white rounded-xl max-w-2xl w-full shadow-xl overflow-hidden"
             >
-              <div className="px-5 py-3 bg-gradient-to-r from-[#E39A65] to-[#f5b485] flex items-center justify-between">
+              <div className="px-5 py-3 bg-gradient-to-r from-[#755841] to-[#f5b485] flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
                     <Eye className="w-4 h-4 text-white" />
@@ -2093,7 +2093,7 @@ export default function AllCustomers() {
                     setViewModal({ isOpen: false, customer: null });
                     handleEditClick(viewModal.customer);
                   }}
-                  className="px-4 py-2 bg-[#E39A65] text-white rounded-lg hover:bg-[#d48b54] text-sm font-medium flex items-center gap-2"
+                  className="px-4 py-2 bg-[#755841] text-white rounded-lg hover:bg-[#8c725d] text-sm font-medium flex items-center gap-2"
                 >
                   <Edit2 className="w-4 h-4" />
                   Edit Customer
@@ -2118,7 +2118,7 @@ export default function AllCustomers() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="bg-white rounded-xl max-w-3xl w-full shadow-xl overflow-hidden max-h-[90vh] flex flex-col"
             >
-              <div className="px-5 py-3 bg-gradient-to-r from-[#E39A65] to-[#f5b485] flex items-center justify-between flex-shrink-0">
+              <div className="px-5 py-3 bg-gradient-to-r from-[#755841] to-[#f5b485] flex items-center justify-between flex-shrink-0">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
                     <Edit2 className="w-4 h-4 text-white" />
@@ -2146,7 +2146,7 @@ export default function AllCustomers() {
                         value={editForm.companyName}
                         onChange={handleEditChange}
                         required
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
                       />
                     </div>
 
@@ -2160,7 +2160,7 @@ export default function AllCustomers() {
                         value={editForm.contactPerson}
                         onChange={handleEditChange}
                         required
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
                       />
                     </div>
 
@@ -2187,7 +2187,7 @@ export default function AllCustomers() {
                         value={editForm.phone}
                         onChange={handleEditChange}
                         required
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
                       />
                     </div>
 
@@ -2200,7 +2200,7 @@ export default function AllCustomers() {
                         name="whatsapp"
                         value={editForm.whatsapp}
                         onChange={handleEditChange}
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
                       />
                     </div>
 
@@ -2214,7 +2214,7 @@ export default function AllCustomers() {
                         value={editForm.country}
                         onChange={handleEditChange}
                         required
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
                       />
                     </div>
 
@@ -2228,7 +2228,7 @@ export default function AllCustomers() {
                         value={editForm.city}
                         onChange={handleEditChange}
                         required
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
                       />
                     </div>
 
@@ -2242,7 +2242,7 @@ export default function AllCustomers() {
                         value={editForm.address}
                         onChange={handleEditChange}
                         required
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
                       />
                     </div>
 
@@ -2256,7 +2256,7 @@ export default function AllCustomers() {
                         value={editForm.zipCode}
                         onChange={handleEditChange}
                         required
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
                       />
                     </div>
 {/* 
@@ -2268,7 +2268,7 @@ export default function AllCustomers() {
                         name="businessType"
                         value={editForm.businessType}
                         onChange={handleEditChange}
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65] bg-white"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841] bg-white"
                       >
                         <option value="Retailer">Retailer</option>
                         <option value="Wholesaler">Wholesaler</option>
@@ -2290,7 +2290,7 @@ export default function AllCustomers() {
                           name="isActive"
                           checked={editForm.isActive}
                           onChange={handleEditChange}
-                          className="w-4 h-4 rounded border-gray-300 text-[#E39A65] focus:ring-[#E39A65]"
+                          className="w-4 h-4 rounded border-gray-300 text-[#755841] focus:ring-[#755841]"
                         />
                         <span className="text-sm text-gray-700">Active</span>
                       </label>
@@ -2309,7 +2309,7 @@ export default function AllCustomers() {
                     <button
                       type="submit"
                       disabled={isEditing}
-                      className="px-4 py-2 bg-[#E39A65] text-white rounded-lg text-sm font-medium hover:bg-[#d48b54] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                      className="px-4 py-2 bg-[#755841] text-white rounded-lg text-sm font-medium hover:bg-[#8c725d] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                     >
                       {isEditing ? (
                         <>
@@ -2367,13 +2367,13 @@ export default function AllCustomers() {
                         onChange={(e) => setPasswordForm(prev => ({ ...prev, newPassword: e.target.value }))}
                         required
                         minLength="8"
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65] pr-10"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841] pr-10"
                         placeholder="Min. 8 characters"
                       />
                       <button
                         type="button"
                         onClick={() => setShowNewPassword(!showNewPassword)}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#E39A65]"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#755841]"
                       >
                         {showNewPassword ? '👁️' : '👁️‍🗨️'}
                       </button>
@@ -2391,13 +2391,13 @@ export default function AllCustomers() {
                         onChange={(e) => setPasswordForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
                         required
                         minLength="8"
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65] pr-10"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841] pr-10"
                         placeholder="Re-enter password"
                       />
                       <button
                         type="button"
                         onClick={() => setShowConfirmNewPassword(!showConfirmNewPassword)}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#E39A65]"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#755841]"
                       >
                         {showConfirmNewPassword ? '👁️' : '👁️‍🗨️'}
                       </button>
@@ -2452,7 +2452,7 @@ export default function AllCustomers() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="bg-white rounded-xl max-w-3xl w-full shadow-xl overflow-hidden max-h-[90vh] flex flex-col"
             >
-              <div className="px-5 py-3 bg-gradient-to-r from-[#E39A65] to-[#f5b485] flex items-center justify-between flex-shrink-0">
+              <div className="px-5 py-3 bg-gradient-to-r from-[#755841] to-[#f5b485] flex items-center justify-between flex-shrink-0">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
                     <UserPlus className="w-4 h-4 text-white" />
@@ -2480,7 +2480,7 @@ export default function AllCustomers() {
                         value={createForm.companyName}
                         onChange={handleCreateChange}
                         required
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
                       />
                     </div>
 
@@ -2494,7 +2494,7 @@ export default function AllCustomers() {
                         value={createForm.contactPerson}
                         onChange={handleCreateChange}
                         required
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
                       />
                     </div>
 
@@ -2508,7 +2508,7 @@ export default function AllCustomers() {
                         value={createForm.email}
                         onChange={handleCreateChange}
                         required
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
                       />
                     </div>
 
@@ -2522,7 +2522,7 @@ export default function AllCustomers() {
                         value={createForm.phone}
                         onChange={handleCreateChange}
                         required
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
                       />
                     </div>
 
@@ -2535,7 +2535,7 @@ export default function AllCustomers() {
                         name="whatsapp"
                         value={createForm.whatsapp}
                         onChange={handleCreateChange}
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
                       />
                     </div>
 
@@ -2549,7 +2549,7 @@ export default function AllCustomers() {
                         value={createForm.country}
                         onChange={handleCreateChange}
                         required
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
                       />
                     </div>
 
@@ -2563,7 +2563,7 @@ export default function AllCustomers() {
                         value={createForm.city}
                         onChange={handleCreateChange}
                         required
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
                       />
                     </div>
 
@@ -2577,7 +2577,7 @@ export default function AllCustomers() {
                         value={createForm.address}
                         onChange={handleCreateChange}
                         required
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
                       />
                     </div>
 
@@ -2591,7 +2591,7 @@ export default function AllCustomers() {
                         value={createForm.zipCode}
                         onChange={handleCreateChange}
                         required
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65]"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841]"
                       />
                     </div>
 
@@ -2603,7 +2603,7 @@ export default function AllCustomers() {
                         name="businessType"
                         value={createForm.businessType}
                         onChange={handleCreateChange}
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65] bg-white"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841] bg-white"
                       >
                         <option value="Retailer">Retailer</option>
                         <option value="Wholesaler">Wholesaler</option>
@@ -2627,13 +2627,13 @@ export default function AllCustomers() {
                           onChange={handleCreateChange}
                           required
                           minLength="8"
-                          className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65] pr-10"
+                          className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841] pr-10"
                           placeholder="Min. 8 characters"
                         />
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#E39A65]"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#755841]"
                         >
                           {showPassword ? '👁️' : '👁️‍🗨️'}
                         </button>
@@ -2652,13 +2652,13 @@ export default function AllCustomers() {
                           onChange={handleCreateChange}
                           required
                           minLength="8"
-                          className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65] pr-10"
+                          className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#755841] focus:border-[#755841] pr-10"
                           placeholder="Re-enter password"
                         />
                         <button
                           type="button"
                           onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#E39A65]"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#755841]"
                         >
                           {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
                         </button>
@@ -2677,7 +2677,7 @@ export default function AllCustomers() {
                     <button
                       type="submit"
                       disabled={isCreating}
-                      className="px-4 py-2 bg-[#E39A65] text-white rounded-lg text-sm font-medium hover:bg-[#d48b54] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                      className="px-4 py-2 bg-[#755841] text-white rounded-lg text-sm font-medium hover:bg-[#8c725d] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                     >
                       {isCreating ? (
                         <>

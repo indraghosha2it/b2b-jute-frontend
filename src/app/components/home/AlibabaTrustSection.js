@@ -133,7 +133,7 @@ export default function AlibabaTrustSection() {
               </div>
               
               <div className="relative z-10 h-20 bg-gradient-to-t from-black/60 to-transparent flex items-center justify-end px-6">
-                <Link href="https://jutecraftify.alibaba.com" target="_blank" className="flex items-center gap-2 text-white text-sm font-medium bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full hover:bg-[#FF6B12] hover:bg-opacity-80 transition-all duration-300 font-sans">
+                <Link href="https://www.alibaba.com" target="_blank" className="flex items-center gap-2 text-white text-sm font-medium bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full hover:bg-[#FF6B12] hover:bg-opacity-80 transition-all duration-300 font-sans">
                   View on Alibaba <ArrowUpRight className="w-3.5 h-3.5" />
                 </Link>
               </div>

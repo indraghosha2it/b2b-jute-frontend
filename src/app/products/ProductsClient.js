@@ -1797,6 +1797,9 @@
 //     </>
 //   );
 // }
+
+
+
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -2318,32 +2321,37 @@ const ProductGridCard = ({ product }) => {
         />
         
         {/* Top Right Action Icons */}
-        <motion.div 
-          className="absolute top-2 right-2 flex flex-col gap-1.5 z-30"
-          initial={{ opacity: 0, x: 10 }}
-          animate={{ opacity: isHovered ? 1 : 0, x: isHovered ? 0 : 10 }}
-          transition={{ duration: 0.2 }}
-        >
-          <div
-            onClick={(e) => {
-              e.stopPropagation();
-              window.open(`/productDetails?id=${product._id}`, '_blank');
-            }}
-            className="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center border border-gray-300 bg-white/80 hover:bg-white transition-all duration-200 cursor-pointer"
-          >
-            <Eye className="w-3 h-3 md:w-3.5 md:h-3.5 text-gray-700" />
-          </div>
-          
-          <div
-            onClick={(e) => {
-              e.stopPropagation();
-              window.open(`/productDetails?id=${product._id}#inquiry-form`, '_blank');
-            }}
-            className="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center border border-gray-300 bg-white/80 hover:bg-white transition-all duration-200 cursor-pointer"
-          >
-            <ShoppingCart className="w-3 h-3 md:w-3.5 md:h-3.5 text-[#6B4F3A]" />
-          </div>
-        </motion.div>
+      {/* Top Right Action Icons - Always visible on mobile */}
+{/* Top Right Action Icons - Always visible on mobile */}
+<motion.div 
+  className="absolute top-2 right-2 flex flex-col gap-1.5 z-30"
+  initial={{ opacity: 0, x: 10 }}
+  animate={{ 
+    opacity: isMobile ? 1 : (isHovered ? 1 : 0), 
+    x: isMobile ? 0 : (isHovered ? 0 : 10) 
+  }}
+  transition={{ duration: 0.2 }}
+>
+  <div
+    onClick={(e) => {
+      e.stopPropagation();
+      window.open(`/productDetails?id=${product._id}`, '_blank');
+    }}
+    className="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center border border-gray-300 bg-white/80 hover:bg-white transition-all duration-200 cursor-pointer"
+  >
+    <Eye className="w-3 h-3 md:w-3.5 md:h-3.5 text-gray-700" />
+  </div>
+  
+  <div
+    onClick={(e) => {
+      e.stopPropagation();
+      window.open(`/productDetails?id=${product._id}#inquiry-form`, '_blank');
+    }}
+    className="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center border border-gray-300 bg-white/80 hover:bg-white transition-all duration-200 cursor-pointer"
+  >
+    <ShoppingCart className="w-3 h-3 md:w-3.5 md:h-3.5 text-[#6B4F3A]" />
+  </div>
+</motion.div>
 
         {/* Tag Badge - Top Left */}
         {primaryTag && (
@@ -2458,15 +2466,16 @@ const ProductGridCard = ({ product }) => {
       </div>
 
       {/* Add to Inquiry Button */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          window.location.href = `/productDetails?id=${product._id}#inquiry-form`;
-        }}
-        className="w-full py-1.5 md:py-2 text-center text-[9px] md:text-[10px] font-medium text-white bg-[#6B4F3A] hover:bg-[#8B6B51] transition-colors"
-      >
-        Add to Inquiry
-      </button>
+    <button
+  onClick={(e) => {
+    e.stopPropagation();
+    window.location.href = `/productDetails?id=${product._id}#inquiry-form`;
+  }}
+  className="w-full py-1.5 md:py-2 text-center text-[9px] md:text-[10px] font-medium text-white bg-[#6B4F3A] hover:bg-[#8B6B51] transition-colors flex items-center justify-center gap-1.5"
+>
+  <ShoppingCart className="w-3 h-3 md:w-3.5 md:h-3.5" />
+  Add to Inquiry
+</button>
     </motion.div>
   );
 };
@@ -2645,15 +2654,16 @@ const ProductListCard = ({ product }) => {
               </div>
             )}
 
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                window.location.href = `/productDetails?id=${product._id}#inquiry-form`;
-              }}
-              className="px-4 py-2 bg-[#6B4F3A] text-white text-xs font-medium hover:bg-[#8B6B51] transition-colors"
-            >
-              Add to Inquiry
-            </button>
+           <button
+  onClick={(e) => {
+    e.stopPropagation();
+    window.location.href = `/productDetails?id=${product._id}#inquiry-form`;
+  }}
+  className="px-4 py-2 bg-[#6B4F3A] text-white text-xs font-medium hover:bg-[#8B6B51] transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap"
+>
+  <ShoppingCart className="w-3 h-3 md:w-3.5 md:h-3.5" />
+  Add to Inquiry
+</button>
           </div>
         </div>
       </div>

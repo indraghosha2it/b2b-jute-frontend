@@ -7,6 +7,7 @@ import FeaturedProducts from './FeaturedProducts.js'
 import Newsletter from './Newsletter.js'
 import Categories from './Categories.js'
 import AlibabaTrustSection from './AlibabaTrustSection.js'
+
 import Navbar from '../layout/Navbar.js'
 import Footer from '../layout/Footer.js'
 
@@ -14,6 +15,8 @@ import ReviewsSection from './ReviewsSection.js'
 import StatsSection from './StatsSection.js'
 import WhatsAppButton from '../layout/WhatsAppButton.js'
 import CTASection from './CTASection.js'
+import TrustCertifications from './TrustCertifications.js'
+
 
 export default function HomePage() {
   return (
@@ -31,7 +34,7 @@ export default function HomePage() {
      
            <AlibabaTrustSection /> 
            {/* <StatsSection/> */}
-        
+      <TrustCertifications />
             <ReviewsSection />
               <CTASection />
            <Footer />

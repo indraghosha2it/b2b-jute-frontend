@@ -343,7 +343,7 @@ export default function ModeratorSettings() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#E39A65] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-16 h-16 border-4 border-[#71543E] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600">Loading settings...</p>
         </div>
       </div>
@@ -356,7 +356,7 @@ export default function ModeratorSettings() {
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <UserCog className="w-6 h-6" style={{ color: '#E39A65' }} />
+            <UserCog className="w-6 h-6" style={{ color: '#71543E' }} />
             Moderator Settings
           </h1>
           <p className="text-sm text-gray-600 mt-1">
@@ -371,7 +371,7 @@ export default function ModeratorSettings() {
               onClick={() => setActiveTab('view')}
               className={`px-6 py-3 text-sm font-medium transition-all relative ${
                 activeTab === 'view'
-                  ? 'text-[#E39A65]'
+                  ? 'text-[#71543E]'
                   : 'text-gray-500 hover:text-gray-700'
               }`}
             >
@@ -382,7 +382,7 @@ export default function ModeratorSettings() {
               {activeTab === 'view' && (
                 <motion.div
                   layoutId="activeTab"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#E39A65]"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#71543E]"
                   initial={false}
                   transition={{ type: "spring", stiffness: 500, damping: 30 }}
                 />
@@ -393,7 +393,7 @@ export default function ModeratorSettings() {
               onClick={() => setActiveTab('edit')}
               className={`px-6 py-3 text-sm font-medium transition-all relative ${
                 activeTab === 'edit'
-                  ? 'text-[#E39A65]'
+                  ? 'text-[#71543E]'
                   : 'text-gray-500 hover:text-gray-700'
               }`}
             >
@@ -404,7 +404,7 @@ export default function ModeratorSettings() {
               {activeTab === 'edit' && (
                 <motion.div
                   layoutId="activeTab"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#E39A65]"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#71543E]"
                   initial={false}
                   transition={{ type: "spring", stiffness: 500, damping: 30 }}
                 />
@@ -415,7 +415,7 @@ export default function ModeratorSettings() {
               onClick={() => setActiveTab('security')}
               className={`px-6 py-3 text-sm font-medium transition-all relative ${
                 activeTab === 'security'
-                  ? 'text-[#E39A65]'
+                  ? 'text-[#71543E]'
                   : 'text-gray-500 hover:text-gray-700'
               }`}
             >
@@ -426,7 +426,7 @@ export default function ModeratorSettings() {
               {activeTab === 'security' && (
                 <motion.div
                   layoutId="activeTab"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#E39A65]"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#71543E]"
                   initial={false}
                   transition={{ type: "spring", stiffness: 500, damping: 30 }}
                 />
@@ -455,7 +455,7 @@ export default function ModeratorSettings() {
                 <div className="p-6">
                   {/* Profile Header */}
                   <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-200">
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-r from-[#E39A65] to-[#f5b485] flex items-center justify-center text-white text-2xl font-bold">
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-r from-[#71543E] to-[#f5b485] flex items-center justify-center text-white text-2xl font-bold">
                       {userData.contactPerson?.charAt(0) || userData.email?.charAt(0)}
                     </div>
                     <div>
@@ -484,7 +484,7 @@ export default function ModeratorSettings() {
                     {/* Personal Info */}
                     <div className="space-y-4">
                       <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                        <User className="w-4 h-4" style={{ color: '#E39A65' }} />
+                        <User className="w-4 h-4" style={{ color: '#71543E' }} />
                         Personal Information
                       </h4>
                       
@@ -528,7 +528,7 @@ export default function ModeratorSettings() {
                     {/* Account Info */}
                     <div className="space-y-4">
                       <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                        <Shield className="w-4 h-4" style={{ color: '#E39A65' }} />
+                        <Shield className="w-4 h-4" style={{ color: '#71543E' }} />
                         Account Information
                       </h4>
                       
@@ -566,7 +566,7 @@ export default function ModeratorSettings() {
                   <div className="mt-6 pt-6 border-t border-gray-200 flex gap-3">
                     <button
                       onClick={() => setActiveTab('edit')}
-                      className="px-4 py-2 bg-[#E39A65] text-white rounded-lg hover:bg-[#d68b55] transition-colors text-sm font-medium flex items-center gap-2"
+                      className="px-4 py-2 bg-[#71543E] text-white rounded-lg hover:bg-[#947054] transition-colors text-sm font-medium flex items-center gap-2"
                     >
                       <Edit className="w-4 h-4" />
                       Edit Profile
@@ -595,7 +595,7 @@ export default function ModeratorSettings() {
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Full Name <span className="text-[#E39A65]">*</span>
+                        Full Name <span className="text-[#71543E]">*</span>
                       </label>
                       <input
                         type="text"
@@ -603,7 +603,7 @@ export default function ModeratorSettings() {
                         value={editFormData.contactPerson}
                         onChange={handleEditChange}
                         required
-                        className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65] transition-all"
+                        className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#71543E] focus:border-[#71543E] transition-all"
                         placeholder="Enter your full name"
                       />
                     </div>
@@ -626,7 +626,7 @@ export default function ModeratorSettings() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Phone Number <span className="text-[#E39A65]">*</span>
+                        Phone Number <span className="text-[#71543E]">*</span>
                       </label>
                       <div className="relative">
                         <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -636,7 +636,7 @@ export default function ModeratorSettings() {
                           value={editFormData.phone}
                           onChange={handleEditChange}
                           required
-                          className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65] transition-all"
+                          className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#71543E] focus:border-[#71543E] transition-all"
                           placeholder="+1 (555) 000-0000"
                         />
                       </div>
@@ -651,14 +651,14 @@ export default function ModeratorSettings() {
                         name="whatsapp"
                         value={editFormData.whatsapp}
                         onChange={handleEditChange}
-                        className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65] transition-all"
+                        className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#71543E] focus:border-[#71543E] transition-all"
                         placeholder="+1 (555) 000-0000"
                       />
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Timezone <span className="text-[#E39A65]">*</span>
+                        Timezone <span className="text-[#71543E]">*</span>
                       </label>
                       <div className="relative">
                         <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -666,7 +666,7 @@ export default function ModeratorSettings() {
                           name="timezone"
                           value={editFormData.timezone}
                           onChange={handleEditChange}
-                          className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65] transition-all appearance-none bg-white"
+                          className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#71543E] focus:border-[#71543E] transition-all appearance-none bg-white"
                         >
                           {timezones.map(tz => (
                             <option key={tz} value={tz}>{tz}</option>
@@ -687,7 +687,7 @@ export default function ModeratorSettings() {
                       <button
                         type="submit"
                         disabled={saving}
-                        className="flex-1 px-4 py-2.5 bg-[#E39A65] text-white rounded-lg hover:bg-[#d68b55] transition-colors font-medium flex items-center justify-center gap-2 disabled:opacity-50"
+                        className="flex-1 px-4 py-2.5 bg-[#71543E] text-white rounded-lg hover:bg-[#947054] transition-colors font-medium flex items-center justify-center gap-2 disabled:opacity-50"
                       >
                         {saving ? (
                           <>
@@ -719,7 +719,7 @@ export default function ModeratorSettings() {
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Current Password <span className="text-[#E39A65]">*</span>
+                        Current Password <span className="text-[#71543E]">*</span>
                       </label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -729,7 +729,7 @@ export default function ModeratorSettings() {
                           value={passwordData.currentPassword}
                           onChange={handlePasswordInputChange}
                           required
-                          className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65] transition-all"
+                          className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#71543E] focus:border-[#71543E] transition-all"
                           placeholder="Enter current password"
                         />
                         <button
@@ -744,7 +744,7 @@ export default function ModeratorSettings() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        New Password <span className="text-[#E39A65]">*</span>
+                        New Password <span className="text-[#71543E]">*</span>
                       </label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -754,7 +754,7 @@ export default function ModeratorSettings() {
                           value={passwordData.newPassword}
                           onChange={handlePasswordInputChange}
                           required
-                          className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65] transition-all"
+                          className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#71543E] focus:border-[#71543E] transition-all"
                           placeholder="Enter new password"
                         />
                         <button
@@ -790,7 +790,7 @@ export default function ModeratorSettings() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Confirm New Password <span className="text-[#E39A65]">*</span>
+                        Confirm New Password <span className="text-[#71543E]">*</span>
                       </label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -800,7 +800,7 @@ export default function ModeratorSettings() {
                           value={passwordData.confirmPassword}
                           onChange={handlePasswordInputChange}
                           required
-                          className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-[#E39A65] transition-all"
+                          className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#71543E] focus:border-[#71543E] transition-all"
                           placeholder="Confirm new password"
                         />
                         <button
@@ -839,7 +839,7 @@ export default function ModeratorSettings() {
                       <button
                         type="submit"
                         disabled={changingPassword}
-                        className="flex-1 px-4 py-2.5 bg-[#E39A65] text-white rounded-lg hover:bg-[#d68b55] transition-colors font-medium flex items-center justify-center gap-2 disabled:opacity-50"
+                        className="flex-1 px-4 py-2.5 bg-[#71543E] text-white rounded-lg hover:bg-[#947054] transition-colors font-medium flex items-center justify-center gap-2 disabled:opacity-50"
                       >
                         {changingPassword ? (
                           <>

@@ -285,6 +285,10 @@ export default function AdminLayout({ children }) {
       href: '/admin/create-categories',
       icon: FolderPlus,
     },
+     { name: 'Manage Certifications', 
+      href: '/admin/certifications',
+       icon: FolderPlus 
+      },
     {
       name: 'Create Users',
       href: '/admin/create-users',

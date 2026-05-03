@@ -24,14 +24,30 @@ const geistMono = Geist_Mono({
 // Default metadata for the entire site
 export const metadata = {
   title: {
-    default: "Jute Craftify || Eco-Friendly Jute Products",
+    default: "Jute Craftify || Premium Eco-Friendly Jute Products from Bangladesh",
     template: "%s || Jute Craftify"
   },
-  description: " Top clothing seller in Bangladesh - Premium wholesale clothing for businesses",
-  keywords: ["wholesale clothing", "b2b clothing", "bulk clothing", "fashion wholesale"],
-  authors: [{ name: "Asian Clothify" }],
-  creator: "Asian Clothify",
-  publisher: "Asian Clothify",
+  description: "Premium jute products supplier from Bangladesh. Eco-friendly bags, home decor, raw jute fiber, and custom manufacturing. Bulk orders for global buyers. Sustainable & handcrafted.",
+  keywords: [
+    "jute products", 
+    "jute bags", 
+    "eco-friendly products", 
+    "jute supplier Bangladesh", 
+    "bulk jute order", 
+    "custom jute manufacturing", 
+    "OEM jute products",
+    "sustainable packaging",
+    "jute home decor",
+    "jute fiber",
+    "B2B jute supplier",
+    "wholesale jute",
+    "natural fiber products",
+    "biodegradable products",
+    "jute craft Bangladesh"
+  ],
+  authors: [{ name: "Jute Craftify" }],
+  creator: "Jute Craftify",
+  publisher: "Jute Craftify",
   formatDetection: {
     email: false,
     address: false,
@@ -42,15 +58,16 @@ export const metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: "Asian Clothify - Wholesale Clothing Platform",
-  description: "Premium wholesale clothing from Bangladesh. Bulk orders, custom manufacturing, and ready-to-ship collections for global businesses.",    url: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
-    siteName: "Asian Clothify",
+    title: "Jute Craftify - Premium Eco-Friendly Jute Products from Bangladesh",
+    description: "Your end-to-end sustainable jute supply partner. Raw jute fiber, jute bags, home decor, and custom manufacturing. Bulk orders | Global export | OEM/ODM services",
+    url: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
+    siteName: "Jute Craftify",
     images: [
       {
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'Asian Clothify',
+        alt: 'Jute Craftify - Premium Jute Products from Bangladesh',
       },
     ],
     locale: 'en_US',
@@ -58,8 +75,8 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Asian Clothify",
-    description: "B2B Wholesale Clothing Platform",
+    title: "Jute Craftify - Sustainable Jute Products",
+    description: "Premium jute products supplier from Bangladesh. Eco-friendly, handcrafted, and globally exported. Request a quote for bulk orders.",
     images: ['/og-image.jpg'],
   },
   robots: {
@@ -73,6 +90,11 @@ export const metadata = {
       'max-snippet': -1,
     },
   },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || '',
+  },
+  category: "business",
+  classification: "B2B Jute Products Manufacturing & Export",
 };
 
 export default function RootLayout({ children }) {

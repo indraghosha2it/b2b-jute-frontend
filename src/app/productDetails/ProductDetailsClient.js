@@ -1348,6 +1348,17 @@ const getUnitLabel = (orderUnit) => {
     default: return 'pcs';
   }
 };
+const formatBulkRange = (range) => {
+  if (!range) return '';
+  if (range.includes('-')) {
+    const [min, max] = range.split('-');
+    return `${min}+ pcs`;
+  }
+  if (range.includes('+')) {
+    return `${range.replace('+', '')}+ pcs`;
+  }
+  return range;
+};
 
 const getUnitFullLabel = (orderUnit) => {
   switch(orderUnit) {
@@ -1826,46 +1837,221 @@ const getTargetedAudienceStyle = (audience) => {
 };
 
 // RelatedProductCard Component
+// RelatedProductCard Component - Updated to match ProductGridCard design
 const RelatedProductCard = ({ product }) => {
-  const productImages = product.images || [];
+  const [isMobile, setIsMobile] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
-  const unitLabel = getUnitLabel(product.orderUnit);
-  const audienceStyle = getTargetedAudienceStyle(product.targetedCustomer);
+  const [isHovered, setIsHovered] = useState(false);
+  
+  const productImages = product.images || [];
+  const hasMultipleImages = productImages.length > 1;
+  const firstTier = product.quantityBasedPricing?.[0];
   const primaryTag = product.tags?.[0];
+  const tagStyle = primaryTag ? getTagStyles(primaryTag) : '';
+  const audienceStyle = product.targetedCustomer ? getTargetedAudienceStyle(product.targetedCustomer) : '';
+  const unitLabel = getUnitLabel(product.orderUnit);
+  const bulkRangeDisplay = firstTier ? formatBulkRange(firstTier.range) : '';
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   return (
     <motion.div
-      whileHover={{ y: -5 }}
-      onClick={() => window.location.href = `/productDetails?id=${product._id}`}
-      className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all cursor-pointer border border-gray-100"
+      layout
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{
+        layout: { type: "spring", stiffness: 100, damping: 15 },
+        opacity: { duration: 0.3 }
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="group bg-white border border-[#E5D5C0] hover:border-[#6B4F3A]/30 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl"
+      onClick={() => {
+        if (isMobile) {
+          window.location.href = `/productDetails?id=${product._id}`;
+        } else {
+          window.open(`/productDetails?id=${product._id}`, '_blank');
+        }
+      }}
     >
-      <div className="relative h-36 overflow-hidden bg-gray-100">
-        <img src={productImages[activeIndex]?.url || productImages[0]?.url} alt={product.productName} className="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" />
+      {/* Image Container */}
+      <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-44 overflow-hidden bg-white">
+        <motion.img
+          src={productImages[activeIndex]?.url || productImages[0]?.url || 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500'}
+          alt={product.productName}
+          className="w-full h-full object-contain p-2"
+          whileHover={{ scale: 1.05 }}
+          transition={{ duration: 0.4 }}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500';
+          }}
+          loading="lazy"
+        />
+        
+        {/* Top Right Action Icons - Always visible on mobile */}
+        <motion.div 
+          className="absolute top-2 right-2 flex flex-col gap-1.5 z-30"
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ 
+            opacity: isMobile ? 1 : (isHovered ? 1 : 0), 
+            x: isMobile ? 0 : (isHovered ? 0 : 10) 
+          }}
+          transition={{ duration: 0.2 }}
+        >
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              window.open(`/productDetails?id=${product._id}`, '_blank');
+            }}
+            className="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center border border-gray-300 bg-white/80 hover:bg-white transition-all duration-200 cursor-pointer"
+          >
+            <Eye className="w-3 h-3 md:w-3.5 md:h-3.5 text-gray-700" />
+          </div>
+          
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              window.open(`/productDetails?id=${product._id}#inquiry-form`, '_blank');
+            }}
+            className="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center border border-gray-300 bg-white/80 hover:bg-white transition-all duration-200 cursor-pointer"
+          >
+            <ShoppingCart className="w-3 h-3 md:w-3.5 md:h-3.5 text-[#6B4F3A]" />
+          </div>
+        </motion.div>
+
+        {/* Tag Badge - Top Left */}
         {primaryTag && (
-          <span className={`absolute top-2 right-2 ${getTagStyles(primaryTag)} text-white text-[8px] px-1.5 py-0.5 rounded-full`}>
-            {primaryTag}
-          </span>
+          <motion.div 
+            initial={{ x: -10, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className={`absolute top-2 left-2 ${tagStyle} text-[7px] md:text-[9px] px-1.5 py-0.5 font-semibold z-20 flex items-center gap-1 shadow-lg`}
+          >
+            <span className="truncate">{primaryTag}</span>
+          </motion.div>
         )}
       </div>
-      <div className="p-2">
-        <div className="flex justify-between items-start gap-1 mb-1">
-          <h3 className="text-xs font-semibold text-gray-900 line-clamp-2">{truncateText(product.productName, 25)}</h3>
-          <span className="font-bold text-[#6B4F3A] text-xs">${formatPriceNumber(product.pricePerUnit)}<span className="text-gray-400 text-[9px]">/{unitLabel === 'pcs' ? 'pc' : unitLabel}</span></span>
+      
+      {/* Thumbnail Images */}
+      {hasMultipleImages && (
+        <div className="flex justify-center items-center gap-1 py-1">
+          {productImages.slice(0, 4).map((image, index) => (
+            <button
+              key={index}
+              className={`w-5 h-5 md:w-6 md:h-6 overflow-hidden transition-all duration-200 ${
+                activeIndex === index 
+                  ? 'border-2 border-[#6B4F3A]' 
+                  : 'border border-gray-200 opacity-60 hover:opacity-100'
+              }`}
+              onMouseEnter={() => setActiveIndex(index)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setActiveIndex(index);
+              }}
+            >
+              <img src={image.url} alt="" className="w-full h-full object-cover" />
+            </button>
+          ))}
         </div>
-        <div className="flex items-center gap-1 mb-1">
-          <span className={`text-[8px] text-white px-1 py-0.5 rounded ${audienceStyle}`}>
-            {product.targetedCustomer === 'ladies' ? 'Ladies' : product.targetedCustomer === 'gents' ? 'Gents' : product.targetedCustomer === 'kids' ? 'Kids' : 'Unisex'}
-          </span>
-          <span className="text-[8px] bg-gray-100 px-1 py-0.5 rounded">MOQ: {product.moq} {unitLabel}</span>
+      )}
+
+      {/* Content */}
+      <div className="p-2 md:p-3">
+        {/* Product Name */}
+        <h3 className="text-[11px] md:text-sm font-semibold text-gray-900 truncate hover:text-[#6B4F3A] transition-colors" style={{ fontFamily: 'Playfair Display, serif' }} title={product.productName}>
+          {truncateText(product.productName, 25)}
+        </h3>
+
+        {/* Starting Price and MOQ Row */}
+        <div className="flex items-center justify-between mb-2">
+          <div>
+            <span className="text-[7px] md:text-[8px] text-[#8B7355]">Starting from</span>
+            <p className="text-sm md:text-base font-bold text-[#6B4F3A] leading-tight">
+              ${formatPrice(product.pricePerUnit)}
+              <span className="text-[8px] md:text-[9px] font-normal text-[#A8947A] ml-0.5">/{unitLabel}</span>
+            </p>
+          </div>
+          <div className="text-right">
+            <span className="text-[7px] md:text-[8px] text-[#8B7355]">MOQ</span>
+            <p className="text-[10px] md:text-xs font-semibold text-gray-700">{product.moq} {unitLabel}</p>
+          </div>
         </div>
-        <div className="flex items-center gap-0.5 mb-1">
-          {product.colors?.slice(0, 3).map((c, i) => <div key={i} className="w-2.5 h-2.5 rounded-full border border-white shadow-sm" style={{ backgroundColor: c.code }} />)}
-          {product.colors?.length > 3 && <span className="text-[6px] text-gray-400">+{product.colors.length - 3}</span>}
+
+        {/* Category, Targeted Audience, First Bulk Price */}
+        <div className="flex items-center justify-start flex-wrap gap-1.5 mb-1.5">
+          {product.category?.name && (
+            <div className="flex items-center gap-0.5">
+              <Package className="w-2.5 h-2.5 text-[#A8947A]" />
+              <span className="text-[7px] md:text-[8px] text-gray-500">
+                {truncateText(product.category.name, 10)}
+              </span>
+            </div>
+          )}
+
+          {product.targetedCustomer && (
+            <div className={`flex items-center gap-0.5 px-1 py-0.5 ${audienceStyle} text-[6px] md:text-[7px]`}>
+              <Users className="w-2 h-2" />
+              <span className="capitalize">
+                {product.targetedCustomer === 'ladies' ? 'Ladies' : 
+                 product.targetedCustomer === 'gents' ? 'Gents' :
+                 product.targetedCustomer === 'kids' ? 'Kids' : product.targetedCustomer}
+              </span>
+            </div>
+          )}
+
+          {firstTier && (
+            <div className="flex items-center gap-0.5 px-1 py-0.5 bg-[#F5E6D3]/50 rounded border border-[#E5D5C0]">
+              <span className="text-[6px] text-[#8B7355]">Bulk:</span>
+              <span className="text-[7px] font-medium text-[#6B4F3A]">
+                ${formatPrice(firstTier.price)}/{unitLabel === 'pcs' ? 'pc' : unitLabel}
+              </span>
+              <span className="text-[6px] text-[#A8947A]">({bulkRangeDisplay})</span>
+            </div>
+          )}
         </div>
-        <button className="w-full py-1.5 bg-[#6B4F3A] text-white text-[10px] font-medium rounded-lg hover:bg-[#8B6B51] transition flex items-center justify-center gap-1">
-          <ShoppingCart className="w-2.5 h-2.5" /> Add to Inquiry
-        </button>
+
+        {/* Color Dots */}
+        {product.colors && product.colors.length > 0 && (
+          <div className="flex items-center gap-0.5 mb-1.5">
+            <Palette className="w-2.5 h-2.5 text-[#A8947A]" />
+            <div className="flex items-center gap-0.5">
+              {product.colors.slice(0, 5).map((color, i) => (
+                <div
+                  key={i}
+                  className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full border border-gray-200 shadow-sm"
+                  style={{ backgroundColor: color.code }}
+                  title={color.name || color.code}
+                />
+              ))}
+              {product.colors.length > 5 && (
+                <span className="text-[6px] text-[#A8947A] ml-0.5">+{product.colors.length - 5}</span>
+              )}
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Add to Inquiry Button */}
+   {/* Add to Inquiry Button */}
+<button
+  onClick={(e) => {
+    e.stopPropagation();
+    window.location.href = `/productDetails?id=${product._id}#inquiry-form`;
+  }}
+  className="w-full py-1.5 md:py-2 text-center text-[9px] md:text-[10px] font-medium text-white bg-[#6B4F3A] hover:bg-[#8B6B51] transition-colors flex items-center justify-center gap-1.5"
+>
+  <ShoppingCart className="w-3 h-3 md:w-3.5 md:h-3.5" />
+  Add to Inquiry
+</button>
     </motion.div>
   );
 };

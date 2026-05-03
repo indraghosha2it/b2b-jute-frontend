@@ -3,7 +3,7 @@ import ShippingDeliveryClient from './ShippingDeliveryClient';
 
 // Metadata for Shipping & Delivery page
 export const metadata = {
-  title: "Custom Manufacturing & Global Logistics | Jute Craftify Shipping & Delivery",
+  title: "Custom Manufacturing & Global Logistics ",
   description: "Explore Jute Craftify's OEM/ODM custom manufacturing services and worldwide shipping solutions. Learn about our production process, shipping methods, incoterms, packaging standards, and global delivery network for premium jute products.",
   keywords: [
     "custom manufacturing",

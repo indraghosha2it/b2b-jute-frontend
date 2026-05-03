@@ -2226,10 +2226,10 @@ export default function AdminInvoicesPage() {
                           
                           <td className="px-4 py-3">
                             <div className="font-medium text-gray-900">{invoice.items?.length || 0} products</div>
-                            <div className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                            {/* <div className="text-xs text-gray-500 mt-1 flex items-center gap-1">
                               <Scale className="w-3 h-3 text-[#6B4F3A]" />
                               {totalQtyWithUnit}
-                            </div>
+                            </div> */}
                           </td>
                           
                           <td className="px-4 py-3">

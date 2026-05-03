@@ -371,16 +371,7 @@ export default function LoginPage() {
 
                 {/* Options Row - Compact */}
                 <div className="flex items-center justify-between">
-                  <label className="flex items-center gap-1.5 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      name="rememberMe"
-                      checked={formData.rememberMe}
-                      onChange={handleChange}
-                      className="w-3.5 h-3.5 rounded border-gray-300 text-[#3bc24f] focus:ring-[#3bc24f]"
-                    />
-                    <span className="text-xs text-gray-600 font-sans">Remember me</span>
-                  </label>
+                 
                   <button
                     type="button"
                     onClick={() => setShowForgotPassword(true)}

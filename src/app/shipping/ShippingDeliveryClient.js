@@ -327,66 +327,127 @@ export default function ShippingDeliveryPage() {
         </section>
 
         {/* MANUFACTURING PROCESS */}
-        <section id="process" className="py-16 bg-gray-50 scroll-mt-20">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto mb-12">
-              <span className="bg-[#F5E6D3] text-[#3A7D44] text-sm font-semibold px-4 py-1.5 rounded-full inline-block mb-4 font-sans">
-                OUR PROCESS
-              </span>
-              <h2 className="text-3xl md:text-4xl font-bold text-[#6B4F3A] mb-4 font-serif">
-                From Concept to Delivery
-              </h2>
-              <p className="text-gray-600 font-sans">
-                A streamlined manufacturing journey with quality at every step
-              </p>
-            </div>
+      {/* MANUFACTURING PROCESS - REDESIGNED */}
+<section id="process" className="py-16 bg-gray-50 scroll-mt-20">
+  <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="text-center max-w-3xl mx-auto mb-12">
+      <span className="bg-[#F5E6D3] text-[#3A7D44] text-sm font-semibold px-4 py-1.5 rounded-full inline-block mb-4 font-sans">
+        OUR PROCESS
+      </span>
+      <h2 className="text-3xl md:text-4xl font-bold text-[#6B4F3A] mb-4 font-serif">
+        From Concept to Delivery
+      </h2>
+      <p className="text-gray-600 font-sans">
+        A streamlined manufacturing journey with quality at every step
+      </p>
+    </div>
 
-            <div className="relative">
-              {/* Timeline line */}
-              <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5 bg-[#3A7D44]/30 hidden md:block"></div>
-              
-              <div className="space-y-8">
-                {manufacturingSteps.map((step, index) => {
-                  const Icon = step.icon;
-                  return (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1, duration: 0.5 }}
-                      viewport={{ once: true }}
-                      className={`flex flex-col md:flex-row gap-4 ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}
-                    >
-                      <div className="md:w-1/2">
-                        <div className="bg-white rounded-xl p-5 shadow-md hover:shadow-lg transition-all">
-                          <div className="flex items-center gap-3 mb-3">
-                            <div className="w-12 h-12 bg-[#F5E6D3] rounded-xl flex items-center justify-center">
-                              <Icon className="w-6 h-6 text-[#3A7D44]" />
-                            </div>
-                            <div>
-                              <span className="text-xs text-[#3A7D44] font-semibold">Step {step.step}</span>
-                              <h3 className="text-lg font-bold text-gray-800 font-serif">{step.title}</h3>
-                            </div>
-                          </div>
-                          <p className="text-gray-600 text-sm mb-2 font-sans">{step.description}</p>
-                          <div className="flex items-center gap-2 text-xs text-gray-500">
-                            <Clock className="w-3 h-3" />
-                            <span>Duration: {step.duration}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="md:w-1/2 flex items-center justify-center md:justify-start">
-                        <div className="w-10 h-10 rounded-full bg-[#3A7D44] text-white flex items-center justify-center font-bold text-sm shadow-lg">
-                          {step.step}
-                        </div>
-                      </div>
-                    </motion.div>
-                  );
-                })}
+    {/* Horizontal Timeline - Desktop */}
+    <div className="hidden md:block relative">
+      {/* Progress Line */}
+      
+      <div className="grid grid-cols-6 gap-4 relative">
+        {manufacturingSteps.map((step, index) => {
+          const Icon = step.icon;
+          return (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1, duration: 0.5 }}
+              viewport={{ once: true }}
+              className="relative group"
+            >
+              {/* Step Circle */}
+              <div className="flex flex-col items-center">
+                <div className="relative z-10">
+                  <div className="w-16 h-16 bg-white rounded-2xl shadow-lg flex items-center justify-center group-hover:shadow-xl transition-all duration-300 border-2 border-[#F5E6D3] group-hover:border-[#3A7D44]">
+                    <Icon className="w-7 h-7 text-[#3A7D44] group-hover:scale-110 transition-transform duration-300" />
+                  </div>
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-[#3A7D44] rounded-full text-white text-xs font-bold flex items-center justify-center">
+                    {step.step}
+                  </div>
+                </div>
+                
+                <div className="mt-4 text-center">
+                  <h3 className="font-bold text-gray-800 text-sm mb-1 group-hover:text-[#3A7D44] transition-colors">
+                    {step.title}
+                  </h3>
+                  <p className="text-xs text-gray-500 hidden lg:block">{step.description.substring(0, 40)}...</p>
+                  <div className="flex items-center justify-center gap-1 mt-2 text-[10px] text-gray-400">
+                    <Clock className="w-3 h-3" />
+                    <span>{step.duration}</span>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </section>
+            </motion.div>
+          );
+        })}
+      </div>
+    </div>
+
+    {/* Vertical Timeline - Mobile */}
+    <div className="md:hidden relative">
+      <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#3A7D44] to-[#3A7D44]/30 rounded-full"></div>
+      
+      <div className="space-y-8">
+        {manufacturingSteps.map((step, index) => {
+          const Icon = step.icon;
+          return (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.1, duration: 0.5 }}
+              viewport={{ once: true }}
+              className="relative flex gap-4"
+            >
+              {/* Timeline Node */}
+              <div className="relative z-10 flex-shrink-0">
+                <div className="w-12 h-12 bg-white rounded-xl shadow-md flex items-center justify-center border-2 border-[#F5E6D3]">
+                  <Icon className="w-5 h-5 text-[#3A7D44]" />
+                </div>
+                <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#3A7D44] rounded-full text-white text-[10px] font-bold flex items-center justify-center">
+                  {step.step}
+                </div>
+              </div>
+              
+              {/* Content */}
+              <div className="flex-1 bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow">
+                <h3 className="font-bold text-gray-800 text-base mb-1">{step.title}</h3>
+                <p className="text-gray-600 text-sm mb-2">{step.description}</p>
+                <div className="flex items-center gap-2 text-xs text-gray-400">
+                  <Clock className="w-3 h-3" />
+                  <span>Duration: {step.duration}</span>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+    </div>
+
+    {/* Process Stats Cards */}
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
+      <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-gray-100">
+        <div className="text-2xl font-bold text-[#3A7D44]">6</div>
+        <div className="text-xs text-gray-500">Quality Checkpoints</div>
+      </div>
+      <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-gray-100">
+        <div className="text-2xl font-bold text-[#3A7D44]">15-30</div>
+        <div className="text-xs text-gray-500">Days Production</div>
+      </div>
+      <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-gray-100">
+        <div className="text-2xl font-bold text-[#3A7D44]">100%</div>
+        <div className="text-xs text-gray-500">Inspection Rate</div>
+      </div>
+      <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-gray-100">
+        <div className="text-2xl font-bold text-[#3A7D44]">24/7</div>
+        <div className="text-xs text-gray-500">Order Tracking</div>
+      </div>
+    </div>
+  </div>
+</section>
 
         {/* SHIPPING METHODS SECTION */}
         <section id="shipping" className="py-16 bg-white scroll-mt-20">
@@ -704,7 +765,7 @@ export default function ShippingDeliveryPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
-                  href="/contact"
+                  href="/contact#request-quote-contact"
                   className="px-8 py-3 bg-white text-[#3A7D44] rounded-lg font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 font-sans"
                 >
                   Request a Quote

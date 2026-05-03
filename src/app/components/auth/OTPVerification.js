@@ -176,14 +176,14 @@
 //     >
 //       <div className="text-center mb-6">
 //         <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-//           <svg className="w-10 h-10" style={{ color: '#d9884e' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//           <svg className="w-10 h-10" style={{ color: '#6B4F3A' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
 //             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
 //           </svg>
 //         </div>
 //         <h2 className="text-2xl font-bold text-gray-900 mb-2">Verify Your Email</h2>
 //         <p className="text-gray-600">
 //           We've sent a 6-digit code to<br />
-//           <span className="font-semibold" style={{ color: '#d9884e' }}>{email}</span>
+//           <span className="font-semibold" style={{ color: '#6B4F3A' }}>{email}</span>
 //         </p>
 //       </div>
 
@@ -200,7 +200,7 @@
 //               onChange={(e) => handleChange(index, e.target.value)}
 //               onKeyDown={(e) => handleKeyDown(index, e)}
 //               onPaste={index === 0 ? handlePaste : undefined}
-//               className="w-12 h-12 text-center text-xl font-semibold border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d9884e] focus:border-[#d9884e]"
+//               className="w-12 h-12 text-center text-xl font-semibold border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-[#6B4F3A]"
 //               required
 //             />
 //           ))}
@@ -208,7 +208,7 @@
 
 //         <div className="text-center mb-6">
 //           <p className="text-sm text-gray-500">
-//             Time remaining: <span className="font-semibold" style={{ color: '#d9884e' }}>{formatTime(timer)}</span>
+//             Time remaining: <span className="font-semibold" style={{ color: '#6B4F3A' }}>{formatTime(timer)}</span>
 //           </p>
 //         </div>
 
@@ -216,7 +216,7 @@
 //           type="submit"
 //           disabled={isSubmitting}
 //           className="w-full py-3 text-white rounded-lg hover:opacity-90 transition-all font-medium mb-3"
-//           style={{ background: 'linear-gradient(135deg, #d9884e 0%, #e6a87c 100%)' }}
+//           style={{ background: 'linear-gradient(135deg, #6B4F3A 0%, #e6a87c 100%)' }}
 //         >
 //           {isSubmitting ? 'Verifying...' : 'Verify Email'}
 //         </button>
@@ -239,7 +239,7 @@
 //                 ? 'hover:underline' 
 //                 : 'text-gray-400 cursor-not-allowed'
 //             }`}
-//             style={canResend ? { color: '#d9884e' } : {}}
+//             style={canResend ? { color: '#6B4F3A' } : {}}
 //           >
 //             Resend OTP
 //           </button>
@@ -468,7 +468,7 @@ const handleSubmit = async (e) => {
             value={digit}
             onChange={(e) => handleChange(index, e.target.value)}
             onKeyDown={(e) => handleKeyDown(index, e)}
-            className="w-12 h-12 text-center text-xl font-semibold border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d9884e] focus:border-[#d9884e]"
+            className="w-12 h-12 text-center text-xl font-semibold border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-[#6B4F3A]"
             required
           />
         ))}
@@ -476,7 +476,7 @@ const handleSubmit = async (e) => {
 
       <div className="text-center mb-6">
         <p className="text-sm text-gray-500">
-          Time remaining: <span className="font-semibold" style={{ color: '#d9884e' }}>{formatTime(timer)}</span>
+          Time remaining: <span className="font-semibold" style={{ color: '#6B4F3A' }}>{formatTime(timer)}</span>
         </p>
       </div>
 
@@ -484,7 +484,7 @@ const handleSubmit = async (e) => {
         type="submit"
         disabled={isSubmitting}
         className="w-full py-3 text-white rounded-lg hover:opacity-90 transition-all font-medium mb-3"
-        style={{ background: 'linear-gradient(135deg, #d9884e 0%, #e6a87c 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #6B4F3A 0%, #6B4F3A 100%)' }}
       >
         {isSubmitting ? 'Verifying...' : 'Verify Email'}
       </button>
@@ -507,7 +507,7 @@ const handleSubmit = async (e) => {
               ? 'hover:underline' 
               : 'text-gray-400 cursor-not-allowed'
           }`}
-          style={canResend ? { color: '#d9884e' } : {}}
+          style={canResend ? { color: '#6B4F3A' } : {}}
         >
           Resend OTP
         </button>

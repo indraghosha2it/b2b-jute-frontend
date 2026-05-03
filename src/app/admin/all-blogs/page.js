@@ -257,7 +257,7 @@
 //             <div className="flex items-center gap-3">
 //               <Link
 //                 href={userRole === 'admin' ? '/admin/create-blog' : '/moderator/create-blog'}
-//                 className="flex items-center gap-2 px-4 py-2 bg-[#E39A65] text-white rounded-lg hover:bg-[#d48b54] transition-colors text-sm font-medium"
+//                 className="flex items-center gap-2 px-4 py-2 bg-[#71543E] text-white rounded-lg hover:bg-[#89674d] transition-colors text-sm font-medium"
 //               >
 //                 <Plus className="w-4 h-4" />
 //                 Create New Blog
@@ -278,7 +278,7 @@
 //                 placeholder="Search blogs by title, author, or content..."
 //                 value={searchTerm}
 //                 onChange={(e) => setSearchTerm(e.target.value)}
-//                 className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition"
+//                 className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#71543E] focus:border-transparent outline-none transition"
 //               />
 //             </div>
 //           <div className="flex flex-col md:flex-row gap-4">
@@ -294,7 +294,7 @@
 //                   setCategoryFilter(e.target.value);
 //                   setPagination(prev => ({ ...prev, page: 1 }));
 //                 }}
-//                 className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition appearance-none bg-white"
+//                 className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#71543E] focus:border-transparent outline-none transition appearance-none bg-white"
 //               >
 //                 <option value="all">All Categories</option>
 //                 {categories.map(cat => (
@@ -313,7 +313,7 @@
 //                   setStatusFilter(e.target.value);
 //                   setPagination(prev => ({ ...prev, page: 1 }));
 //                 }}
-//                 className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition bg-white"
+//                 className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#71543E] focus:border-transparent outline-none transition bg-white"
 //               >
 //                 {statusOptions.map(option => (
 //                   <option key={option.value} value={option.value}>
@@ -329,7 +329,7 @@
 //         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
 //           {loading ? (
 //             <div className="flex items-center justify-center py-20">
-//               <Loader2 className="w-8 h-8 animate-spin text-[#E39A65]" />
+//               <Loader2 className="w-8 h-8 animate-spin text-[#71543E]" />
 //             </div>
 //           ) : blogs.length === 0 ? (
 //             <div className="text-center py-20">
@@ -340,7 +340,7 @@
 //               <p className="text-sm text-gray-500 mb-6">Get started by creating your first blog post</p>
 //               <Link
 //                 href={userRole === 'admin' ? '/admin/create-blog' : '/moderator/create-blog'}
-//                 className="inline-flex items-center gap-2 px-4 py-2 bg-[#E39A65] text-white rounded-lg hover:bg-[#d48b54] transition-colors text-sm font-medium"
+//                 className="inline-flex items-center gap-2 px-4 py-2 bg-[#71543E] text-white rounded-lg hover:bg-[#89674d] transition-colors text-sm font-medium"
 //               >
 //                 <Plus className="w-4 h-4" />
 //                 Create New Blog
@@ -414,7 +414,7 @@
 //                             <div className="flex items-center justify-end gap-2">
 //                               <Link
 //                                 href={`/blog/blogDetailsPage?id=${blog._id}`}
-//                                 className="p-2 text-gray-400 hover:text-[#E39A65] hover:bg-orange-50 rounded-lg transition-colors"
+//                                 className="p-2 text-gray-400 hover:text-[#71543E] hover:bg-orange-50 rounded-lg transition-colors"
 //                                 title="View"
 //                                 target="_blank"
 //                               >
@@ -466,7 +466,7 @@
 //                     <button
 //                       onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
 //                       disabled={pagination.page === 1}
-//                       className="p-2 text-gray-400 hover:text-[#E39A65] hover:bg-orange-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+//                       className="p-2 text-gray-400 hover:text-[#71543E] hover:bg-orange-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 //                     >
 //                       <ChevronLeft className="w-5 h-5" />
 //                     </button>
@@ -476,7 +476,7 @@
 //                     <button
 //                       onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
 //                       disabled={pagination.page === pagination.pages}
-//                       className="p-2 text-gray-400 hover:text-[#E39A65] hover:bg-orange-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+//                       className="p-2 text-gray-400 hover:text-[#71543E] hover:bg-orange-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 //                     >
 //                       <ChevronRight className="w-5 h-5" />
 //                     </button>
@@ -781,7 +781,7 @@ export default function AdminBlogs() {
             <div className="flex items-center gap-3">
               <Link
                 href={userRole === 'admin' ? '/admin/create-blog' : '/moderator/create-blog'}
-                className="flex items-center gap-2 px-4 py-2 bg-[#E39A65] text-white rounded-lg hover:bg-[#d48b54] transition-colors text-sm font-medium"
+                className="flex items-center gap-2 px-4 py-2 bg-[#71543E] text-white rounded-lg hover:bg-[#89674d] transition-colors text-sm font-medium"
               >
                 <Plus className="w-4 h-4" />
                 Create New Blog
@@ -802,7 +802,7 @@ export default function AdminBlogs() {
                 placeholder="Search blogs by title, author, content, or tags..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition"
+                className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#71543E] focus:border-transparent outline-none transition"
               />
             </div>
           <div className="flex flex-col md:flex-row gap-4">
@@ -815,7 +815,7 @@ export default function AdminBlogs() {
                   setCategoryFilter(e.target.value);
                   setPagination(prev => ({ ...prev, page: 1 }));
                 }}
-                className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition appearance-none bg-white"
+                className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#71543E] focus:border-transparent outline-none transition appearance-none bg-white"
               >
                 <option value="all">All Categories</option>
                 {categories.map(cat => (
@@ -834,7 +834,7 @@ export default function AdminBlogs() {
                   setStatusFilter(e.target.value);
                   setPagination(prev => ({ ...prev, page: 1 }));
                 }}
-                className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E39A65] focus:border-transparent outline-none transition bg-white"
+                className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#71543E] focus:border-transparent outline-none transition bg-white"
               >
                 {statusOptions.map(option => (
                   <option key={option.value} value={option.value}>
@@ -850,7 +850,7 @@ export default function AdminBlogs() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           {loading ? (
             <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-8 h-8 animate-spin text-[#E39A65]" />
+              <Loader2 className="w-8 h-8 animate-spin text-[#71543E]" />
             </div>
           ) : blogs.length === 0 ? (
             <div className="text-center py-20">
@@ -861,7 +861,7 @@ export default function AdminBlogs() {
               <p className="text-sm text-gray-500 mb-6">Get started by creating your first blog post</p>
               <Link
                 href={userRole === 'admin' ? '/admin/create-blog' : '/moderator/create-blog'}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-[#E39A65] text-white rounded-lg hover:bg-[#d48b54] transition-colors text-sm font-medium"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-[#71543E] text-white rounded-lg hover:bg-[#89674d] transition-colors text-sm font-medium"
               >
                 <Plus className="w-4 h-4" />
                 Create New Blog
@@ -935,7 +935,7 @@ export default function AdminBlogs() {
                             <div className="flex items-center justify-end gap-2">
                               <Link
                                 href={`/blog/blogDetailsPage?id=${blog._id}`}
-                                className="p-2 text-gray-400 hover:text-[#E39A65] hover:bg-orange-50 rounded-lg transition-colors"
+                                className="p-2 text-gray-400 hover:text-[#71543E] hover:bg-orange-50 rounded-lg transition-colors"
                                 title="View"
                                 target="_blank"
                               >
@@ -987,7 +987,7 @@ export default function AdminBlogs() {
                     <button
                       onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
                       disabled={pagination.page === 1}
-                      className="p-2 text-gray-400 hover:text-[#E39A65] hover:bg-orange-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="p-2 text-gray-400 hover:text-[#71543E] hover:bg-orange-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </button>
@@ -997,7 +997,7 @@ export default function AdminBlogs() {
                     <button
                       onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
                       disabled={pagination.page === pagination.pages}
-                      className="p-2 text-gray-400 hover:text-[#E39A65] hover:bg-orange-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="p-2 text-gray-400 hover:text-[#71543E] hover:bg-orange-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <ChevronRight className="w-5 h-5" />
                     </button>

@@ -634,7 +634,8 @@ export default function PrivacyPolicyPage() {
                 <div>
                   <p className="text-sm text-blue-800 font-semibold font-sans">To Exercise Your Rights:</p>
                   <p className="text-sm text-blue-700 font-sans mt-1">
-                    Contact our Data Protection Officer at <strong>privacy@jutecraftify.com</strong> or call <strong>+880 1234 567890</strong>. 
+                    Contact our Data Protection Officer at <strong>info@jutecraftify.com</strong> or call <strong>+880 
+1871-733305</strong>. 
                     We will verify your identity before processing any request to protect your data.
                   </p>
                 </div>

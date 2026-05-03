@@ -640,6 +640,10 @@ export default function ModeratorLayout({ children }) {
       href: '/moderator/manage-blogs',
       icon: Edit,
     },
+     { name: 'Manage Certifications', 
+      href: '/moderator/certifications',
+       icon: FolderPlus 
+      },
     {
       name: 'Manage Reviews',
       href: '/moderator/manage-reviews',

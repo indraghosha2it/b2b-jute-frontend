@@ -841,9 +841,11 @@
 //   );
 // }
 
+
+
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -862,7 +864,13 @@ import {
   Sparkles,
   Building2,
   Globe,
-  TrendingUp
+  TrendingUp,
+  User,
+  Briefcase,
+  MapPin,
+  Clock,
+  ThumbsUp,
+  Heart
 } from 'lucide-react';
 import ReviewModal from './ReviewModal';
 
@@ -872,9 +880,64 @@ export default function ReviewsSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedReview, setSelectedReview] = useState(null);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
   const [totalReviews, setTotalReviews] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const autoPlayRef = useRef(null);
+
+  // Cards per page based on screen size
+  const getCardsPerPage = () => {
+    if (typeof window !== 'undefined') {
+      if (window.innerWidth < 640) return 1;
+      if (window.innerWidth < 1024) return 2;
+      return 3;
+    }
+    return 3;
+  };
+
+  const [cardsPerPage, setCardsPerPage] = useState(3);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setCardsPerPage(getCardsPerPage());
+    };
+    
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const totalPages = Math.ceil(reviews.length / cardsPerPage);
+
+  // Auto-scroll functionality
+  const startAutoPlay = useCallback(() => {
+    if (autoPlayRef.current) clearInterval(autoPlayRef.current);
+    if (!isAutoPlaying || totalPages <= 1) return;
+    
+    autoPlayRef.current = setInterval(() => {
+      setCurrentPage((prev) => (prev + 1) % totalPages);
+    }, 5000);
+  }, [isAutoPlaying, totalPages]);
+
+  useEffect(() => {
+    startAutoPlay();
+    return () => {
+      if (autoPlayRef.current) clearInterval(autoPlayRef.current);
+    };
+  }, [startAutoPlay]);
+
+  const handlePrev = () => {
+    setIsAutoPlaying(false);
+    setCurrentPage((prev) => (prev === 0 ? totalPages - 1 : prev - 1));
+    setTimeout(() => setIsAutoPlaying(true), 5000);
+  };
+
+  const handleNext = () => {
+    setIsAutoPlaying(false);
+    setCurrentPage((prev) => (prev + 1) % totalPages);
+    setTimeout(() => setIsAutoPlaying(true), 5000);
+  };
 
   // Fetch reviews from API
   useEffect(() => {
@@ -883,7 +946,7 @@ export default function ReviewsSection() {
 
   const fetchReviews = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/reviews/featured?limit=6');
+      const response = await fetch('http://localhost:5000/api/reviews/featured?limit=20');
       const data = await response.json();
       
       if (data.success) {
@@ -919,101 +982,117 @@ export default function ReviewsSection() {
       _id: '1',
       rating: 5,
       title: 'Excellent quality and service',
-      comment: 'The bulk order quality exceeded our expectations. Fast shipping and great communication throughout.',
+      comment: 'The bulk order quality exceeded our expectations. Fast shipping and great communication throughout. Will definitely order again.',
       createdAt: '2024-01-15T10:00:00Z',
       user: {
         _id: 'u1',
         companyName: 'EcoPack Solutions',
         contactPerson: 'Michael Rodriguez',
-        email: 'michael@example.com'
+        email: 'michael@example.com',
+        country: 'USA'
       },
-      userName: 'Michael Rodriguez',
-      userCompany: 'EcoPack Solutions',
       isFeatured: true,
       product: {
         _id: 'p1',
-        productName: 'Premium Jute Shopping Bags',
-        images: [{ url: 'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=100' }]
+        productName: 'Premium Jute Shopping Bags'
       }
     },
     {
       _id: '2',
       rating: 5,
       title: 'Best wholesale partner',
-      comment: 'We\'ve been ordering for 2 years now. Consistent quality, competitive pricing, and they always deliver on time.',
+      comment: 'We\'ve been ordering for 2 years now. Consistent quality, competitive pricing, and they always deliver on time. Highly recommended for bulk orders.',
       createdAt: '2024-01-10T10:00:00Z',
       user: {
         _id: 'u2',
         companyName: 'GreenLife Imports',
         contactPerson: 'Sarah Williams',
-        email: 'sarah@example.com'
+        email: 'sarah@example.com',
+        country: 'UK'
       },
-      userName: 'Sarah Williams',
-      userCompany: 'GreenLife Imports',
-      isFeatured: true,
       product: {
         _id: 'p2',
-        productName: 'Jute Rugs & Mats',
-        images: [{ url: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=100' }]
+        productName: 'Jute Rugs & Mats'
       }
     },
     {
       _id: '3',
       rating: 4,
       title: 'Great products, responsive team',
-      comment: 'The MOQ options are flexible and the pricing tiers work well for our growing business.',
+      comment: 'The MOQ options are flexible and the pricing tiers work well for our growing business. Customer service is excellent.',
       createdAt: '2024-01-05T10:00:00Z',
       user: {
         _id: 'u3',
         companyName: 'EcoHome Germany',
         contactPerson: 'Hans Mueller',
-        email: 'hans@example.com'
+        email: 'hans@example.com',
+        country: 'Germany'
       },
-      userName: 'Hans Mueller',
-      userCompany: 'EcoHome Germany',
       product: {
         _id: 'p3',
-        productName: 'Home Decor Items',
-        images: [{ url: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=100' }]
+        productName: 'Home Decor Items'
       }
     },
     {
       _id: '4',
       rating: 5,
       title: 'Amazing quality and fast shipping',
-      comment: 'The products arrived earlier than expected and the quality is top-notch. Highly recommend!',
+      comment: 'The products arrived earlier than expected and the quality is top-notch. Very satisfied with the service.',
       createdAt: '2024-01-20T10:00:00Z',
       user: {
         _id: 'u4',
         companyName: 'GreenRetail Australia',
         contactPerson: 'James O\'Brien',
-        email: 'james@example.com'
+        email: 'james@example.com',
+        country: 'Australia'
       },
-      userName: 'James O\'Brien',
-      userCompany: 'GreenRetail Australia',
       product: {
         _id: 'p4',
-        productName: 'Jute Bags & Totes',
-        images: [{ url: 'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=100' }]
+        productName: 'Jute Bags & Totes'
+      }
+    },
+    {
+      _id: '5',
+      rating: 5,
+      title: 'Reliable supplier for B2B',
+      comment: 'We have placed multiple bulk orders and the quality has been consistently excellent. Their team is very professional.',
+      createdAt: '2024-01-25T10:00:00Z',
+      user: {
+        _id: 'u5',
+        companyName: 'EcoWorld Canada',
+        contactPerson: 'Lisa Chen',
+        email: 'lisa@example.com',
+        country: 'Canada'
+      },
+      product: {
+        _id: 'p5',
+        productName: 'Jute Fiber Rolls'
+      }
+    },
+    {
+      _id: '6',
+      rating: 4,
+      title: 'Great value for money',
+      comment: 'Competitive pricing with good quality. Shipping was well organized. Looking forward to more orders.',
+      createdAt: '2024-01-28T10:00:00Z',
+      user: {
+        _id: 'u6',
+        companyName: 'Sustainable Living NL',
+        contactPerson: 'Mark van der Berg',
+        email: 'mark@example.com',
+        country: 'Netherlands'
+      },
+      product: {
+        _id: 'p6',
+        productName: 'Jute Twine & Rope'
       }
     }
   ];
 
-  const handlePrev = () => {
-    setActiveIndex((prev) => (prev === 0 ? reviews.length - 1 : prev - 1));
-  };
-
-  const handleNext = () => {
-    setActiveIndex((prev) => (prev === reviews.length - 1 ? 0 : prev + 1));
-  };
-
-  const handleViewReview = (review) => {
-    setSelectedReview(review);
-    setIsViewModalOpen(true);
-  };
-
-  // Featured testimonials for grid (first 4 reviews)
-  const featuredReviews = reviews.slice(0, 4);
+const handleViewReview = (review) => {
+  setSelectedReview(review);
+  setIsViewModalOpen(true);
+};
 
   const StarRating = ({ rating, size = "w-4 h-4" }) => {
     return (
@@ -1037,21 +1116,23 @@ export default function ReviewsSection() {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  // Helper functions
   const getUserName = (review) => {
     if (review.userName) return review.userName;
     if (review.user) {
       if (review.user.contactPerson) return review.user.contactPerson;
       if (review.user.companyName) return review.user.companyName;
-      if (review.user.name) return review.user.name;
     }
-    return 'Anonymous Buyer';
+    return 'Verified Buyer';
   };
 
   const getUserCompany = (review) => {
     if (review.userCompany) return review.userCompany;
     if (review.user?.companyName) return review.user.companyName;
     return null;
+  };
+
+  const getUserCountry = (review) => {
+    return review.user?.country || null;
   };
 
   const getUserInitials = (review) => {
@@ -1061,15 +1142,12 @@ export default function ReviewsSection() {
 
   const getProductName = (review) => {
     if (review.product?.productName) return review.product.productName;
-    if (review.product?.name) return review.product.name;
     return null;
   };
 
-  const getProductImage = (review) => {
-    if (review.product?.images && review.product.images.length > 0) {
-      return review.product.images[0].url;
-    }
-    return null;
+  const getRandomColor = (index) => {
+    const colors = ['#4A7C59', '#C6A43B', '#6B4F3A', '#3A7D44', '#8B6B51'];
+    return colors[index % colors.length];
   };
 
   if (loading) {
@@ -1090,23 +1168,14 @@ export default function ReviewsSection() {
     );
   }
 
-  // Container variants for animations
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1, delayChildren: 0.2 }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
-  };
+  const currentReviews = reviews.slice(
+    currentPage * cardsPerPage,
+    (currentPage + 1) * cardsPerPage
+  );
 
   return (
     <>
-      <section className="py-16 md:py-20 lg:py-24 bg-white overflow-hidden">
+      <section className="py-16 md:py-20 lg:py-24 bg-gradient-to-b from-white to-[#FAF7F2] overflow-hidden">
         <div className="container mx-auto px-4 max-w-7xl">
           {/* Section Header */}
           <motion.div
@@ -1118,7 +1187,7 @@ export default function ReviewsSection() {
           >
             <div className="inline-flex items-center gap-2 bg-[#4A7C59]/10 rounded-full px-4 py-1.5 mb-4">
               <Sparkles className="w-4 h-4 text-[#4A7C59]" />
-              <span className="text-xs font-semibold text-[#4A7C59] tracking-wider uppercase font-sans">Client Testimonials</span>
+              <span className="text-xs font-semibold text-[#4A7C59] tracking-wider uppercase font-sans">What Our Clients Say</span>
             </div>
             
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-[#2C2420] mb-3 font-serif">
@@ -1129,7 +1198,7 @@ export default function ReviewsSection() {
             </h2>
             
             <p className="text-gray-500 max-w-2xl mx-auto text-sm md:text-base font-sans">
-              What wholesale buyers and importers say about their experience with Jute Craftify
+              Real feedback from wholesale buyers and importers worldwide
             </p>
 
             {/* Rating Summary */}
@@ -1144,216 +1213,229 @@ export default function ReviewsSection() {
                 <div className="flex items-center gap-2 bg-white px-6 py-3 rounded-full shadow-lg border border-[#E8D5C0]">
                   <StarRating rating={Math.round(averageRating)} size="w-5 h-5" />
                   <span className="text-2xl font-bold text-[#2C2420] font-serif">{averageRating}</span>
-                  <span className="text-sm text-gray-500">({totalReviews} reviews)</span>
+              
                 </div>
               </motion.div>
             )}
           </motion.div>
 
-          {/* Stats Row */}
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12"
-          >
-            {[
-              { icon: Building2, label: "Happy Clients", value: "800+", color: "#4A7C59" },
-              { icon: Globe, label: "Countries Served", value: "30+", color: "#C6A43B" },
-              { icon: Package, label: "Orders Completed", value: "2,500+", color: "#6B4F3A" },
-              { icon: TrendingUp, label: "Retention Rate", value: "95%", color: "#4A7C59" },
-            ].map((stat, idx) => {
-              const Icon = stat.icon;
-              return (
-                <motion.div key={idx} variants={itemVariants} className="text-center p-4 bg-gray-50 rounded-xl">
-                  <div className="w-10 h-10 rounded-full mx-auto mb-2 flex items-center justify-center" style={{ backgroundColor: `${stat.color}15` }}>
-                    <Icon className="w-5 h-5" style={{ color: stat.color }} />
-                  </div>
-                  <div className="text-xl font-bold text-[#2C2420] font-serif">{stat.value}</div>
-                  <div className="text-[10px] text-gray-500 font-sans">{stat.label}</div>
-                </motion.div>
-              );
-            })}
-          </motion.div>
 
-          {/* Main Testimonial Carousel */}
+          {/* Reviews Carousel */}
           {reviews.length > 0 && (
-            <div className="relative mb-16">
-              <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between pointer-events-none z-10">
-                <button
-                  onClick={handlePrev}
-                  className="pointer-events-auto w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-600 hover:bg-[#4A7C59] hover:text-white transition-all duration-300 -ml-4 md:-ml-5"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={handleNext}
-                  className="pointer-events-auto w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-600 hover:bg-[#4A7C59] hover:text-white transition-all duration-300 -mr-4 md:-mr-5"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </div>
-
-              <motion.div
-                key={activeIndex}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="bg-gradient-to-br from-[#FAF7F2] to-white rounded-2xl border border-[#E8D5C0] p-6 md:p-8 shadow-lg"
+            <div className="relative">
+              {/* Navigation Buttons */}
+              <button
+                onClick={handlePrev}
+                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 md:-translate-x-4 z-20 w-8 h-8 md:w-10 md:h-10 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-600 hover:bg-[#4A7C59] hover:text-white transition-all duration-300"
               >
-                <div className="flex flex-col md:flex-row gap-6 md:gap-8">
-                  {/* Left - Client Info */}
-                  <div className="md:w-1/3 text-center md:text-left">
-                    <div className="relative">
-                      <div className="w-24 h-24 rounded-full mx-auto md:mx-0 overflow-hidden border-4 border-[#C6A43B]/30 mb-4 bg-gradient-to-br from-[#4A7C59] to-[#C6A43B] flex items-center justify-center">
-                        <span className="text-white text-2xl font-bold">
-                          {getUserInitials(reviews[activeIndex])}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <h3 className="text-xl font-bold text-[#2C2420] font-serif mt-3">
-                      {getUserName(reviews[activeIndex])}
-                    </h3>
-                    <p className="text-sm text-[#C6A43B] font-medium font-sans">
-                      {reviews[activeIndex].user?.contactPerson || 'Buyer'}
-                    </p>
-                    <p className="text-sm font-semibold text-gray-700 font-sans mt-1">
-                      {getUserCompany(reviews[activeIndex])}
-                    </p>
-                  </div>
+                <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
+              </button>
+              
+              <button
+                onClick={handleNext}
+                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 md:translate-x-4 z-20 w-8 h-8 md:w-10 md:h-10 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-600 hover:bg-[#4A7C59] hover:text-white transition-all duration-300"
+              >
+                <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
+              </button>
 
-                  {/* Right - Testimonial Content */}
-                  <div className="md:w-2/3">
-                    <Quote className="w-10 h-10 text-[#C6A43B]/30 mb-3" />
-                    <p className="text-gray-700 text-base md:text-lg leading-relaxed font-serif italic mb-5">
-                      "{reviews[activeIndex].comment}"
-                    </p>
+              {/* Cards Grid - Auto-scrolling */}
+              <div className="overflow-hidden px-2">
+                <motion.div
+                  key={currentPage}
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -50 }}
+                  transition={{ duration: 0.5 }}
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6"
+                >
+                  {currentReviews.map((review, idx) => {
+                    const color = getRandomColor(idx);
+                    const userName = getUserName(review);
+                    const userCompany = getUserCompany(review);
+                    const userCountry = getUserCountry(review);
+                    const productName = getProductName(review);
+                    const reviewDate = formatDate(review.createdAt);
                     
-                    <div className="flex items-center gap-1 mb-4">
-                      <StarRating rating={reviews[activeIndex].rating} size="w-4 h-4" />
-                    </div>
+                    return (
+                      <motion.div
+                        key={review._id}
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.1 }}
+                        whileHover={{ y: -8 }}
+                        className="group bg-white rounded-2xl border border-[#E8D5C0] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer"
+                        onClick={() => handleViewReview(review)}
+                      >
+                        {/* Card Content */}
+                        <div className="p-5 md:p-6">
+                          {/* Header - Avatar and Rating */}
+                          <div className="flex items-start justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                              <div 
+                                className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg"
+                                style={{ backgroundColor: color }}
+                              >
+                                {getUserInitials(review)}
+                              </div>
+                              <div>
+                                <h4 className="font-semibold text-[#2C2420] font-serif text-sm md:text-base">
+                                  {userName}
+                                </h4>
+                                {userCompany && (
+                                  <p className="text-[10px] text-[#C6A43B] font-medium font-sans flex items-center gap-1">
+                                    <Briefcase className="w-2.5 h-2.5" />
+                                    {userCompany}
+                                  </p>
+                                )}
+                                {userCountry && (
+                                  <p className="text-[9px] text-gray-400 font-sans flex items-center gap-1 mt-0.5">
+                                    <MapPin className="w-2.5 h-2.5" />
+                                    {userCountry}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <StarRating rating={review.rating} size="w-3 h-3" />
+                          </div>
 
-                    <div className="flex flex-wrap gap-4 pt-4 border-t border-[#E8D5C0]">
-                      {getProductName(reviews[activeIndex]) && (
-                        <div>
-                          <p className="text-[10px] text-gray-400 font-sans">Product</p>
-                          <p className="text-sm font-semibold text-[#2C2420] font-sans">{getProductName(reviews[activeIndex])}</p>
+                          {/* Testimonial Text */}
+                          <div className="mb-4">
+                            <div className="flex items-center gap-1 mb-2">
+                              <Quote className="w-4 h-4 text-[#C6A43B]/40" />
+                              {review.title && (
+                                <p className="text-xs font-semibold text-[#4A7C59] uppercase tracking-wide font-sans">
+                                  {review.title}
+                                </p>
+                              )}
+                            </div>
+                            <p className="text-gray-600 text-xs md:text-sm leading-relaxed font-sans line-clamp-4">
+                              "{review.comment}"
+                            </p>
+                          </div>
+
+                          {/* Product Info */}
+                          {productName && (
+                            <div className="mb-4 pt-3 border-t border-[#E8D5C0]">
+                              <div className="flex items-center gap-1.5">
+                                <Package className="w-3 h-3 text-[#4A7C59]" />
+                                <p className="text-[10px] text-gray-500 font-sans">
+                                  Product: <span className="font-medium text-[#2C2420]">{productName}</span>
+                                </p>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Date and Verification Badge */}
+                          <div className="flex items-center justify-between pt-3 border-t border-[#E8D5C0]">
+                            <div className="flex items-center gap-1">
+                              <Clock className="w-3 h-3 text-gray-400" />
+                              <span className="text-[9px] text-gray-400 font-sans">{reviewDate}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <CheckCircle className="w-3 h-3 text-[#4A7C59]" />
+                              <span className="text-[9px] text-[#4A7C59] font-sans font-medium">Verified</span>
+                            </div>
+                          </div>
                         </div>
-                      )}
-                      <div>
-                        <p className="text-[10px] text-gray-400 font-sans">Date</p>
-                        <p className="text-sm font-semibold text-[#2C2420] font-sans">{formatDate(reviews[activeIndex].createdAt)}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
+
+                        {/* Footer Buttons */}
+                        <div className="flex border-t border-[#E8D5C0] bg-[#FAF7F2]">
+                        <button
+  onClick={(e) => {
+    e.stopPropagation();
+    handleViewReview(review);
+  }}
+  className="flex-1 flex items-center justify-center gap-2 py-3..."
+>
+  <Eye className="w-3.5 h-3.5" />
+  Read Full Review
+</button>
+                          <div className="w-px bg-[#E8D5C0]"></div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setIsModalOpen(true);
+                            }}
+                            className="flex-1 flex items-center justify-center gap-2 py-3 text-xs font-medium text-gray-600 hover:bg-white hover:text-[#4A7C59] transition-all duration-300"
+                          >
+                            <MessageCircle className="w-3.5 h-3.5" />
+                            Write Review
+                          </button>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </motion.div>
+              </div>
 
               {/* Dots Indicator */}
-              <div className="flex justify-center gap-2 mt-5">
-                {reviews.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveIndex(idx)}
-                    className={`h-2 rounded-full transition-all duration-300 ${
-                      activeIndex === idx 
-                        ? 'w-8 bg-[#4A7C59]' 
-                        : 'w-2 bg-gray-300 hover:bg-gray-400'
-                    }`}
-                  />
-                ))}
-              </div>
+              {totalPages > 1 && (
+                <div className="flex justify-center gap-2 mt-8">
+                  {Array.from({ length: totalPages }).map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setIsAutoPlaying(false);
+                        setCurrentPage(idx);
+                        setTimeout(() => setIsAutoPlaying(true), 5000);
+                      }}
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        currentPage === idx 
+                          ? 'w-8 bg-[#4A7C59]' 
+                          : 'w-2 bg-gray-300 hover:bg-gray-400'
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* Auto-play Indicator */}
+              {isAutoPlaying && totalPages > 1 && (
+                <div className="flex justify-center mt-4">
+                  <div className="w-16 h-0.5 bg-gray-200 rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full bg-[#4A7C59] rounded-full"
+                      initial={{ width: "0%" }}
+                      animate={{ width: "100%" }}
+                      transition={{ duration: 5, ease: "linear", repeat: Infinity }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
-          {/* Featured Testimonials Grid */}
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-2 gap-5"
-          >
-            {featuredReviews.map((review, idx) => (
-              <motion.div
-                key={review._id}
-                variants={itemVariants}
-                whileHover={{ y: -4 }}
-                className="bg-white border border-[#E8D5C0] rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer"
-                onClick={() => handleViewReview(review)}
-              >
-                <div className="flex items-start gap-4">
-                  <div className="relative flex-shrink-0">
-                    <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-[#C6A43B]/30 bg-gradient-to-br from-[#4A7C59] to-[#C6A43B] flex items-center justify-center">
-                      <span className="text-white text-lg font-bold">
-                        {getUserInitials(review)}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
-                      <h4 className="font-semibold text-[#2C2420] font-serif">{getUserName(review)}</h4>
-                      <StarRating rating={review.rating} size="w-3 h-3" />
-                    </div>
-                    <p className="text-xs text-[#C6A43B] font-medium font-sans mb-0.5">{review.user?.contactPerson || 'Buyer'}</p>
-                    <p className="text-xs text-gray-500 font-sans mb-2">{getUserCompany(review)}</p>
-                    <p className="text-sm text-gray-600 leading-relaxed font-sans italic line-clamp-2">
-                      "{review.comment}"
-                    </p>
-                    <div className="flex items-center gap-3 mt-3 pt-2 border-t border-[#E8D5C0]">
-                      {getProductName(review) && (
-                        <div className="flex items-center gap-1">
-                          <Package className="w-3 h-3 text-gray-400" />
-                          <span className="text-[9px] text-gray-500 font-sans line-clamp-1">{getProductName(review)}</span>
-                        </div>
-                      )}
-                      <div className="w-px h-3 bg-[#E8D5C0]" />
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3 text-gray-400" />
-                        <span className="text-[9px] text-gray-500 font-sans">{formatDate(review.createdAt)}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
+          {/* Action Buttons */}
+       {/* Action Buttons */}
+<motion.div 
+  initial={{ opacity: 0, y: 30 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  viewport={{ once: true }}
+  transition={{ delay: 0.6, duration: 0.5 }}
+  className="flex flex-row items-center justify-center gap-2 sm:gap-4 mt-12"
+>
+  <motion.button
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+    onClick={() => setIsModalOpen(true)}
+    className="inline-flex items-center justify-center gap-1.5 px-3 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-[#4A7C59] to-[#5D9B6B] text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 text-[11px] sm:text-sm whitespace-nowrap"
+  >
+    <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+    <span>Give Feedback</span>
+    <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
+  </motion.button>
 
-          {/* Buttons Row - Give Feedback & Browse All */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.6, duration: 0.5 }}
-            className="flex flex-row items-center justify-center gap-3 sm:gap-4 mt-10"
-          >
-            {/* Give Your Feedback Button */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setIsModalOpen(true)}
-              className="inline-flex items-center gap-2 px-5 md:px-6 py-2.5 md:py-3 bg-gradient-to-r from-[#4A7C59] to-[#5D9B6B] text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 text-sm"
-            >
-              <MessageCircle className="w-4 h-4" />
-              <span>Give Your Feedback</span>
-              <ArrowRight className="w-4 h-4" />
-            </motion.button>
-
-            {/* Browse All Reviews Button */}
-            <Link href="/reviews">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center gap-2 px-5 md:px-6 py-2.5 md:py-3 bg-white text-[#4A7C59] font-semibold rounded-full border-2 border-[#4A7C59] hover:bg-[#4A7C59] hover:text-white transition-all duration-300 text-sm"
-              >
-                <Eye className="w-4 h-4" />
-                <span>Browse All Reviews</span>
-              </motion.button>
-            </Link>
-          </motion.div>
+  <Link href="/reviews">
+    <motion.button
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      className="inline-flex items-center justify-center gap-1.5 px-3 sm:px-6 py-2.5 sm:py-3 bg-white text-[#4A7C59] font-semibold rounded-full border-2 border-[#4A7C59] hover:bg-[#4A7C59] hover:text-white transition-all duration-300 text-[11px] sm:text-sm whitespace-nowrap"
+    >
+      <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+      <span>Browse All Reviews</span>
+    </motion.button>
+  </Link>
+</motion.div>
 
           {/* Trust Badge Footer */}
           <motion.div
@@ -1384,144 +1466,111 @@ export default function ReviewsSection() {
       />
 
       {/* View Details Modal */}
-      <AnimatePresence>
-        {isViewModalOpen && selectedReview && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 overflow-y-auto"
+   {/* View Details Modal */}
+<AnimatePresence>
+  {isViewModalOpen && selectedReview && (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 overflow-y-auto"
+    >
+      <div className="flex items-center justify-center min-h-screen px-4">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+          onClick={() => setIsViewModalOpen(false)}
+        />
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9, y: 50 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.9, y: 50 }}
+          transition={{ type: "spring", duration: 0.5 }}
+          className="relative bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+        >
+          <button
+            onClick={() => setIsViewModalOpen(false)}
+            className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full transition-colors z-10"
           >
-            <div className="flex items-center justify-center min-h-screen px-4">
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/50 backdrop-blur-sm"
-                onClick={() => setIsViewModalOpen(false)}
-              />
+            <X className="w-5 h-5 text-gray-500" />
+          </button>
 
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9, y: 50 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 50 }}
-                transition={{ type: "spring", duration: 0.5 }}
-                className="relative bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
-              >
-                <motion.button
-                  whileHover={{ scale: 1.1, rotate: 90 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => setIsViewModalOpen(false)}
-                  className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full transition-colors z-10"
-                >
-                  <X className="w-5 h-5 text-gray-500" />
-                </motion.button>
-
-                <div className="p-6">
-                  <motion.div 
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="flex items-start gap-4 mb-6"
-                  >
-                    <motion.div 
-                      whileHover={{ scale: 1.1, rotate: 5 }}
-                      className="w-16 h-16 rounded-full bg-gradient-to-br from-[#4A7C59] to-[#C6A43B] flex items-center justify-center text-white font-bold text-2xl flex-shrink-0"
-                    >
-                      {getUserInitials(selectedReview)}
-                    </motion.div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold text-gray-900 font-serif">
-                        {getUserName(selectedReview)}
-                      </h3>
-                      {getUserCompany(selectedReview) && (
-                        <p className="text-gray-600 font-sans">{getUserCompany(selectedReview)}</p>
-                      )}
-                      <div className="flex items-center gap-3 mt-2">
-                        <StarRating rating={selectedReview.rating} size="w-5 h-5" />
-                        <span className="text-sm text-gray-400 flex items-center gap-1 font-sans">
-                          <Calendar className="w-4 h-4" />
-                          {formatDate(selectedReview.createdAt)}
-                        </span>
-                      </div>
-                    </div>
-                  </motion.div>
-
-                  {selectedReview.title && (
-                    <motion.h4 
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
-                      className="text-xl font-bold text-gray-900 mb-4 font-serif"
-                    >
-                      {selectedReview.title}
-                    </motion.h4>
-                  )}
-
-                  <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="bg-gray-50 rounded-xl p-6 mb-6 border border-gray-200"
-                  >
-                    <p className="text-gray-700 text-sm leading-relaxed font-sans italic">
-                      "{selectedReview.comment}"
-                    </p>
-                  </motion.div>
-
-                  {getProductName(selectedReview) && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.4 }}
-                      className="mb-6 p-4 bg-[#F5E6D3] rounded-lg border border-[#E8D5C0]"
-                    >
-                      <p className="text-xs text-[#4A7C59] mb-2 flex items-center gap-1 font-sans">
-                        <Package className="w-4 h-4" />
-                        Product Reviewed
-                      </p>
-                      <div className="flex items-center gap-3">
-                        {getProductImage(selectedReview) && (
-                          <motion.div 
-                            whileHover={{ scale: 1.05 }}
-                            className="w-16 h-16 rounded-lg overflow-hidden bg-white border border-[#E8D5C0]"
-                          >
-                            <img
-                              src={getProductImage(selectedReview)}
-                              alt={getProductName(selectedReview)}
-                              className="w-full h-full object-cover"
-                            />
-                          </motion.div>
-                        )}
-                        <div>
-                          <p className="font-semibold text-gray-900 font-sans">
-                            {getProductName(selectedReview)}
-                          </p>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.5 }}
-                    className="flex items-center gap-4 pt-4 border-t border-gray-200"
-                  >
-                    <motion.div 
-                      whileHover={{ scale: 1.05 }}
-                      className="flex items-center gap-1 text-sm text-gray-600 bg-green-50 px-3 py-1 rounded-full"
-                    >
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      Verified Buyer
-                    </motion.div>
-                  </motion.div>
+          <div className="p-6 md:p-8">
+            {/* User Info */}
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#4A7C59] to-[#C6A43B] flex items-center justify-center text-white font-bold text-2xl flex-shrink-0">
+                {getUserInitials(selectedReview)}
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-gray-900 font-serif">
+                  {getUserName(selectedReview)}
+                </h3>
+                {getUserCompany(selectedReview) && (
+                  <p className="text-gray-600 font-sans">{getUserCompany(selectedReview)}</p>
+                )}
+                {getUserCountry(selectedReview) && (
+                  <p className="text-xs text-gray-400 font-sans flex items-center gap-1 mt-1">
+                    <MapPin className="w-3 h-3" />
+                    {getUserCountry(selectedReview)}
+                  </p>
+                )}
+                <div className="flex items-center gap-3 mt-2">
+                  <StarRating rating={selectedReview.rating} size="w-5 h-5" />
+                  <span className="text-sm text-gray-400 flex items-center gap-1 font-sans">
+                    <Calendar className="w-4 h-4" />
+                    {formatDate(selectedReview.createdAt)}
+                  </span>
                 </div>
-              </motion.div>
+              </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
+            {/* Review Title */}
+            {selectedReview.title && (
+              <h4 className="text-xl font-bold text-gray-900 mb-4 font-serif">
+                {selectedReview.title}
+              </h4>
+            )}
+
+            {/* Review Comment */}
+            <div className="bg-gray-50 rounded-xl p-6 mb-6 border border-gray-200">
+              <Quote className="w-8 h-8 text-[#C6A43B]/30 mb-3" />
+              <p className="text-gray-700 text-sm leading-relaxed font-sans">
+                "{selectedReview.comment}"
+              </p>
+            </div>
+
+            {/* Product Info */}
+            {getProductName(selectedReview) && (
+              <div className="mb-6 p-4 bg-[#F5E6D3] rounded-lg border border-[#E8D5C0]">
+                <p className="text-xs text-[#4A7C59] mb-2 flex items-center gap-1 font-sans">
+                  <Package className="w-4 h-4" />
+                  Product Reviewed
+                </p>
+                <div>
+                  <p className="font-semibold text-gray-900 font-sans">
+                    {getProductName(selectedReview)}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Verification Badges */}
+            <div className="flex items-center gap-4 pt-4 border-t border-gray-200">
+              <div className="flex items-center gap-1 text-sm text-gray-600 bg-green-50 px-3 py-1 rounded-full">
+                <CheckCircle className="w-4 h-4 text-green-500" />
+                Verified Buyer
+              </div>
+            
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </motion.div>
+  )}
+</AnimatePresence>
     </>
   );
 }
