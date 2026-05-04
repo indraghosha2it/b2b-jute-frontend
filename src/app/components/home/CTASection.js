@@ -34,15 +34,13 @@ export default function CTASection() {
     email: '',
     phone: '',
     country: '',
-    inquiryType: 'wholesale',
+
     productInterest: '',
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formStatus, setFormStatus] = useState({ submitted: false, success: false, message: '' });
-  const [showCustomInquiryField, setShowCustomInquiryField] = useState(false);
-  const [customInquiryText, setCustomInquiryText] = useState('');
-
+ 
   const benefits = [
     { icon: Clock, text: "Response within 24 hours", color: "#4A7C59" },
     { icon: Shield, text: "Verified Bangladesh Manufacturer", color: "#C6A43B" },
@@ -57,93 +55,80 @@ export default function CTASection() {
       [name]: value
     });
     
-    // Show custom inquiry field when "other" is selected
-    if (name === 'inquiryType') {
-      setShowCustomInquiryField(value === 'other');
-      if (value !== 'other') {
-        setCustomInquiryText('');
-      }
-    }
+  
   };
 
-  const handleCustomInquiryChange = (e) => {
-    setCustomInquiryText(e.target.value);
-  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    let finalInquiryType = formData.inquiryType;
-    if (formData.inquiryType === 'other' && customInquiryText.trim()) {
-      finalInquiryType = customInquiryText.trim();
-    }
-    
-    setFormStatus({ submitted: true, success: false, message: 'Sending...' });
-    setIsSubmitting(true);
 
-    try {
-      const response = await fetch('http://localhost:5000/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          company: formData.company,
-          country: formData.country,
-          inquiryType: finalInquiryType,
-          message: formData.message,
-          productInterest: formData.productInterest
-        }),
-      });
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  
+  setFormStatus({ submitted: true, success: false, message: 'Sending...' });
+  setIsSubmitting(true);
 
-      const data = await response.json();
+  try {
+    const response = await fetch('http://localhost:5000/api/contact', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        company: formData.company,
+        country: formData.country,
+        message: formData.message,
+        productInterest: formData.productInterest
+      }),
+    });
 
-      if (response.ok && data.success) {
-        setFormStatus({
-          submitted: true,
-          success: true,
-          message: data.message || 'Thank you! Your inquiry has been sent. We\'ll contact you within 24 hours.'
-        });
-        
-        // Reset form
-        setFormData({ 
-          name: '', 
-          company: '', 
-          email: '', 
-          phone: '',
-          country: '',
-          inquiryType: 'wholesale',
-          productInterest: '', 
-          message: '' 
-        });
-        setCustomInquiryText('');
-        setShowCustomInquiryField(false);
-        
-        // Auto-hide success message after 5 seconds
-        setTimeout(() => {
-          setFormStatus({ submitted: false, success: false, message: '' });
-        }, 5000);
-      } else {
-        throw new Error(data.error || 'Failed to send message');
-      }
-    } catch (error) {
-      console.error('Contact form error:', error);
+    const data = await response.json();
+
+    if (response.ok && data.success) {
       setFormStatus({
         submitted: true,
-        success: false,
-        message: error.message || 'Failed to send message. Please try again later.'
+        success: true,
+        message: data.message || 'Thank you! Your inquiry has been sent. We\'ll contact you within 24 hours.'
       });
       
+      // Reset form
+      setFormData({ 
+        name: '', 
+        company: '', 
+        email: '', 
+        phone: '',
+        country: '',
+        productInterest: '', 
+        message: '' 
+      });
+      
+      // Remove these two lines:
+      // setCustomInquiryText('');
+      // setShowCustomInquiryField(false);
+      
+      // Auto-hide success message after 5 seconds
       setTimeout(() => {
         setFormStatus({ submitted: false, success: false, message: '' });
       }, 5000);
-    } finally {
-      setIsSubmitting(false);
+    } else {
+      throw new Error(data.error || 'Failed to send message');
     }
-  };
+  } catch (error) {
+    console.error('Contact form error:', error);
+    setFormStatus({
+      submitted: true,
+      success: false,
+      message: error.message || 'Failed to send message. Please try again later.'
+    });
+    
+    setTimeout(() => {
+      setFormStatus({ submitted: false, success: false, message: '' });
+    }, 5000);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -450,56 +435,7 @@ export default function CTASection() {
                   </div>
 
                   {/* Inquiry Type */}
-                  <div>
-                    <label className="block text-[8px] md:text-[9px] font-semibold text-gray-700 mb-0.5 font-sans">
-                      Inquiry Type <span className="text-[#3bc24f]">*</span>
-                    </label>
-                    <div className="relative">
-                      <HelpCircle className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-2 h-2 md:w-2.5 md:h-2.5" />
-                      <select
-                        name="inquiryType"
-                        value={formData.inquiryType}
-                        onChange={handleChange}
-                        required
-                        className="w-full pl-6 md:pl-7 pr-2 py-0.5 text-[9px] md:text-[10px] border border-gray-300 rounded-md focus:ring-1 focus:ring-[#3bc24f] focus:border-transparent outline-none transition bg-white font-sans"
-                      >
-                        <option value="wholesale">Wholesale Inquiry</option>
-                        <option value="custom">Custom Manufacturing</option>
-                        <option value="sample">Sample Request</option>
-                        <option value="partnership">Partnership</option>
-                        <option value="other">Other</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Custom Inquiry Field - Only shows when "Other" is selected */}
-                {showCustomInquiryField && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="relative"
-                  >
-                    <label className="block text-[8px] md:text-[9px] font-semibold text-gray-700 mb-0.5 font-sans">
-                      Specify Inquiry Type <span className="text-[#3bc24f]">*</span>
-                    </label>
-                    <div className="relative">
-                      <HelpCircle className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-2 h-2 md:w-2.5 md:h-2.5" />
-                      <input
-                        type="text"
-                        value={customInquiryText}
-                        onChange={handleCustomInquiryChange}
-                        required
-                        className="w-full pl-6 md:pl-7 pr-2 py-0.5 text-[9px] md:text-[10px] border border-gray-300 rounded-md focus:ring-1 focus:ring-[#3bc24f] focus:border-transparent outline-none transition font-sans"
-                        placeholder="e.g., Bulk Export, Franchise, etc."
-                      />
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* Product Interest */}
-                <div>
+                    <div>
                   <label className="block text-[8px] md:text-[9px] font-semibold text-gray-700 mb-0.5 font-sans">
                     Product Interest
                   </label>
@@ -515,6 +451,13 @@ export default function CTASection() {
                     />
                   </div>
                 </div>
+              
+                </div>
+
+              
+
+                {/* Product Interest */}
+              
 
                 {/* Message */}
                 <div>

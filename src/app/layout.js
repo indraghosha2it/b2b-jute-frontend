@@ -10,6 +10,8 @@ import LayoutContent from "./components/layout/LayoutContent";
 
 import ScrollToTop from "./components/layout/ScrollToTop";
 import PromotionalModalWrapper from "./components/PromotionalModalWrapper";
+import NewsletterPopup from "./components/NewsletterPopup";
+import UnifiedPopupManager from "./components/UnifiedPopupManager";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -124,7 +126,9 @@ export default function RootLayout({ children }) {
         />
       
         <ScrollToTop />
-        <PromotionalModalWrapper />
+        {/* <PromotionalModalWrapper />
+          <NewsletterPopup /> */}
+          <UnifiedPopupManager />
       </body>
     </html>
   );

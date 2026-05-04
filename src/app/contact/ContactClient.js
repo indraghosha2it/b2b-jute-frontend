@@ -42,16 +42,14 @@ export default function AboutPage() {
     email: '',
     phone: '',
     country: '',
-    inquiryType: 'wholesale',
+   
     message: '',
     productInterest: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [formStatus, setFormStatus] = useState({ submitted: false, success: false, message: '' });
-  const [showCustomInquiryField, setShowCustomInquiryField] = useState(false);
-  const [customInquiryText, setCustomInquiryText] = useState('');
-  
+ 
   // Count animation states
   const [counts, setCounts] = useState({
     years: 0,
@@ -200,32 +198,19 @@ useEffect(() => {
   }
 }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-    
-    if (name === 'inquiryType') {
-      setShowCustomInquiryField(value === 'other');
-      if (value !== 'other') {
-        setCustomInquiryText('');
-      }
-    }
-  };
+const handleChange = (e) => {
+  const { name, value } = e.target;
+  setFormData({
+    ...formData,
+    [name]: value
+  });
+};
 
-  const handleCustomInquiryChange = (e) => {
-    setCustomInquiryText(e.target.value);
-  };
 
  const handleSubmit = async (e) => {
   e.preventDefault();
   
-  let finalInquiryType = formData.inquiryType;
-  if (formData.inquiryType === 'other' && customInquiryText.trim()) {
-    finalInquiryType = customInquiryText.trim();
-  }
+ 
   
   setFormStatus({ submitted: true, success: false, message: 'Sending...' });
   setIsSubmitting(true);
@@ -242,7 +227,6 @@ useEffect(() => {
         phone: formData.phone,
         company: formData.company,
         country: formData.country,
-        inquiryType: finalInquiryType,
         message: formData.message,
         productInterest: formData.productInterest
       }),
@@ -265,12 +249,11 @@ useEffect(() => {
         email: '', 
         phone: '', 
         country: '',
-        inquiryType: 'wholesale',
+     
         message: '', 
         productInterest: '' 
       });
-      setCustomInquiryText('');
-      setShowCustomInquiryField(false);
+   
       
       // Auto-hide success message after 5 seconds
       setTimeout(() => {
@@ -597,7 +580,7 @@ useEffect(() => {
                     </div>
                   </div>
 
-                  <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="grid sm:grid-cols-1 gap-4">
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-1 font-sans">
                         Email Address <span className="text-[#3bc24f]">*</span>
@@ -615,23 +598,7 @@ useEffect(() => {
                         />
                       </div>
                     </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1 font-sans">
-                        Phone / WhatsApp <span className="text-[#3bc24f]">*</span>
-                      </label>
-                      <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                        <input
-                          type="tel"
-                          name="phone"
-                          value={formData.phone}
-                          onChange={handleChange}
-                          required
-                          className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3bc24f] focus:border-transparent outline-none transition font-sans"
-                          placeholder="+880 1871-733305"
-                        />
-                      </div>
-                    </div>
+                
                   </div>
 
                   <div className="grid sm:grid-cols-2 gap-4">
@@ -842,47 +809,27 @@ useEffect(() => {
   <option value="Zimbabwe">Zimbabwe</option>
 </select>
                     </div>
-                    <div>
+                        <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-1 font-sans">
-                        Inquiry Type
-                      </label>
-                      <select
-                        name="inquiryType"
-                        value={formData.inquiryType}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3bc24f] focus:border-transparent outline-none transition bg-white font-sans"
-                      >
-                        <option value="wholesale">Wholesale Inquiry</option>
-                        <option value="custom">Custom Manufacturing</option>
-                        <option value="sample">Sample Request</option>
-                        <option value="partnership">Partnership</option>
-                        <option value="other">Other</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  {showCustomInquiryField && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <label className="block text-sm font-semibold text-gray-700 mb-1 font-sans">
-                        Specify Inquiry Type <span className="text-[#3bc24f]">*</span>
+                        Phone / WhatsApp <span className="text-[#3bc24f]">*</span>
                       </label>
                       <div className="relative">
-                        <HelpCircle className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                         <input
-                          type="text"
-                          value={customInquiryText}
-                          onChange={handleCustomInquiryChange}
-                          required={showCustomInquiryField}
+                          type="tel"
+                          name="phone"
+                          value={formData.phone}
+                          onChange={handleChange}
+                          required
                           className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3bc24f] focus:border-transparent outline-none transition font-sans"
-                          placeholder="e.g., Bulk Export, Franchise, etc."
+                          placeholder="+880 1871-733305"
                         />
                       </div>
-                    </motion.div>
-                  )}
+                    </div>
+               
+                  </div>
+
+              
 
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-1 font-sans">

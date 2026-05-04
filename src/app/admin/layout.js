@@ -275,6 +275,11 @@ export default function AdminLayout({ children }) {
       href: '/admin/all-products',
       icon: Package,
     },
+       {
+    name: 'Popup Settings',
+    href: '/admin/popup-settings',
+    icon: Star,  // Using Star icon, you can change to any icon like Bell, Megaphone, etc.
+  },
      {
     name: 'Promotional Popup',
     href: '/admin/promotional-settings',

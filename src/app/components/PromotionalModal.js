@@ -1053,151 +1053,202 @@ const PromotionalModal = ({ products = [], onClose, currentProductIndex = 0, onP
 };
 
 // Hook to use the modal - Shows ONLY the latest uploaded promotional data
+// export const usePromotionalModal = () => {
+//   const [showModal, setShowModal] = useState(false);
+//   const [modalProducts, setModalProducts] = useState([]);
+//   const [isLoading, setIsLoading] = useState(true);
+//   const [currentShowNumber, setCurrentShowNumber] = useState(1);
+//   const [currentProductIndex, setCurrentProductIndex] = useState(0);
+//   const [intervals, setIntervals] = useState([]);
+//   const [maxShows, setMaxShows] = useState(3);
+//   const timerRef = useRef(null);
+
+//   // Fetch promotional settings from API
+//   const fetchPromotionalSettings = async () => {
+//     try {
+//       console.log('🔍 Fetching promotional settings...');
+//       const response = await fetch('http://localhost:5000/api/promotional');
+//       const data = await response.json();
+      
+//       console.log('📦 API Response:', data);
+      
+//       if (data.success && data.data && data.data.isActive && data.data.products && data.data.products.length > 0) {
+//         console.log('📊 Total products from API:', data.data.products.length);
+//         console.log('📊 Products data with createdAt:', data.data.products.map(p => ({ name: p.productName, createdAt: p.createdAt })));
+        
+//         setIntervals(data.data.intervals);
+//         setMaxShows(data.data.maxShows);
+        
+//         // IMPORTANT: Sort by createdAt and take ONLY the LATEST ONE
+//         // First, ensure each product has a createdAt field
+//         const productsWithDates = data.data.products.map(product => ({
+//           ...product,
+//           createdAt: product.createdAt || new Date(0) // Fallback for old data
+//         }));
+        
+//         // Sort by createdAt in descending order (newest first)
+//         const sortedProducts = productsWithDates.sort((a, b) => {
+//           const dateA = new Date(a.createdAt);
+//           const dateB = new Date(b.createdAt);
+//           return dateB - dateA; // Descending - newest first
+//         });
+        
+//         console.log('📊 Sorted products by createdAt (newest first):', sortedProducts.map(p => ({ 
+//           name: p.productName, 
+//           createdAt: p.createdAt 
+//         })));
+        
+//         // Take ONLY the latest product (first item after sorting)
+//         const latestProduct = sortedProducts.slice(0, 1);
+        
+//         console.log('📊 Latest product (only 1):', latestProduct.length);
+//         console.log('📊 Latest product name:', latestProduct[0]?.productName);
+//         console.log('📊 Latest product createdAt:', latestProduct[0]?.createdAt);
+        
+//         // Format products - take only the latest
+//         const productsWithTags = latestProduct.map(product => ({
+//           productId: product.productId,
+//           productName: product.productName,
+//           pricePerUnit: product.pricePerUnit,
+//           images: product.images || [],
+//           fabric: product.fabric,
+//           moq: product.moq,
+//           orderUnit: product.orderUnit || 'piece',
+//           tag: product.tag || 'Special Offer',
+//           colors: product.colors || [],
+//           sizes: product.sizes || [],
+//           quantityBasedPricing: product.quantityBasedPricing || [],
+//           additionalInfo: product.additionalInfo || []
+//         }));
+        
+//         console.log('✅ Products loaded:', productsWithTags.length);
+//         if (productsWithTags[0]) {
+//           console.log('✅ Product name:', productsWithTags[0]?.productName);
+//           console.log('✅ Product images count:', productsWithTags[0]?.images?.length);
+//         }
+        
+//         setModalProducts(productsWithTags);
+        
+//         // Show first modal
+//         const firstDelay = data.data.intervals[0]?.delay * 1000 || 5000;
+//         console.log(`⏰ Showing modal #1 in ${firstDelay/1000} seconds...`);
+        
+//         if (timerRef.current) clearTimeout(timerRef.current);
+//         timerRef.current = setTimeout(() => {
+//           console.log('🎉 SHOWING MODAL #1!');
+//           setShowModal(true);
+//         }, firstDelay);
+        
+//       } else {
+//         console.log('⚠️ No active promotional settings');
+//         setModalProducts([]);
+//       }
+//     } catch (error) {
+//       console.error('❌ Error fetching promotional settings:', error);
+//       setModalProducts([]);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   // Schedule next modal
+//   const scheduleNextModal = useCallback((currentShow) => {
+//     const nextShowNumber = currentShow + 1;
+    
+//     if (nextShowNumber <= maxShows && intervals[nextShowNumber - 1]) {
+//       const delay = intervals[nextShowNumber - 1].delay * 1000;
+//       console.log(`⏰ Showing modal #${nextShowNumber} in ${delay/1000} seconds...`);
+      
+//       if (timerRef.current) clearTimeout(timerRef.current);
+//       timerRef.current = setTimeout(() => {
+//         console.log(`🎉 SHOWING MODAL #${nextShowNumber}!`);
+//         setShowModal(true);
+//         setCurrentShowNumber(nextShowNumber);
+//       }, delay);
+//     } else {
+//       console.log('✅ All modals shown. No more modals will appear.');
+//     }
+//   }, [intervals, maxShows]);
+
+//   // Handle modal close
+//   const handleModalClose = useCallback(() => {
+//     console.log(`🔚 Modal #${currentShowNumber} closed`);
+//     setShowModal(false);
+    
+//     // Schedule next modal if not at max
+//     if (currentShowNumber < maxShows) {
+//       scheduleNextModal(currentShowNumber);
+//     }
+//   }, [currentShowNumber, maxShows, scheduleNextModal]);
+
+//   // Cleanup on unmount
+//   useEffect(() => {
+//     return () => {
+//       if (timerRef.current) {
+//         clearTimeout(timerRef.current);
+//       }
+//     };
+//   }, []);
+
+//   // Initialize
+//   useEffect(() => {
+//     setCurrentShowNumber(1);
+//     fetchPromotionalSettings();
+//   }, []);
+
+//   const handleProductChange = (index) => {
+//     setCurrentProductIndex(index);
+//   };
+
+//   return {
+//     showModal,
+//     modalProducts,
+//     isLoading,
+//     currentProductIndex,
+//     handleModalClose,
+//     handleProductChange
+//   };
+// };
+
+// In PromotionalModal.js - Modify the usePromotionalModal hook
+// Add this to ensure the modal shows all intervals
+
 export const usePromotionalModal = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalProducts, setModalProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentShowNumber, setCurrentShowNumber] = useState(1);
   const [currentProductIndex, setCurrentProductIndex] = useState(0);
-  const [intervals, setIntervals] = useState([]);
   const [maxShows, setMaxShows] = useState(3);
   const timerRef = useRef(null);
 
   // Fetch promotional settings from API
   const fetchPromotionalSettings = async () => {
     try {
-      console.log('🔍 Fetching promotional settings...');
       const response = await fetch('http://localhost:5000/api/promotional');
       const data = await response.json();
       
-      console.log('📦 API Response:', data);
-      
-      if (data.success && data.data && data.data.isActive && data.data.products && data.data.products.length > 0) {
-        console.log('📊 Total products from API:', data.data.products.length);
-        console.log('📊 Products data with createdAt:', data.data.products.map(p => ({ name: p.productName, createdAt: p.createdAt })));
-        
-        setIntervals(data.data.intervals);
+      if (data.success && data.data.isActive && data.data.products && data.data.products.length > 0) {
+        setModalProducts(data.data.products);
         setMaxShows(data.data.maxShows);
         
-        // IMPORTANT: Sort by createdAt and take ONLY the LATEST ONE
-        // First, ensure each product has a createdAt field
-        const productsWithDates = data.data.products.map(product => ({
-          ...product,
-          createdAt: product.createdAt || new Date(0) // Fallback for old data
-        }));
-        
-        // Sort by createdAt in descending order (newest first)
-        const sortedProducts = productsWithDates.sort((a, b) => {
-          const dateA = new Date(a.createdAt);
-          const dateB = new Date(b.createdAt);
-          return dateB - dateA; // Descending - newest first
-        });
-        
-        console.log('📊 Sorted products by createdAt (newest first):', sortedProducts.map(p => ({ 
-          name: p.productName, 
-          createdAt: p.createdAt 
-        })));
-        
-        // Take ONLY the latest product (first item after sorting)
-        const latestProduct = sortedProducts.slice(0, 1);
-        
-        console.log('📊 Latest product (only 1):', latestProduct.length);
-        console.log('📊 Latest product name:', latestProduct[0]?.productName);
-        console.log('📊 Latest product createdAt:', latestProduct[0]?.createdAt);
-        
-        // Format products - take only the latest
-        const productsWithTags = latestProduct.map(product => ({
-          productId: product.productId,
-          productName: product.productName,
-          pricePerUnit: product.pricePerUnit,
-          images: product.images || [],
-          fabric: product.fabric,
-          moq: product.moq,
-          orderUnit: product.orderUnit || 'piece',
-          tag: product.tag || 'Special Offer',
-          colors: product.colors || [],
-          sizes: product.sizes || [],
-          quantityBasedPricing: product.quantityBasedPricing || [],
-          additionalInfo: product.additionalInfo || []
-        }));
-        
-        console.log('✅ Products loaded:', productsWithTags.length);
-        if (productsWithTags[0]) {
-          console.log('✅ Product name:', productsWithTags[0]?.productName);
-          console.log('✅ Product images count:', productsWithTags[0]?.images?.length);
-        }
-        
-        setModalProducts(productsWithTags);
-        
-        // Show first modal
-        const firstDelay = data.data.intervals[0]?.delay * 1000 || 5000;
-        console.log(`⏰ Showing modal #1 in ${firstDelay/1000} seconds...`);
-        
-        if (timerRef.current) clearTimeout(timerRef.current);
-        timerRef.current = setTimeout(() => {
-          console.log('🎉 SHOWING MODAL #1!');
-          setShowModal(true);
-        }, firstDelay);
-        
-      } else {
-        console.log('⚠️ No active promotional settings');
-        setModalProducts([]);
+        // Store intervals in localStorage for the unified manager
+        localStorage.setItem('promotionalIntervals', JSON.stringify(data.data.intervals));
+        localStorage.setItem('promotionalMaxShows', data.data.maxShows);
       }
     } catch (error) {
-      console.error('❌ Error fetching promotional settings:', error);
-      setModalProducts([]);
+      console.error('Error fetching promotional settings:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Schedule next modal
-  const scheduleNextModal = useCallback((currentShow) => {
-    const nextShowNumber = currentShow + 1;
-    
-    if (nextShowNumber <= maxShows && intervals[nextShowNumber - 1]) {
-      const delay = intervals[nextShowNumber - 1].delay * 1000;
-      console.log(`⏰ Showing modal #${nextShowNumber} in ${delay/1000} seconds...`);
-      
-      if (timerRef.current) clearTimeout(timerRef.current);
-      timerRef.current = setTimeout(() => {
-        console.log(`🎉 SHOWING MODAL #${nextShowNumber}!`);
-        setShowModal(true);
-        setCurrentShowNumber(nextShowNumber);
-      }, delay);
-    } else {
-      console.log('✅ All modals shown. No more modals will appear.');
-    }
-  }, [intervals, maxShows]);
-
-  // Handle modal close
-  const handleModalClose = useCallback(() => {
-    console.log(`🔚 Modal #${currentShowNumber} closed`);
-    setShowModal(false);
-    
-    // Schedule next modal if not at max
-    if (currentShowNumber < maxShows) {
-      scheduleNextModal(currentShowNumber);
-    }
-  }, [currentShowNumber, maxShows, scheduleNextModal]);
-
-  // Cleanup on unmount
   useEffect(() => {
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-    };
-  }, []);
-
-  // Initialize
-  useEffect(() => {
-    setCurrentShowNumber(1);
     fetchPromotionalSettings();
   }, []);
 
-  const handleProductChange = (index) => {
-    setCurrentProductIndex(index);
+  const handleModalClose = () => {
+    setShowModal(false);
   };
 
   return {
@@ -1206,7 +1257,7 @@ export const usePromotionalModal = () => {
     isLoading,
     currentProductIndex,
     handleModalClose,
-    handleProductChange
+    handleProductChange: setCurrentProductIndex
   };
 };
 

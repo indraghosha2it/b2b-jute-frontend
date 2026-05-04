@@ -31,7 +31,9 @@ import {
   User,
   Send,
   ExternalLink,
-  Target
+  Target,
+  ChevronRight,
+  ChevronLeft
 } from 'lucide-react';
 import Footer from '../components/layout/Footer';
 import Navbar from '../components/layout/Navbar';
@@ -46,6 +48,11 @@ export default function AboutPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+    const [categories, setCategories] = useState([]); // ADD THIS
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true); // ADD THI
+    const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(false);
+  const categoriesScrollRef = useRef(null);
   const statsRef = useRef(null);
   const [statsInView, setStatsInView] = useState(false);
 
@@ -65,6 +72,98 @@ export default function AboutPage() {
     
     return () => observer.disconnect();
   }, []);
+
+  // Fetch categories from API
+useEffect(() => {
+  fetchCategories();
+}, []);
+
+// Set up scroll listeners for categories
+useEffect(() => {
+  const container = categoriesScrollRef.current;
+  if (container && categories.length > 0) {
+    container.addEventListener('scroll', checkCategoriesScroll);
+    checkCategoriesScroll();
+    window.addEventListener('resize', checkCategoriesScroll);
+    return () => {
+      container.removeEventListener('scroll', checkCategoriesScroll);
+      window.removeEventListener('resize', checkCategoriesScroll);
+    };
+  }
+}, [categories]);
+
+const fetchCategories = async () => {
+  setIsLoadingCategories(true);
+  try {
+    const response = await fetch('http://localhost:5000/api/categories');
+    const data = await response.json();
+    
+    if (data.success) {
+      // REMOVE .slice(0, 5) - show ALL categories
+      const formattedCategories = data.data.map(cat => ({
+        _id: cat._id,
+        name: cat.name,
+        slug: cat.slug,
+      }));
+      setCategories(formattedCategories);
+      // Show right arrow if more than 5 categories
+      setShowRightArrow(formattedCategories.length > 5);
+    } else {
+      // Fallback categories
+      setCategories([
+        { _id: '1', name: 'Raw Jute Fiber', slug: 'raw-jute-fiber' },
+        { _id: '2', name: 'Jute Yarn & Twine', slug: 'jute-yarn-twine' },
+        { _id: '3', name: 'Jute Bags', slug: 'jute-bags' },
+        { _id: '4', name: 'Home Decor', slug: 'home-decor' },
+        { _id: '5', name: 'Industrial Jute', slug: 'industrial-jute' },
+        { _id: '6', name: 'Jute Rugs', slug: 'jute-rugs' },
+        { _id: '7', name: 'Jute Ropes', slug: 'jute-ropes' },
+      ]);
+      setShowRightArrow(true);
+    }
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    setCategories([
+      { _id: '1', name: 'Raw Jute Fiber', slug: 'raw-jute-fiber' },
+      { _id: '2', name: 'Jute Yarn & Twine', slug: 'jute-yarn-twine' },
+      { _id: '3', name: 'Jute Bags', slug: 'jute-bags' },
+      { _id: '4', name: 'Home Decor', slug: 'home-decor' },
+      { _id: '5', name: 'Industrial Jute', slug: 'industrial-jute' },
+      { _id: '6', name: 'Jute Rugs', slug: 'jute-rugs' },
+      { _id: '7', name: 'Jute Ropes', slug: 'jute-ropes' },
+    ]);
+    setShowRightArrow(true);
+  } finally {
+    setIsLoadingCategories(false);
+  }
+};
+
+// Check scroll position to show/hide arrows
+// Check scroll position to show/hide arrows
+const checkCategoriesScroll = () => {
+  if (categoriesScrollRef.current) {
+    const { scrollLeft, scrollWidth, clientWidth } = categoriesScrollRef.current;
+    setShowLeftArrow(scrollLeft > 10);
+    setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
+  }
+};
+
+// Scroll categories left or right
+// Scroll categories left or right
+const scrollCategories = (direction) => {
+  if (categoriesScrollRef.current) {
+    const scrollAmount = 300;
+    const currentScroll = categoriesScrollRef.current.scrollLeft;
+    const newScrollLeft = direction === 'left' 
+      ? currentScroll - scrollAmount
+      : currentScroll + scrollAmount;
+    
+    categoriesScrollRef.current.scrollTo({
+      left: newScrollLeft,
+      behavior: 'smooth'
+    });
+  }
+};
 
   const handleChange = (e) => {
     setFormData({
@@ -252,38 +351,97 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* OUR PRODUCT CATEGORIES */}
-        <section className="py-16 bg-white">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto mb-12">
-              <span className="bg-[#F5E6D3] text-[#3bc24f] text-sm font-semibold px-4 py-1.5 rounded-full inline-block mb-4 font-sans">
-                WHAT WE OFFER
-              </span>
-              <h2 className="text-3xl md:text-4xl font-bold text-[#6B4F3A] mb-4 font-serif">
-                Our Product Categories
-              </h2>
-              <p className="text-gray-600 font-sans">
-                We offer a comprehensive range of jute products to meet diverse business needs
-              </p>
-            </div>
+{/* OUR PRODUCT CATEGORIES */}
+{/* OUR PRODUCT CATEGORIES */}
+<section className="py-16 bg-white">
+  <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="text-center max-w-3xl mx-auto mb-12">
+      <span className="bg-[#F5E6D3] text-[#3bc24f] text-sm font-semibold px-4 py-1.5 rounded-full inline-block mb-4 font-sans">
+        WHAT WE OFFER
+      </span>
+      <h2 className="text-3xl md:text-4xl font-bold text-[#6B4F3A] mb-4 font-serif">
+        Our Product Categories
+      </h2>
+      <p className="text-gray-600 font-sans">
+        We offer a comprehensive range of jute products to meet diverse business needs
+      </p>
+      {categories.length > 5 && (
+        <p className="text-xs text-[#8B7355] mt-2 font-sans">
+          ← Scroll horizontally to see all categories →
+        </p>
+      )}
+    </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              {['Raw Jute Fiber', 'Jute Yarn & Twine', 'Jute Bags', 'Home Decor', 'Industrial Jute'].map((category, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  className="bg-[#F5E6D3] rounded-xl p-4 text-center hover:bg-[#3bc24f] hover:text-white transition-all duration-300 cursor-pointer group"
-                >
-                  <Package className="w-8 h-8 mx-auto mb-2 text-[#6B4F3A] group-hover:text-white transition-colors" />
-                  <p className="font-semibold text-sm group-hover:text-white font-sans">{category}</p>
-                </motion.div>
-              ))}
+    {isLoadingCategories ? (
+      <div className="flex gap-4 overflow-x-auto pb-4">
+        {[...Array(6)].map((_, index) => (
+          <div key={index} className="flex-shrink-0 w-28 sm:w-32 md:w-36">
+            <div className="bg-gray-100 rounded-xl p-4 text-center animate-pulse h-32 flex flex-col items-center justify-center">
+              <div className="w-8 h-8 mx-auto mb-2 bg-gray-200 rounded-full"></div>
+              <div className="h-4 bg-gray-200 rounded w-20 mx-auto"></div>
             </div>
           </div>
-        </section>
+        ))}
+      </div>
+    ) : (
+      <div className="relative group">
+        {/* Left Arrow */}
+        {showLeftArrow && (
+          <button
+            onClick={() => scrollCategories('left')}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 border border-gray-200 hover:bg-gray-50 -ml-3 md:-ml-4 transition-all duration-200 hover:scale-110"
+            aria-label="Scroll left"
+          >
+            <ChevronLeft className="w-5 h-5 text-[#6B4F3A]" />
+          </button>
+        )}
+
+        {/* Right Arrow */}
+        {showRightArrow && (
+          <button
+            onClick={() => scrollCategories('right')}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 border border-gray-200 hover:bg-gray-50 -mr-3 md:-mr-4 transition-all duration-200 hover:scale-110"
+            aria-label="Scroll right"
+          >
+            <ChevronRight className="w-5 h-5 text-[#6B4F3A]" />
+          </button>
+        )}
+
+        {/* Scrollable Container */}
+        <div
+          ref={categoriesScrollRef}
+          className="flex overflow-x-auto gap-4 pb-4 scroll-smooth"
+          style={{ 
+            scrollbarWidth: 'none', 
+            msOverflowStyle: 'none',
+            WebkitOverflowScrolling: 'touch'
+          }}
+        >
+          {categories.map((category, index) => (
+            <Link
+              key={category._id}
+              href={`/products?category=${category._id}`}
+              className="flex-shrink-0 w-28 sm:w-32 md:w-52"
+            >
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: Math.min(index * 0.05, 0.5) }}
+                viewport={{ once: true }}
+                className="bg-[#F5E6D3] rounded-xl p-4 text-center hover:bg-[#3bc24f] hover:text-white transition-all duration-300 cursor-pointer group h-32 flex flex-col items-center justify-center"
+              >
+                <Package className="w-8 h-8 mx-auto mb-2 text-[#6B4F3A] group-hover:text-white transition-colors flex-shrink-0" />
+                <p className="font-semibold text-xs sm:text-sm group-hover:text-white font-sans line-clamp-2 text-center px-1">
+                  {category.name}
+                </p>
+              </motion.div>
+            </Link>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+</section>
 
         {/* SUSTAINABILITY SECTION */}
         <section className="py-16 bg-gradient-to-r from-[#6B4F3A] to-[#4A3222] text-white">
@@ -592,3 +750,12 @@ export default function AboutPage() {
     </>
   );
 }
+<style jsx global>{`
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+`}</style>

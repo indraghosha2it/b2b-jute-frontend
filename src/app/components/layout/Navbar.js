@@ -2190,38 +2190,83 @@ export default function Navbar() {
   }, []);
 
   // Initial check
-  useEffect(() => {
-    checkUserState();
-    fetchCartCount();
+  // useEffect(() => {
+  //   checkUserState();
+  //   fetchCartCount();
 
-    const handleStorageChange = (e) => {
-      if (e.key === 'user' || e.key === 'token') {
-        checkUserState();
-        fetchCartCount();
-      }
-    };
+  //   const handleStorageChange = (e) => {
+  //     if (e.key === 'user' || e.key === 'token') {
+  //       checkUserState();
+  //       fetchCartCount();
+  //     }
+  //   };
 
-    window.addEventListener('storage', handleStorageChange);
+  //   window.addEventListener('storage', handleStorageChange);
 
-    const handleAuthChange = () => {
+  //   const handleAuthChange = () => {
+  //     checkUserState();
+  //     fetchCartCount();
+  //   };
+
+  //   window.addEventListener('auth-change', handleAuthChange);
+
+  //   const handleCartUpdate = () => {
+  //     fetchCartCount();
+  //   };
+
+  //   window.addEventListener('cart-update', handleCartUpdate);
+
+  //   return () => {
+  //     window.removeEventListener('storage', handleStorageChange);
+  //     window.removeEventListener('auth-change', handleAuthChange);
+  //     window.removeEventListener('cart-update', handleCartUpdate);
+  //   };
+  // }, []);
+
+  // In Navbar.js, add this to your existing useEffect
+useEffect(() => {
+  checkUserState();
+  fetchCartCount();
+
+  const handleStorageChange = (e) => {
+    if (e.key === 'user' || e.key === 'token') {
       checkUserState();
       fetchCartCount();
-    };
+    }
+  };
 
-    window.addEventListener('auth-change', handleAuthChange);
+  window.addEventListener('storage', handleStorageChange);
 
-    const handleCartUpdate = () => {
-      fetchCartCount();
-    };
+  const handleAuthChange = () => {
+    console.log('🔄 Auth change detected, refreshing user state...');
+    checkUserState();
+    fetchCartCount();
+  };
 
-    window.addEventListener('cart-update', handleCartUpdate);
+  window.addEventListener('auth-change', handleAuthChange);
+  
+  // 🔥 NEW: Listen for focus events (when user returns to tab after login)
+  const handleFocus = () => {
+    console.log('👁️ Tab focused, checking user state...');
+    checkUserState();
+    fetchCartCount();
+  };
+  
+  window.addEventListener('focus', handleFocus);
 
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('auth-change', handleAuthChange);
-      window.removeEventListener('cart-update', handleCartUpdate);
-    };
-  }, []);
+  const handleCartUpdate = () => {
+    fetchCartCount();
+  };
+
+  window.addEventListener('cart-update', handleCartUpdate);
+
+  return () => {
+    window.removeEventListener('storage', handleStorageChange);
+    window.removeEventListener('auth-change', handleAuthChange);
+    window.removeEventListener('focus', handleFocus);
+    window.removeEventListener('cart-update', handleCartUpdate);
+  };
+}, []);
 
   // Listen for route changes
   useEffect(() => {
