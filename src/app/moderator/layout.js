@@ -625,6 +625,11 @@ export default function ModeratorLayout({ children }) {
       href: '/moderator/inquiries',
       icon: MessageSquare,
     },
+     {
+    name: 'Popup Settings',
+    href: '/moderator/popup-settings',
+    icon: Star,  // Using Star icon, you can change to any icon like Bell, Megaphone, etc.
+  },
       {
     name: 'Promotional Popup',
     href: '/moderator/promotional-settings',

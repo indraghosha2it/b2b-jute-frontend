@@ -84,6 +84,22 @@ export default function AdminLayout({ children }) {
       }
       return false;
     }
+
+      if (href === '/admin/popup-settings') {
+      if (currentPath === '/admin/popup-settings' || 
+          currentPath.startsWith('/admin/popup-settings/')) {
+        return true;
+      }
+      return false;
+    }
+
+       if (href === '/admin/promotional-settings') {
+      if (currentPath === '/admin/promotional-settings' || 
+          currentPath.startsWith('/admin/promotional-settings/')) {
+        return true;
+      }
+      return false;
+    }
     
     // Create Products
     if (href === '/admin/create-products') {
