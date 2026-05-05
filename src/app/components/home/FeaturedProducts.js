@@ -166,7 +166,7 @@ export default function FeaturedProducts() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/products?isFeatured=true&limit=20&sort=-createdAt');
+      const response = await fetch('https://b2b-jute-backend.vercel.app/api/products?isFeatured=true&limit=20&sort=-createdAt');
       const data = await response.json();
       
       if (data.success) {

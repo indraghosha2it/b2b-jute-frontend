@@ -449,7 +449,7 @@
 //   const fetchCategories = async () => {
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch('http://localhost:5000/api/categories', {
+//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/categories', {
 //         headers: { 'Authorization': `Bearer ${token}` }
 //       });
 //       const data = await response.json();
@@ -465,7 +465,7 @@
 //   const fetchSubcategories = async (categoryId) => {
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch(`http://localhost:5000/api/categories/${categoryId}/subcategories`, {
+//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/categories/${categoryId}/subcategories`, {
 //         headers: { 'Authorization': `Bearer ${token}` }
 //       });
 //       const data = await response.json();
@@ -484,7 +484,7 @@
 // const fetchChildSubcategories = async (categoryId, subcategoryId) => {
 //   try {
 //     const token = localStorage.getItem('token');
-//     const response = await fetch(`http://localhost:5000/api/categories/${categoryId}/subcategories/${subcategoryId}/children`, {
+//     const response = await fetch(`https://b2b-jute-backend.vercel.app/api/categories/${categoryId}/subcategories/${subcategoryId}/children`, {
 //       headers: { 'Authorization': `Bearer ${token}` }
 //     });
 //     const data = await response.json();
@@ -555,7 +555,7 @@
 //       }
 //       queryParams.append('sort', sortParam);
 
-//       const response = await fetch(`http://localhost:5000/api/products?${queryParams.toString()}`, {
+//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/products?${queryParams.toString()}`, {
 //         headers: { 'Authorization': `Bearer ${token}` }
 //       });
 //       const data = await response.json();
@@ -1470,7 +1470,7 @@ export default function ModeratorAllProducts() {
   const fetchCategories = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/categories', {
+      const response = await fetch('https://b2b-jute-backend.vercel.app/api/categories', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -1485,7 +1485,7 @@ export default function ModeratorAllProducts() {
   const fetchSubcategories = async (categoryId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/categories/${categoryId}/subcategories`, {
+      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/categories/${categoryId}/subcategories`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -1503,7 +1503,7 @@ export default function ModeratorAllProducts() {
   const fetchChildSubcategories = async (categoryId, subcategoryId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/categories/${categoryId}/subcategories/${subcategoryId}/children`, {
+      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/categories/${categoryId}/subcategories/${subcategoryId}/children`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -1574,7 +1574,7 @@ export default function ModeratorAllProducts() {
       }
       queryParams.append('sort', sortParam);
 
-      const response = await fetch(`http://localhost:5000/api/products?${queryParams.toString()}`, {
+      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/products?${queryParams.toString()}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();

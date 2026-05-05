@@ -94,7 +94,7 @@ export default function CertificationsPage() {
   const fetchCertifications = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/certifications/admin/all', {
+      const response = await fetch('https://b2b-jute-backend.vercel.app/api/certifications/admin/all', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -266,8 +266,8 @@ export default function CertificationsPage() {
     try {
       const token = localStorage.getItem('token');
       const url = editingCert 
-        ? `http://localhost:5000/api/certifications/admin/${editingCert._id}`
-        : 'http://localhost:5000/api/certifications';
+        ? `https://b2b-jute-backend.vercel.app/api/certifications/admin/${editingCert._id}`
+        : 'https://b2b-jute-backend.vercel.app/api/certifications';
       const method = editingCert ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
@@ -301,7 +301,7 @@ export default function CertificationsPage() {
     
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/certifications/admin/${id}`, {
+      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/certifications/admin/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -320,7 +320,7 @@ export default function CertificationsPage() {
   const handleToggleStatus = async (id, currentStatus) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/certifications/admin/${id}/toggle`, {
+      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/certifications/admin/${id}/toggle`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}` }
       });

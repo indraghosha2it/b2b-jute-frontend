@@ -1,6 +1,9 @@
 
 
 
+
+
+
 // 'use client';
 
 // import { useState, useEffect, useRef } from 'react';
@@ -38,16 +41,15 @@
 
 // // Blog categories
 // const BLOG_CATEGORIES = [
-//   { value: 'fashion-trends', label: 'Fashion Trends', icon: '👗' },
-//   { value: 'wholesale-guide', label: 'Wholesale Guide', icon: '📦' },
-//   { value: 'industry-news', label: 'Industry News', icon: '📰' },
-//   { value: 'style-tips', label: 'Style Tips', icon: '✨' },
-//   { value: 'business-tips', label: 'Business Tips', icon: '💼' },
-//   { value: 'fabric-and-quality', label: 'Fabric and Quality', icon: '🧵' },
+//   { value: 'eco-sustainability', label: 'Eco & Sustainability', icon: '🌿' },
+//   { value: 'jute-product-guides', label: 'Jute Product Guides', icon: '📚' },
+//   { value: 'manufacturing-process', label: 'Manufacturing & Process', icon: '🏭' },
+//   { value: 'bulk-buying-export', label: 'Bulk Buying & Export', icon: '🚢' },
+//   { value: 'jute-industry-trends', label: 'Jute Industry Trends', icon: '📈' },
+//   { value: 'jute-craft-diy', label: 'Jute Craft & DIY', icon: '✂️' },
+//   { value: 'product-spotlights', label: 'Product Spotlights', icon: '⭐' },
 //   { value: 'customer-stories', label: 'Customer Stories', icon: '👥' },
-//   { value: 'case-studies', label: 'Case Studies', icon: '📊' },
-//   { value: 'product-guide', label: 'Product Guide', icon: '📖' },
-//   { value: 'others', label: 'Others', icon: '📌' }
+//   { value: 'business-insights', label: 'Business Insights', icon: '💡' }
 // ];
 
 // // Cloudinary upload function for images
@@ -762,7 +764,7 @@
 
 //       console.log('Submitting blog payload:', payload);
 
-//       const response = await fetch('http://localhost:5000/api/blogs', {
+//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/blogs', {
 //         method: 'POST',
 //         headers: {
 //           'Authorization': `Bearer ${token}`,
@@ -1408,10 +1410,6 @@
 //   );
 // }
 
-
-
-
-
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -1434,7 +1432,8 @@ import {
   Type,
   Globe,
   ImagePlus,
-  Video
+  Video,
+  GripVertical
 } from 'lucide-react';
 import NextLink from 'next/link';
 import { toast } from 'sonner';
@@ -1459,6 +1458,48 @@ const BLOG_CATEGORIES = [
   { value: 'customer-stories', label: 'Customer Stories', icon: '👥' },
   { value: 'business-insights', label: 'Business Insights', icon: '💡' }
 ];
+
+// YouTube helper functions
+const getYouTubeVideoId = (url) => {
+  if (!url) return null;
+  
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?/\s]+)/,
+    /youtube\.com\/embed\/([^/?]+)/,
+    /youtube\.com\/v\/([^/?]+)/,
+    /youtube\.com\/shorts\/([^/?]+)/
+  ];
+  
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) {
+      return match[1];
+    }
+  }
+  return null;
+};
+
+const getYouTubeThumbnail = (videoId, quality = 'maxresdefault') => {
+  if (!videoId) return null;
+  
+  const qualities = {
+    'maxresdefault': `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+    'hqdefault': `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+    'mqdefault': `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+    'sddefault': `https://img.youtube.com/vi/${videoId}/sddefault.jpg`
+  };
+  return qualities[quality] || qualities.hqdefault;
+};
+
+const validateYoutubeUrl = (url) => {
+  if (!url) return { valid: true, error: null };
+  
+  const videoId = getYouTubeVideoId(url);
+  return { 
+    valid: !!videoId, 
+    error: videoId ? null : 'Please enter a valid YouTube URL'
+  };
+};
 
 // Cloudinary upload function for images
 const uploadToCloudinary = async (file, folder = 'blogs') => {
@@ -1491,40 +1532,6 @@ const uploadToCloudinary = async (file, folder = 'blogs') => {
   }
 };
 
-// YouTube helper functions
-const getYouTubeVideoId = (url) => {
-  if (!url) return null;
-  
-  const patterns = [
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?/\s]+)/,
-    /youtube\.com\/embed\/([^/?]+)/,
-    /youtube\.com\/v\/([^/?]+)/,
-    /youtube\.com\/shorts\/([^/?]+)/
-  ];
-  
-  for (const pattern of patterns) {
-    const match = url.match(pattern);
-    if (match && match[1]) {
-      return match[1];
-    }
-  }
-  return null;
-};
-
-const getYouTubeThumbnail = (videoId) => {
-  if (!videoId) return null;
-  return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-};
-
-const validateYoutubeUrl = (url) => {
-  if (!url) return { valid: true, error: null };
-  const videoId = getYouTubeVideoId(url);
-  return { 
-    valid: !!videoId, 
-    error: videoId ? null : 'Please enter a valid YouTube URL'
-  };
-};
-
 // ========== PARAGRAPH SECTION COMPONENT ==========
 const ParagraphSection = ({ index, paragraph, onUpdate, onRemove, onImageUpload, errors, isMounted }) => {
   const editor = useEditor({
@@ -1552,7 +1559,6 @@ const ParagraphSection = ({ index, paragraph, onUpdate, onRemove, onImageUpload,
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     onImageUpload(index, file);
   };
 
@@ -1580,7 +1586,7 @@ const ParagraphSection = ({ index, paragraph, onUpdate, onRemove, onImageUpload,
             value={paragraph.header || ''}
             onChange={(e) => onUpdate(index, 'header', e.target.value)}
             placeholder="e.g., Why Choose Bulk Ordering?"
-            className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#806149] focus:border-transparent outline-none transition ${
+            className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6F533D] focus:border-transparent outline-none transition ${
               errors[`paragraph_${index}_header`] ? 'border-red-500' : 'border-gray-300'
             }`}
           />
@@ -1631,54 +1637,6 @@ const ParagraphSection = ({ index, paragraph, onUpdate, onRemove, onImageUpload,
             <p className="text-xs text-red-600 mt-1">{errors[`paragraph_${index}_description`]}</p>
           )}
         </div>
-
-        {/* Section Image (Optional) */}
-        {/* <div>
-          <label className="block text-sm font-medium text-gray-600 mb-1.5">
-            Section Image (Optional)
-          </label>
-          {paragraph.imagePreview ? (
-            <div className="relative rounded-lg overflow-hidden border border-gray-200">
-              <img 
-                src={paragraph.imagePreview} 
-                alt={`Section ${index + 1}`} 
-                className="w-full h-32 object-cover"
-              />
-              {paragraph.uploading && (
-                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                  <Loader2 className="w-6 h-6 text-white animate-spin" />
-                </div>
-              )}
-              <button
-                type="button"
-                onClick={() => onUpdate(index, 'imageFile', null)}
-                className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                disabled={paragraph.uploading}
-              >
-                <X className="w-3 h-3" />
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <input
-                type="file"
-                ref={imageInputRef}
-                className="hidden"
-                accept="image/jpeg,image/jpg,image/png,image/webp"
-                onChange={handleImageUpload}
-              />
-              <button
-                type="button"
-                onClick={() => imageInputRef.current?.click()}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-[#806149] border border-dashed border-[#806149] rounded-lg hover:bg-orange-50 transition-colors"
-                disabled={paragraph.uploading}
-              >
-                <ImagePlus className="w-4 h-4" />
-                {paragraph.uploading ? 'Uploading...' : 'Add Image'}
-              </button>
-            </div>
-          )}
-        </div> */}
       </div>
     </div>
   );
@@ -1692,6 +1650,10 @@ export default function ModeratorCreateBlog() {
   
   // Refs for file inputs
   const featuredImageRef = useRef(null);
+
+  // Drag and drop state for thumbnail images
+  const [draggedIndex, setDraggedIndex] = useState(null);
+  const [dragOverIndex, setDragOverIndex] = useState(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -1727,7 +1689,7 @@ export default function ModeratorCreateBlog() {
     error: ''
   });
 
-  // Thumbnail images state with Cloudinary URLs
+  // Thumbnail images state with upload tracking
   const [thumbnailImages, setThumbnailImages] = useState([]);
 
   // Errors state
@@ -1737,7 +1699,6 @@ export default function ModeratorCreateBlog() {
   const [tagInput, setTagInput] = useState('');
 
   // Allowed file types
-  const allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
   const maxImageSize = 5 * 1024 * 1024; // 5MB
 
   // Set mounted state
@@ -1751,8 +1712,7 @@ export default function ModeratorCreateBlog() {
     if (userStr) {
       try {
         const user = JSON.parse(userStr);
-        if (user.role !== 'moderator') {
-          toast.error('Access denied. Moderator privileges required.');
+        if (user.role !== 'moderator' && user.role !== 'admin') {
           router.push('/login');
         }
       } catch (error) {
@@ -1905,60 +1865,124 @@ export default function ModeratorCreateBlog() {
     const files = Array.from(e.target.files);
     if (!files.length) return;
 
+    const currentImagesCount = thumbnailImages.filter(img => img.url !== null || img.uploading).length;
+    const availableSlots = 10 - currentImagesCount;
+    
+    if (files.length > availableSlots) {
+      toast.error(`You can only upload ${availableSlots} more image(s). Maximum 10 images total.`);
+      e.target.value = '';
+      return;
+    }
+    
     const validFiles = [];
-    const errorsList = [];
+    const invalidFiles = [];
 
-    files.forEach(file => {
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
       const validation = validateImageFile(file);
       if (validation.valid) {
-        validFiles.push(file);
+        validFiles.push({ file, originalIndex: i });
       } else {
-        errorsList.push(`${file.name}: ${validation.message}`);
-      }
-    });
-
-    if (errorsList.length > 0) {
-      toast.error(errorsList.join('\n'));
-    }
-
-    if (validFiles.length > 0) {
-      // Add all new images with uploading state
-      const newImagesWithPreview = validFiles.map(file => ({
-        file,
-        preview: URL.createObjectURL(file),
-        url: null,
-        publicId: null,
-        uploading: true,
-        id: Math.random().toString(36).substr(2, 9)
-      }));
-      
-      setThumbnailImages(prev => [...prev, ...newImagesWithPreview]);
-
-      // Upload each image to Cloudinary
-      for (const img of newImagesWithPreview) {
-        try {
-          const { url, publicId } = await uploadToCloudinary(img.file, 'blogs/thumbnails');
-          setThumbnailImages(prev => prev.map(item => 
-            item.id === img.id ? { ...item, url, publicId, uploading: false } : item
-          ));
-        } catch (error) {
-          console.error('Upload error:', error);
-          setThumbnailImages(prev => prev.filter(item => item.id !== img.id));
-          toast.error(`Failed to upload ${img.file.name}`);
-        }
+        invalidFiles.push({ index: i + 1, message: validation.message });
+        toast.error(`Image ${i + 1}: ${validation.message}`);
       }
     }
 
-    // Clear input
+    if (validFiles.length === 0) {
+      toast.error('No valid images to upload');
+      e.target.value = '';
+      return;
+    }
+
+    const batchId = Date.now();
+    const newImagesWithPreview = validFiles.map(({ file }) => ({
+      file,
+      preview: URL.createObjectURL(file),
+      url: null,
+      publicId: null,
+      uploading: true,
+      uploadAborted: false,
+      uploadBatchId: batchId,
+      id: `${batchId}_${Math.random().toString(36).substr(2, 9)}`
+    }));
+    
+    setThumbnailImages(prev => [...prev, ...newImagesWithPreview]);
+
+    // Upload each image
+    for (const img of newImagesWithPreview) {
+      try {
+        const { url, publicId } = await uploadToCloudinary(img.file, 'blogs/thumbnails');
+        setThumbnailImages(prev => prev.map(item => 
+          item.id === img.id && !item.uploadAborted ? { ...item, url, publicId, uploading: false } : item
+        ));
+      } catch (error) {
+        console.error('Upload error:', error);
+        setThumbnailImages(prev => prev.filter(item => item.id !== img.id));
+        toast.error(`Failed to upload ${img.file.name}`);
+      }
+    }
+
     e.target.value = '';
   };
 
   const removeThumbnailImage = (imageId) => {
     const imageToRemove = thumbnailImages.find(img => img.id === imageId);
+    
+    // Mark as aborted so upload completion doesn't update it
+    setThumbnailImages(prev => prev.map(img => 
+      img.id === imageId ? { ...img, uploadAborted: true } : img
+    ));
+    
+    // Revoke object URL if it exists (to prevent memory leaks)
     if (imageToRemove && imageToRemove.preview && imageToRemove.preview.startsWith('blob:')) {
       URL.revokeObjectURL(imageToRemove.preview);
     }
-    setThumbnailImages(prev => prev.filter(img => img.id !== imageId));
+    
+    // Remove the image from state after a small delay to ensure upload doesn't complete
+    setTimeout(() => {
+      setThumbnailImages(prev => prev.filter(img => img.id !== imageId));
+    }, 100);
+    
+    toast.success('Image removed');
+  };
+
+  // Drag and drop functions for thumbnail images
+  const moveImage = (fromIndex, toIndex) => {
+    const updatedImages = [...thumbnailImages];
+    const [movedImage] = updatedImages.splice(fromIndex, 1);
+    updatedImages.splice(toIndex, 0, movedImage);
+    setThumbnailImages(updatedImages);
+  };
+
+  const handleDragStart = (index) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDragOverWithFeedback = (event, index) => {
+    event.preventDefault();
+    if (thumbnailImages[index] && !thumbnailImages[index].uploading) {
+      setDragOverIndex(index);
+    }
+  };
+
+  const handleDragLeave = () => {
+    setDragOverIndex(null);
+  };
+
+  const handleDropWithFeedback = (dropIndex) => {
+    if (draggedIndex === null || draggedIndex === dropIndex) {
+      setDragOverIndex(null);
+      setDraggedIndex(null);
+      return;
+    }
+    moveImage(draggedIndex, dropIndex);
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
   };
 
   // ========== PARAGRAPH HANDLERS ==========
@@ -1982,7 +2006,6 @@ export default function ModeratorCreateBlog() {
 
     const previewUrl = URL.createObjectURL(file);
     
-    // Update paragraph with preview and uploading state
     const updatedParagraphs = [...formData.paragraphs];
     updatedParagraphs[index] = {
       ...updatedParagraphs[index],
@@ -1994,7 +2017,6 @@ export default function ModeratorCreateBlog() {
     };
     setFormData(prev => ({ ...prev, paragraphs: updatedParagraphs }));
 
-    // Upload to Cloudinary
     try {
       const { url, publicId } = await uploadToCloudinary(file, 'blogs/paragraphs');
       const finalParagraphs = [...formData.paragraphs];
@@ -2112,7 +2134,6 @@ export default function ModeratorCreateBlog() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if any uploads are still in progress
     if (featuredImage.uploading || thumbnailImages.some(img => img.uploading)) {
       toast.error('Please wait for all uploads to complete');
       return;
@@ -2134,7 +2155,6 @@ export default function ModeratorCreateBlog() {
         return;
       }
 
-      // Prepare paragraphs data with image URLs
       const processedParagraphs = formData.paragraphs
         .filter(p => p.header?.trim() && p.description?.trim())
         .map(p => ({
@@ -2143,7 +2163,6 @@ export default function ModeratorCreateBlog() {
           image: p.imageUrl || null
         }));
 
-      // Prepare payload with Cloudinary URLs and YouTube video
       const payload = {
         title: formData.title,
         author: formData.author,
@@ -2164,15 +2183,15 @@ export default function ModeratorCreateBlog() {
           videoId: youtubeVideo.videoId,
           thumbnail: youtubeVideo.thumbnail
         } : null,
-        thumbnailImages: thumbnailImages.map(img => ({
-          url: img.url,
-          publicId: img.publicId
-        }))
+        thumbnailImages: thumbnailImages
+          .filter(img => img.url !== null && !img.uploading && !img.uploadAborted)
+          .map(img => ({
+            url: img.url,
+            publicId: img.publicId
+          }))
       };
 
-      console.log('Submitting blog payload:', payload);
-
-      const response = await fetch('http://localhost:5000/api/blogs', {
+      const response = await fetch('https://b2b-jute-backend.vercel.app/api/blogs', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -2195,12 +2214,6 @@ export default function ModeratorCreateBlog() {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  // Get category icon
-  const getCategoryIcon = (categoryValue) => {
-    const category = BLOG_CATEGORIES.find(c => c.value === categoryValue);
-    return category?.icon || '📌';
   };
 
   return (
@@ -2244,7 +2257,7 @@ export default function ModeratorCreateBlog() {
                     type="text"
                     value={formData.title}
                     onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                    className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#806149] focus:border-transparent outline-none transition ${
+                    className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6F533D] focus:border-transparent outline-none transition ${
                       errors.title ? 'border-red-500' : 'border-gray-300'
                     }`}
                     placeholder="e.g., Top Fashion Trends for 2026"
@@ -2257,7 +2270,7 @@ export default function ModeratorCreateBlog() {
                   )}
                 </div>
 
-                {/* Author Name - Readonly */}
+                {/* Author Name */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     <div className="flex items-center gap-1">
@@ -2268,10 +2281,15 @@ export default function ModeratorCreateBlog() {
                   <input
                     type="text"
                     value={formData.author}
-                    readOnly
-                    disabled
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-gray-100 text-gray-700 cursor-not-allowed"
+                    onChange={(e) => setFormData(prev => ({ ...prev, author: e.target.value }))}
+                    className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6F533D] focus:border-transparent outline-none transition ${
+                      errors.author ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="e.g., John Doe"
                   />
+                  {errors.author && (
+                    <p className="text-xs text-red-600 mt-1">{errors.author}</p>
+                  )}
                 </div>
 
                 {/* Category and Publish Date */}
@@ -2287,7 +2305,7 @@ export default function ModeratorCreateBlog() {
                           setFormData(prev => ({ ...prev, category: e.target.value }));
                           if (errors.category) setErrors(prev => ({ ...prev, category: null }));
                         }}
-                        className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#806149] focus:border-transparent outline-none transition ${
+                        className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6F533D] focus:border-transparent outline-none transition ${
                           errors.category ? 'border-red-500' : 'border-gray-300'
                         }`}
                       >
@@ -2314,7 +2332,7 @@ export default function ModeratorCreateBlog() {
                         type="date"
                         value={formData.publishDate}
                         onChange={(e) => setFormData(prev => ({ ...prev, publishDate: e.target.value }))}
-                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#806149] focus:border-transparent outline-none transition"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6F533D] focus:border-transparent outline-none transition"
                       />
                     </div>
                   </div>
@@ -2329,7 +2347,7 @@ export default function ModeratorCreateBlog() {
                     value={formData.excerpt}
                     onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
                     rows="4"
-                    className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#806149] focus:border-transparent outline-none transition resize-none ${
+                    className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6F533D] focus:border-transparent outline-none transition resize-none ${
                       errors.excerpt ? 'border-red-500' : 'border-gray-300'
                     }`}
                     placeholder="Brief summary of your blog post..."
@@ -2341,8 +2359,8 @@ export default function ModeratorCreateBlog() {
                     {formData.excerpt.length}/160 characters recommended
                   </p>
                 </div>
-                
-                {/* Mark as Featured and Tags */}
+
+                {/* Featured Checkbox and Tags */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                   <div className="mb-4 pb-4 border-b border-gray-200">
                     <label className="flex items-center gap-2 text-sm text-gray-700">
@@ -2350,7 +2368,7 @@ export default function ModeratorCreateBlog() {
                         type="checkbox"
                         checked={formData.featured}
                         onChange={(e) => setFormData(prev => ({ ...prev, featured: e.target.checked }))}
-                        className="w-4 h-4 text-[#806149] border-gray-300 rounded focus:ring-[#806149]"
+                        className="w-4 h-4 text-[#6F533D] border-gray-300 rounded focus:ring-[#6F533D]"
                       />
                       <span>Mark as Featured Post</span>
                     </label>
@@ -2371,12 +2389,12 @@ export default function ModeratorCreateBlog() {
                         onChange={(e) => setTagInput(e.target.value)}
                         onKeyDown={handleTagKeyDown}
                         placeholder="Enter tags (press Enter or comma to add)"
-                        className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#806149] focus:border-transparent outline-none transition"
+                        className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6F533D] focus:border-transparent outline-none transition"
                       />
                       <button
                         type="button"
                         onClick={addTag}
-                        className="px-4 py-2 bg-[#806149] text-white text-sm font-medium rounded-lg hover:bg-[#55351C] transition-colors"
+                        className="px-4 py-2 bg-[#6F533D] text-white text-sm font-medium rounded-lg hover:bg-[#55351c] transition-colors"
                       >
                         Add
                       </button>
@@ -2415,7 +2433,7 @@ export default function ModeratorCreateBlog() {
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                   <div className="p-5 border-b border-gray-200">
                     <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                      <ImageIcon className="w-5 h-5 text-[#806149]" />
+                      <ImageIcon className="w-5 h-5 text-[#6F533D]" />
                       Featured Image <span className="text-red-500">*</span>
                     </h2>
                     <p className="text-xs text-gray-500 mt-1">Main blog image (JPG, PNG, WebP, max 5MB)</p>
@@ -2432,7 +2450,7 @@ export default function ModeratorCreateBlog() {
                     {!featuredImage.preview ? (
                       <div 
                         className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer ${
-                          featuredImage.error ? 'border-red-300 bg-red-50' : 'border-gray-300 hover:border-[#806149] hover:bg-orange-50'
+                          featuredImage.error ? 'border-red-300 bg-red-50' : 'border-gray-300 hover:border-[#6F533D] hover:bg-orange-50'
                         }`}
                         onClick={() => featuredImageRef.current?.click()}
                       >
@@ -2467,7 +2485,6 @@ export default function ModeratorCreateBlog() {
                           type="button"
                           onClick={removeFeaturedImage}
                           className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                          disabled={featuredImage.uploading}
                         >
                           <X className="w-4 h-4" />
                         </button>
@@ -2484,7 +2501,7 @@ export default function ModeratorCreateBlog() {
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                   <div className="p-5 border-b border-gray-200">
                     <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                      <Video className="w-5 h-5 text-[#806149]" />
+                      <Video className="w-5 h-5 text-[#6F533D]" />
                       YouTube Video (Optional)
                     </h2>
                     <p className="text-xs text-gray-500 mt-1">Add a YouTube video to accompany your blog post</p>
@@ -2502,7 +2519,7 @@ export default function ModeratorCreateBlog() {
                             value={youtubeVideo.url}
                             onChange={handleYoutubeUrlChange}
                             placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..."
-                            className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#806149] focus:border-transparent outline-none transition ${
+                            className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#6F533D] focus:border-transparent outline-none transition ${
                               youtubeVideo.error ? 'border-red-500' : 'border-gray-300'
                             }`}
                           />
@@ -2527,12 +2544,6 @@ export default function ModeratorCreateBlog() {
                           <p className="text-xs text-gray-500 mt-1">
                             Supports YouTube links, shorts, and embed URLs
                           </p>
-                          <div className="mt-3 text-xs text-gray-400">
-                            <p>Examples:</p>
-                            <p>• https://www.youtube.com/watch?v=...</p>
-                            <p>• https://youtu.be/...</p>
-                            <p>• https://www.youtube.com/shorts/...</p>
-                          </div>
                         </div>
                       </div>
                     ) : (
@@ -2559,22 +2570,41 @@ export default function ModeratorCreateBlog() {
                   </div>
                 </div>
 
-                {/* Thumbnail Images (Optional) */}
+                {/* Thumbnail Images (Optional) - With Drag & Drop */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                   <div className="p-5 border-b border-gray-200">
                     <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                      <ImagePlus className="w-5 h-5 text-[#806149]" />
+                      <ImagePlus className="w-5 h-5 text-[#6F533D]" />
                       Thumbnail Images
                     </h2>
-                    <p className="text-xs text-gray-500 mt-1">Additional images for gallery (optional)</p>
+                    <p className="text-xs text-gray-500 mt-1">Additional images for gallery (max 10 images)</p>
                   </div>
                   
                   <div className="p-5">
-                    {/* Thumbnail Gallery */}
                     {thumbnailImages.length > 0 && (
                       <div className="grid grid-cols-3 gap-3 mb-4">
-                        {thumbnailImages.map((image) => (
-                          <div key={image.id} className="relative rounded-lg overflow-hidden border border-gray-200 aspect-square">
+                        {thumbnailImages.map((image, index) => (
+                          <div
+                            key={image.id}
+                            draggable={!image.uploading}
+                            onDragStart={() => !image.uploading && handleDragStart(index)}
+                            onDragOver={(e) => !image.uploading && handleDragOverWithFeedback(e, index)}
+                            onDragLeave={handleDragLeave}
+                            onDrop={() => !image.uploading && handleDropWithFeedback(index)}
+                            onDragEnd={handleDragEnd}
+                            className={`relative rounded-lg overflow-hidden border border-gray-200 aspect-square transition-all duration-200 ${
+                              !image.uploading ? 'cursor-grab active:cursor-grabbing' : 'cursor-default'
+                            } ${
+                              draggedIndex === index ? 'opacity-50 scale-95' : ''
+                            } ${
+                              dragOverIndex === index && draggedIndex !== index && draggedIndex !== null 
+                                ? 'ring-2 ring-[#6F533D] ring-offset-2' 
+                                : ''
+                            }`}
+                          >
+                            <div className="absolute top-1 left-1 bg-black/50 rounded px-1.5 py-0.5 z-10">
+                              <GripVertical className="w-3 h-3 text-white" />
+                            </div>
                             <img 
                               src={image.preview} 
                               alt="Thumbnail" 
@@ -2582,14 +2612,13 @@ export default function ModeratorCreateBlog() {
                             />
                             {image.uploading && (
                               <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                                <Loader2 className="w-4 h-4 text-white animate-spin" />
+                                <Loader2 className="w-5 h-5 text-white animate-spin" />
                               </div>
                             )}
                             <button
                               type="button"
                               onClick={() => removeThumbnailImage(image.id)}
-                              className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                              disabled={image.uploading}
+                              className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors z-20"
                             >
                               <X className="w-3 h-3" />
                             </button>
@@ -2598,9 +2627,8 @@ export default function ModeratorCreateBlog() {
                       </div>
                     )}
 
-                    {/* Upload Button */}
                     <div 
-                      className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center transition-colors cursor-pointer hover:border-[#806149] hover:bg-orange-50"
+                      className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center transition-colors cursor-pointer hover:border-[#6F533D] hover:bg-orange-50"
                       onClick={() => document.getElementById('thumbnailImages')?.click()}
                     >
                       <input 
@@ -2616,9 +2644,18 @@ export default function ModeratorCreateBlog() {
                         Click to upload thumbnail images
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
-                        You can select multiple images
+                        You can select multiple images (up to 10, max 5MB each)
+                      </p>
+                      <p className="text-xs text-gray-400 mt-2">
+                        💡 Drag and drop images to reorder
                       </p>
                     </div>
+
+                    {thumbnailImages.length > 0 && (
+                      <p className="text-xs text-gray-500 mt-3 text-center">
+                        {thumbnailImages.filter(img => !img.uploading && img.url).length} of 10 images uploaded
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -2629,7 +2666,7 @@ export default function ModeratorCreateBlog() {
               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                 <div className="p-5 border-b border-gray-200">
                   <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                    <BookOpen className="w-5 h-5 text-[#806149]" />
+                    <BookOpen className="w-5 h-5 text-[#6F533D]" />
                     Main Content <span className="text-red-500">*</span>
                   </h2>
                   <p className="text-xs text-gray-500 mt-1">Write your main blog content with rich text formatting</p>
@@ -2653,31 +2690,26 @@ export default function ModeratorCreateBlog() {
                             <RichTextEditor.Underline />
                             <RichTextEditor.Strikethrough />
                           </RichTextEditor.ControlsGroup>
-
                           <RichTextEditor.ControlsGroup>
                             <RichTextEditor.H1 />
                             <RichTextEditor.H2 />
                             <RichTextEditor.H3 />
                             <RichTextEditor.H4 />
                           </RichTextEditor.ControlsGroup>
-
                           <RichTextEditor.ControlsGroup>
                             <RichTextEditor.BulletList />
                             <RichTextEditor.OrderedList />
                           </RichTextEditor.ControlsGroup>
-
                           <RichTextEditor.ControlsGroup>
                             <RichTextEditor.AlignLeft />
                             <RichTextEditor.AlignCenter />
                             <RichTextEditor.AlignRight />
                           </RichTextEditor.ControlsGroup>
-
                           <RichTextEditor.ControlsGroup>
                             <RichTextEditor.Link />
                             <RichTextEditor.Unlink />
                           </RichTextEditor.ControlsGroup>
                         </RichTextEditor.Toolbar>
-
                         <RichTextEditor.Content />
                       </RichTextEditor>
                     </div>
@@ -2691,7 +2723,7 @@ export default function ModeratorCreateBlog() {
               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                 <div className="p-5 border-b border-gray-200">
                   <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                    <Plus className="w-5 h-5 text-[#806149]" />
+                    <Plus className="w-5 h-5 text-[#6F533D]" />
                     Additional Sections
                   </h2>
                   <p className="text-xs text-gray-500 mt-1">
@@ -2716,7 +2748,7 @@ export default function ModeratorCreateBlog() {
                   <button
                     type="button"
                     onClick={addParagraph}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-[#806149] border-2 border-dashed border-[#806149]/30 rounded-lg hover:bg-orange-50 hover:border-[#806149] transition-colors"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-[#6F533D] border-2 border-dashed border-[#6F533D]/30 rounded-lg hover:bg-orange-50 hover:border-[#6F533D] transition-colors"
                   >
                     <Plus className="w-4 h-4" />
                     Add New Section
@@ -2730,7 +2762,7 @@ export default function ModeratorCreateBlog() {
               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                 <div className="p-5 border-b border-gray-200">
                   <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                    <Globe className="w-5 h-5 text-[#806149]" />
+                    <Globe className="w-5 h-5 text-[#6F533D]" />
                     SEO Settings
                   </h2>
                   <p className="text-xs text-gray-500 mt-1">Optimize your blog post for search engines</p>
@@ -2745,7 +2777,7 @@ export default function ModeratorCreateBlog() {
                       type="text"
                       value={formData.metaTitle}
                       onChange={(e) => setFormData(prev => ({ ...prev, metaTitle: e.target.value }))}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#806149] focus:border-transparent outline-none transition"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6F533D] focus:border-transparent outline-none transition"
                       placeholder="Leave empty to use blog title"
                     />
                     <p className="text-xs text-gray-500 mt-1">
@@ -2761,7 +2793,7 @@ export default function ModeratorCreateBlog() {
                       value={formData.metaDescription}
                       onChange={(e) => setFormData(prev => ({ ...prev, metaDescription: e.target.value }))}
                       rows="3"
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#806149] focus:border-transparent outline-none transition resize-none"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6F533D] focus:border-transparent outline-none transition resize-none"
                       placeholder="Brief description for search engines"
                     />
                     <p className="text-xs text-gray-500 mt-1">
@@ -2777,7 +2809,7 @@ export default function ModeratorCreateBlog() {
                       type="text"
                       value={formData.metaKeywords}
                       onChange={(e) => setFormData(prev => ({ ...prev, metaKeywords: e.target.value }))}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#806149] focus:border-transparent outline-none transition"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6F533D] focus:border-transparent outline-none transition"
                       placeholder="fashion, wholesale, clothing, trends (comma separated)"
                     />
                   </div>
@@ -2796,7 +2828,7 @@ export default function ModeratorCreateBlog() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex items-center gap-2 px-6 py-3 bg-[#806149] text-white font-medium rounded-lg hover:bg-[#55351C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                className="flex items-center gap-2 px-6 py-3 bg-[#6F533D] text-white font-medium rounded-lg hover:bg-[#55351c] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
               >
                 {isSubmitting ? (
                   <>

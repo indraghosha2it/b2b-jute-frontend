@@ -37,7 +37,7 @@
 //   const fetchSettings = async () => {
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch('http://localhost:5000/api/popup-settings', {
+//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/popup-settings', {
 //         headers: { 'Authorization': `Bearer ${token}` }
 //       });
 //       const data = await response.json();
@@ -57,7 +57,7 @@
 //     setSaving(true);
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch('http://localhost:5000/api/popup-settings', {
+//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/popup-settings', {
 //         method: 'PUT',
 //         headers: {
 //           'Content-Type': 'application/json',
@@ -327,7 +327,7 @@ export default function PopupSettingsPage() {
     try {
       const token = localStorage.getItem('token');
       console.log('🔍 Fetching popup settings...');
-      const response = await fetch('http://localhost:5000/api/popup-settings', {
+      const response = await fetch('https://b2b-jute-backend.vercel.app/api/popup-settings', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -357,7 +357,7 @@ export default function PopupSettingsPage() {
     setSaving(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/popup-settings', {
+      const response = await fetch('https://b2b-jute-backend.vercel.app/api/popup-settings', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

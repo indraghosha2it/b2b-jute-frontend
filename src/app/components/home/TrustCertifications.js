@@ -34,7 +34,7 @@ export default function TrustCertifications() {
   const fetchCertifications = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/certifications?limit=50');
+      const response = await fetch('https://b2b-jute-backend.vercel.app/api/certifications?limit=50');
       
       if (!response.ok) throw new Error('Failed to fetch certifications');
       

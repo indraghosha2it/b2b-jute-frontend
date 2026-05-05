@@ -1,5 +1,9 @@
 
 
+
+
+
+
 // 'use client';
 
 // import { useState, useEffect, useRef } from 'react';
@@ -38,16 +42,15 @@
 
 // // Blog categories
 // const BLOG_CATEGORIES = [
-//   { value: 'fashion-trends', label: 'Fashion Trends', icon: '👗' },
-//   { value: 'wholesale-guide', label: 'Wholesale Guide', icon: '📦' },
-//   { value: 'industry-news', label: 'Industry News', icon: '📰' },
-//   { value: 'style-tips', label: 'Style Tips', icon: '✨' },
-//   { value: 'business-tips', label: 'Business Tips', icon: '💼' },
-//   { value: 'fabric-and-quality', label: 'Fabric and Quality', icon: '🧵' },
+//   { value: 'eco-sustainability', label: 'Eco & Sustainability', icon: '🌿' },
+//   { value: 'jute-product-guides', label: 'Jute Product Guides', icon: '📚' },
+//   { value: 'manufacturing-process', label: 'Manufacturing & Process', icon: '🏭' },
+//   { value: 'bulk-buying-export', label: 'Bulk Buying & Export', icon: '🚢' },
+//   { value: 'jute-industry-trends', label: 'Jute Industry Trends', icon: '📈' },
+//   { value: 'jute-craft-diy', label: 'Jute Craft & DIY', icon: '✂️' },
+//   { value: 'product-spotlights', label: 'Product Spotlights', icon: '⭐' },
 //   { value: 'customer-stories', label: 'Customer Stories', icon: '👥' },
-//   { value: 'case-studies', label: 'Case Studies', icon: '📊' },
-//   { value: 'product-guide', label: 'Product Guide', icon: '📖' },
-//   { value: 'others', label: 'Others', icon: '📌' }
+//   { value: 'business-insights', label: 'Business Insights', icon: '💡' }
 // ];
 
 // // Cloudinary upload function for images
@@ -333,7 +336,7 @@
 //       setIsLoading(true);
 //       try {
 //         const token = localStorage.getItem('token');
-//         const response = await fetch(`http://localhost:5000/api/blogs/admin/${blogId}`, {
+//         const response = await fetch(`https://b2b-jute-backend.vercel.app/api/blogs/admin/${blogId}`, {
 //           headers: {
 //             'Authorization': `Bearer ${token}`
 //           }
@@ -852,7 +855,7 @@
 
 //       console.log('Submitting payload:', payload);
 
-//       const response = await fetch(`http://localhost:5000/api/blogs/admin/${blogId}`, {
+//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/blogs/admin/${blogId}`, {
 //         method: 'PUT',
 //         headers: {
 //           'Authorization': `Bearer ${token}`,
@@ -1562,10 +1565,6 @@
 //   );
 // }
 
-
-
-
-
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -1589,7 +1588,8 @@ import {
   Globe,
   ImagePlus,
   Video,
-  Youtube
+  Youtube,
+  GripVertical
 } from 'lucide-react';
 import NextLink from 'next/link';
 import { toast } from 'sonner';
@@ -1785,9 +1785,6 @@ const ParagraphSection = ({ index, paragraph, onUpdate, onRemove, onImageUpload,
             <p className="text-xs text-red-600 mt-1">{errors[`paragraph_${index}_description`]}</p>
           )}
         </div>
-
-    
-    
       </div>
     </div>
   );
@@ -1805,6 +1802,10 @@ export default function AdminEditBlog() {
   
   // Refs for file inputs
   const featuredImageRef = useRef(null);
+
+  // Drag and drop state for thumbnail images
+  const [draggedIndex, setDraggedIndex] = useState(null);
+  const [dragOverIndex, setDragOverIndex] = useState(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -1843,9 +1844,8 @@ export default function AdminEditBlog() {
     existingVideo: null
   });
 
-  // Thumbnail images state
-  const [newThumbnailImages, setNewThumbnailImages] = useState([]);
-  const [existingThumbnails, setExistingThumbnails] = useState([]);
+  // Thumbnail images state - unified list for drag & drop
+  const [allThumbnails, setAllThumbnails] = useState([]);
   const [thumbnailsToDelete, setThumbnailsToDelete] = useState([]);
 
   // Errors state
@@ -1855,7 +1855,6 @@ export default function AdminEditBlog() {
   const [tagInput, setTagInput] = useState('');
 
   // Allowed file types
-  const allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
   const maxImageSize = 5 * 1024 * 1024; // 5MB
 
   // Set mounted state
@@ -1898,7 +1897,7 @@ export default function AdminEditBlog() {
       setIsLoading(true);
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:5000/api/blogs/admin/${blogId}`, {
+        const response = await fetch(`https://b2b-jute-backend.vercel.app/api/blogs/admin/${blogId}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -1953,9 +1952,18 @@ export default function AdminEditBlog() {
             });
           }
 
-          // Set thumbnail images
+          // Set thumbnail images - combine existing thumbnails
           if (blog.thumbnailImages && blog.thumbnailImages.length > 0) {
-            setExistingThumbnails(blog.thumbnailImages);
+            const existingWithType = blog.thumbnailImages.map((thumb, idx) => ({
+              id: `existing_${idx}_${thumb.publicId}`,
+              url: thumb.url,
+              publicId: thumb.publicId,
+              preview: thumb.url,
+              uploading: false,
+              isNew: false,
+              uploadAborted: false
+            }));
+            setAllThumbnails(existingWithType);
           }
         } else {
           toast.error(data.error || 'Failed to fetch blog');
@@ -2123,71 +2131,142 @@ export default function AdminEditBlog() {
     }
   };
 
-  // ========== THUMBNAIL IMAGES HANDLERS ==========
+  // ========== THUMBNAIL IMAGES HANDLERS WITH DRAG & DROP ==========
   
+  // Move thumbnail for drag and drop
+  const moveThumbnail = (fromIndex, toIndex) => {
+    const updatedImages = [...allThumbnails];
+    const [movedImage] = updatedImages.splice(fromIndex, 1);
+    updatedImages.splice(toIndex, 0, movedImage);
+    setAllThumbnails(updatedImages);
+  };
+
+  const handleThumbnailDragStart = (index) => {
+    setDraggedIndex(index);
+  };
+
+  const handleThumbnailDragOver = (event, index) => {
+    event.preventDefault();
+    if (allThumbnails[index] && !allThumbnails[index].uploading) {
+      setDragOverIndex(index);
+    }
+  };
+
+  const handleThumbnailDragLeave = () => {
+    setDragOverIndex(null);
+  };
+
+  const handleThumbnailDrop = (dropIndex) => {
+    if (draggedIndex === null || draggedIndex === dropIndex) {
+      setDragOverIndex(null);
+      setDraggedIndex(null);
+      return;
+    }
+    moveThumbnail(draggedIndex, dropIndex);
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleThumbnailDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
   const handleThumbnailImagesChange = async (e) => {
     const files = Array.from(e.target.files);
     if (!files.length) return;
 
+    const currentImagesCount = allThumbnails.filter(img => img.url !== null || img.uploading).length;
+    const availableSlots = 10 - currentImagesCount;
+    
+    if (files.length > availableSlots) {
+      toast.error(`You can only upload ${availableSlots} more image(s). Maximum 10 images total.`);
+      e.target.value = '';
+      return;
+    }
+    
     const validFiles = [];
-    const errorsList = [];
+    const invalidFiles = [];
 
-    files.forEach(file => {
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
       const validation = validateImageFile(file);
       if (validation.valid) {
-        validFiles.push(file);
+        validFiles.push({ file, originalIndex: i });
       } else {
-        errorsList.push(`${file.name}: ${validation.message}`);
+        invalidFiles.push({ index: i + 1, message: validation.message });
+        toast.error(`Image ${i + 1}: ${validation.message}`);
       }
-    });
-
-    if (errorsList.length > 0) {
-      toast.error(errorsList.join('\n'));
     }
 
-    if (validFiles.length > 0) {
-      const newImagesWithPreview = validFiles.map(file => ({
-        file,
-        preview: URL.createObjectURL(file),
-        url: null,
-        publicId: null,
-        uploading: true,
-        id: Math.random().toString(36).substr(2, 9)
-      }));
-      
-      setNewThumbnailImages(prev => [...prev, ...newImagesWithPreview]);
+    if (validFiles.length === 0) {
+      toast.error('No valid images to upload');
+      e.target.value = '';
+      return;
+    }
 
-      for (const img of newImagesWithPreview) {
-        try {
-          const { url, publicId } = await uploadToCloudinary(img.file, 'blogs/thumbnails');
-          setNewThumbnailImages(prev => prev.map(item => 
-            item.id === img.id ? { ...item, url, publicId, uploading: false } : item
-          ));
-        } catch (error) {
-          console.error('Upload error:', error);
-          setNewThumbnailImages(prev => prev.filter(item => item.id !== img.id));
-          toast.error(`Failed to upload ${img.file.name}`);
-        }
+    const batchId = Date.now();
+    const newImagesWithPreview = validFiles.map(({ file }) => ({
+      id: `${batchId}_${Math.random().toString(36).substr(2, 9)}`,
+      file,
+      preview: URL.createObjectURL(file),
+      url: null,
+      publicId: null,
+      uploading: true,
+      isNew: true,
+      uploadAborted: false,
+      uploadBatchId: batchId
+    }));
+    
+    setAllThumbnails(prev => [...prev, ...newImagesWithPreview]);
+
+    // Upload each image
+    for (const img of newImagesWithPreview) {
+      try {
+        const { url, publicId } = await uploadToCloudinary(img.file, 'blogs/thumbnails');
+        setAllThumbnails(prev => prev.map(item => 
+          item.id === img.id && !item.uploadAborted ? { ...item, url, publicId, uploading: false } : item
+        ));
+        toast.success('Image uploaded successfully');
+      } catch (error) {
+        console.error('Upload error:', error);
+        setAllThumbnails(prev => prev.filter(item => item.id !== img.id));
+        toast.error('Failed to upload one image');
       }
     }
 
     e.target.value = '';
   };
 
-  const removeNewThumbnail = (imageId) => {
-    const imageToRemove = newThumbnailImages.find(img => img.id === imageId);
+  const removeThumbnail = (imageId, isNew, publicId) => {
+    const imageToRemove = allThumbnails.find(img => img.id === imageId);
+    
+    // If it's an existing image (not new), mark for deletion
+    if (!isNew && publicId) {
+      setThumbnailsToDelete(prev => [...prev, publicId]);
+    }
+    
+    // For new images that are still uploading, mark as aborted immediately
+    if (isNew && imageToRemove && imageToRemove.uploading) {
+      setAllThumbnails(prev => prev.map(img => 
+        img.id === imageId ? { ...img, uploadAborted: true, uploading: false } : img
+      ));
+    } else {
+      // Mark as aborted so upload completion doesn't update it
+      setAllThumbnails(prev => prev.map(img => 
+        img.id === imageId ? { ...img, uploadAborted: true } : img
+      ));
+    }
+    
+    // Revoke object URL if it exists (to prevent memory leaks)
     if (imageToRemove && imageToRemove.preview && imageToRemove.preview.startsWith('blob:')) {
       URL.revokeObjectURL(imageToRemove.preview);
     }
-    setNewThumbnailImages(prev => prev.filter(img => img.id !== imageId));
-  };
-
-  const removeExistingThumbnail = (index, publicId) => {
-    if (publicId) {
-      setThumbnailsToDelete(prev => [...prev, publicId]);
-    }
-    setExistingThumbnails(prev => prev.filter((_, i) => i !== index));
-    toast.info('Thumbnail marked for deletion');
+    
+    // Remove the image from state immediately
+    setAllThumbnails(prev => prev.filter(img => img.id !== imageId));
+    
+    toast.success('Image removed');
   };
 
   // ========== PARAGRAPH HANDLERS ==========
@@ -2326,6 +2405,7 @@ export default function AdminEditBlog() {
     if (!formData.excerpt.trim()) newErrors.excerpt = 'Excerpt is required';
     if (!formData.content || formData.content === '<p></p>') newErrors.content = 'Content is required';
     if (!featuredImage.url && !featuredImage.existingUrl) newErrors.featuredImage = 'Featured image is required';
+    if (formData.paragraphs.length === 0) newErrors.paragraphs = 'At least one paragraph section is required';
 
     setErrors(newErrors);
     
@@ -2339,7 +2419,7 @@ export default function AdminEditBlog() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (featuredImage.uploading || newThumbnailImages.some(img => img.uploading)) {
+    if (featuredImage.uploading || allThumbnails.some(img => img.uploading)) {
       toast.error('Please wait for all uploads to complete');
       return;
     }
@@ -2380,20 +2460,13 @@ export default function AdminEditBlog() {
         thumbnail: youtubeVideo.thumbnail
       } : null;
 
-      // Process thumbnail images
-      const existingThumbnailsToKeep = existingThumbnails.map(thumb => ({
-        url: thumb.url,
-        publicId: thumb.publicId
-      }));
-
-      const newThumbnailUrls = newThumbnailImages
-        .filter(img => img.url)
+      // Process thumbnail images - only include fully uploaded images not marked for deletion
+      const thumbnailsToKeep = allThumbnails
+        .filter(img => img.url !== null && !img.uploading && !img.uploadAborted && !thumbnailsToDelete.includes(img.publicId))
         .map(img => ({
           url: img.url,
           publicId: img.publicId
         }));
-
-      const allThumbnails = [...existingThumbnailsToKeep, ...newThumbnailUrls];
 
       const payload = {
         title: formData.title,
@@ -2411,13 +2484,11 @@ export default function AdminEditBlog() {
         featuredImageUrl,
         featuredImagePublicId,
         youtubeVideo: youtubeVideoData,
-        thumbnailImages: allThumbnails,
+        thumbnailImages: thumbnailsToKeep,
         imagesToDelete: thumbnailsToDelete
       };
 
-      console.log('Submitting payload:', payload);
-
-      const response = await fetch(`http://localhost:5000/api/blogs/admin/${blogId}`, {
+      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/blogs/admin/${blogId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -2440,12 +2511,6 @@ export default function AdminEditBlog() {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  // Get category icon
-  const getCategoryIcon = (categoryValue) => {
-    const category = BLOG_CATEGORIES.find(c => c.value === categoryValue);
-    return category?.icon || '📌';
   };
 
   if (isLoading) {
@@ -2513,7 +2578,7 @@ export default function AdminEditBlog() {
                   )}
                 </div>
 
-                {/* Author Name - Readonly for admin edit too */}
+                {/* Author Name - Readonly for admin edit */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     <div className="flex items-center gap-1">
@@ -2845,64 +2910,75 @@ export default function AdminEditBlog() {
                   </div>
                 </div>
 
-                {/* Thumbnail Images (Optional) */}
+                {/* Thumbnail Images (Optional) - With Drag & Drop for All Images */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                   <div className="p-5 border-b border-gray-200">
                     <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                       <ImagePlus className="w-5 h-5 text-[#7F6149]" />
                       Thumbnail Images
                     </h2>
-                    <p className="text-xs text-gray-500 mt-1">Additional images for gallery (optional)</p>
+                    <p className="text-xs text-gray-500 mt-1">Additional images for gallery (max 10 images). Drag to reorder.</p>
                   </div>
                   
                   <div className="p-5">
-                    {/* Existing Thumbnails */}
-                    {existingThumbnails.length > 0 && (
+                    {/* All Thumbnails Grid with Drag & Drop */}
+                    {allThumbnails.length > 0 && (
                       <div className="mb-4">
-                        <p className="text-xs font-medium text-gray-600 mb-2">Current thumbnails:</p>
+                        <p className="text-xs font-medium text-gray-600 mb-2">
+                          Thumbnails ({allThumbnails.length}/10):
+                        </p>
                         <div className="grid grid-cols-3 gap-3">
-                          {existingThumbnails.map((thumb, index) => (
-                            <div key={index} className="relative rounded-lg overflow-hidden border border-gray-200 aspect-square">
-                              <img 
-                                src={thumb.url} 
-                                alt="Thumbnail" 
-                                className="w-full h-full object-cover"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => removeExistingThumbnail(index, thumb.publicId)}
-                                className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                              >
-                                <X className="w-3 h-3" />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* New Thumbnails */}
-                    {newThumbnailImages.length > 0 && (
-                      <div className="mb-4">
-                        <p className="text-xs font-medium text-gray-600 mb-2">New thumbnails to add:</p>
-                        <div className="grid grid-cols-3 gap-3">
-                          {newThumbnailImages.map((image) => (
-                            <div key={image.id} className="relative rounded-lg overflow-hidden border border-gray-200 aspect-square">
+                          {allThumbnails.map((image, index) => (
+                            <div
+                              key={image.id}
+                              draggable={!image.uploading}
+                              onDragStart={() => !image.uploading && handleThumbnailDragStart(index)}
+                              onDragOver={(e) => !image.uploading && handleThumbnailDragOver(e, index)}
+                              onDragLeave={handleThumbnailDragLeave}
+                              onDrop={() => !image.uploading && handleThumbnailDrop(index)}
+                              onDragEnd={handleThumbnailDragEnd}
+                              className={`relative rounded-lg overflow-hidden border border-gray-200 aspect-square transition-all duration-200 ${
+                                !image.uploading ? 'cursor-grab active:cursor-grabbing' : 'cursor-default'
+                              } ${
+                                draggedIndex === index ? 'opacity-50 scale-95' : ''
+                              } ${
+                                dragOverIndex === index && draggedIndex !== index && draggedIndex !== null 
+                                  ? 'ring-2 ring-[#7F6149] ring-offset-2' 
+                                  : ''
+                              }`}
+                            >
+                              {/* Drag handle */}
+                              {!image.uploading && (
+                                <div className="absolute top-1 left-1 bg-black/50 rounded px-1.5 py-0.5 z-10">
+                                  <GripVertical className="w-3 h-3 text-white" />
+                                </div>
+                              )}
+                              
                               <img 
                                 src={image.preview} 
                                 alt="Thumbnail" 
                                 className="w-full h-full object-cover"
                               />
+                              
+                              {/* Uploading overlay for new images */}
                               {image.uploading && (
                                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                                  <Loader2 className="w-4 h-4 text-white animate-spin" />
+                                  <Loader2 className="w-5 h-5 text-white animate-spin" />
                                 </div>
                               )}
+                              
+                              {/* Badge for existing vs new */}
+                              {!image.isNew && !image.uploading && (
+                                <div className="absolute bottom-1 left-1 bg-green-500/80 text-white text-[8px] px-1.5 py-0.5 rounded z-10">
+                                  Saved
+                                </div>
+                              )}
+                              
+                              {/* Remove button */}
                               <button
                                 type="button"
-                                onClick={() => removeNewThumbnail(image.id)}
-                                className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                                disabled={image.uploading}
+                                onClick={() => removeThumbnail(image.id, image.isNew, image.publicId)}
+                                className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors z-20"
                               >
                                 <X className="w-3 h-3" />
                               </button>
@@ -2930,9 +3006,19 @@ export default function AdminEditBlog() {
                         Click to add more thumbnail images
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
-                        You can select multiple images
+                        You can select multiple images (up to 10 total, max 5MB each)
+                      </p>
+                      <p className="text-xs text-gray-400 mt-2">
+                        💡 Drag and drop images to reorder
                       </p>
                     </div>
+
+                    {allThumbnails.length > 0 && (
+                      <p className="text-xs text-gray-500 mt-3 text-center">
+                        {allThumbnails.filter(img => img.url !== null && !img.uploading).length} of 10 images
+                        {thumbnailsToDelete.length > 0 && ` (${thumbnailsToDelete.length} marked for deletion)`}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>

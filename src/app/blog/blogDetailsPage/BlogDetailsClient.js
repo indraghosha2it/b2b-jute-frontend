@@ -72,7 +72,7 @@
       
 //       setLoading(true);
 //       try {
-//         const response = await fetch(`http://localhost:5000/api/blogs/${blogId}`);
+//         const response = await fetch(`https://b2b-jute-backend.vercel.app/api/blogs/${blogId}`);
 //         const data = await response.json();
         
 //         if (data.success) {
@@ -101,7 +101,7 @@
 //   // Fetch related posts
 //   const fetchRelatedPosts = async (category, currentId) => {
 //     try {
-//       const response = await fetch(`http://localhost:5000/api/blogs?category=${category}&limit=3`);
+//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/blogs?category=${category}&limit=3`);
 //       const data = await response.json();
 //       if (data.success) {
 //         setRelatedPosts(data.data.filter(post => post._id !== currentId).slice(0, 3));
@@ -948,7 +948,7 @@ export default function BlogDetailsPage() {
     const fetchBlog = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`http://localhost:5000/api/blogs/${blogId}`);
+        const response = await fetch(`https://b2b-jute-backend.vercel.app/api/blogs/${blogId}`);
         const data = await response.json();
         
         if (data.success) {
@@ -990,7 +990,7 @@ export default function BlogDetailsPage() {
   // Fetch related posts
   const fetchRelatedPosts = async (category, currentId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/blogs?category=${category}&limit=3`);
+      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/blogs?category=${category}&limit=3`);
       const data = await response.json();
       if (data.success) {
         setRelatedPosts(data.data.filter(post => post._id !== currentId).slice(0, 3));
@@ -1444,7 +1444,7 @@ export default function BlogDetailsPage() {
                 )}
 
                 {/* Newsletter Card */}
-                <div className="bg-gradient-to-br from-[#3A7D44] to-[#2d6335] rounded-xl p-5 text-white shadow-lg">
+                {/* <div className="bg-gradient-to-br from-[#3A7D44] to-[#2d6335] rounded-xl p-5 text-white shadow-lg">
                   <div className="text-center">
                     <Mail className="w-8 h-8 mx-auto mb-3 text-white/80" />
                     <h4 className="font-bold mb-1" style={{ fontFamily: 'Playfair Display, serif' }}>Weekly Newsletter</h4>
@@ -1460,7 +1460,7 @@ export default function BlogDetailsPage() {
                       </button>
                     </div>
                   </div>
-                </div>
+                </div> */}
 
                 {/* Quote Card */}
                 <div className="bg-[#F5E6D3] rounded-xl p-5 text-center">

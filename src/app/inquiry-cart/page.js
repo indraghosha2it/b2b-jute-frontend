@@ -135,7 +135,7 @@
 //         return;
 //       }
 
-//       const response = await fetch('http://localhost:5000/api/inquiry-cart', {
+//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/inquiry-cart', {
 //         headers: { 'Authorization': `Bearer ${token}` }
 //       });
 //       const data = await response.json();
@@ -156,7 +156,7 @@
 
 //   const fetchProductDetails = async (productId) => {
 //     try {
-//       const response = await fetch(`http://localhost:5000/api/products/${productId}`);
+//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/products/${productId}`);
 //       const data = await response.json();
 //       if (data.success) {
 //         setProductDetails(prev => ({ ...prev, [productId]: data.data }));
@@ -198,7 +198,7 @@
     
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch(`http://localhost:5000/api/inquiry-cart/item/${itemId}/color/${colorIndex}`, {
+//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/inquiry-cart/item/${itemId}/color/${colorIndex}`, {
 //         method: 'DELETE',
 //         headers: { 'Authorization': `Bearer ${token}` }
 //       });
@@ -232,7 +232,7 @@
     
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch(`http://localhost:5000/api/inquiry-cart/item/${itemId}`, {
+//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/inquiry-cart/item/${itemId}`, {
 //         method: 'DELETE',
 //         headers: { 'Authorization': `Bearer ${token}` }
 //       });
@@ -262,7 +262,7 @@
     
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch('http://localhost:5000/api/inquiry-cart/clear', {
+//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/inquiry-cart/clear', {
 //         method: 'DELETE',
 //         headers: { 'Authorization': `Bearer ${token}` }
 //       });
@@ -357,7 +357,7 @@
 //         orderUnit: item.orderUnit
 //       };
 
-//       const response = await fetch('http://localhost:5000/api/inquiry-cart/add', {
+//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/inquiry-cart/add', {
 //         method: 'POST',
 //         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
 //         body: JSON.stringify(cartItem)
@@ -520,7 +520,7 @@
 //         orderUnit: item.orderUnit
 //       };
 
-//       const response = await fetch('http://localhost:5000/api/inquiry-cart/add', {
+//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/inquiry-cart/add', {
 //         method: 'POST',
 //         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
 //         body: JSON.stringify(cartItem)
@@ -565,7 +565,7 @@
 //     setUploading(true);
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch('http://localhost:5000/api/inquiry-cart/upload', {
+//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/inquiry-cart/upload', {
 //         method: 'POST',
 //         headers: { 'Authorization': `Bearer ${token}` },
 //         body: formData
@@ -603,7 +603,7 @@
 //     setSubmitting(true);
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch('http://localhost:5000/api/inquiry-cart/submit', {
+//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/inquiry-cart/submit', {
 //         method: 'POST',
 //         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
 //         body: JSON.stringify({ specialInstructions, attachments })
@@ -1330,7 +1330,7 @@ export default function InquiryCartPage() {
       const products = await Promise.all(
         recentIds.slice(0, 4).map(async (id) => {
           try {
-            const response = await fetch(`http://localhost:5000/api/products/${id}`);
+            const response = await fetch(`https://b2b-jute-backend.vercel.app/api/products/${id}`);
             const data = await response.json();
             if (data.success) {
               return data.data;
@@ -1362,7 +1362,7 @@ export default function InquiryCartPage() {
         return;
       }
 
-      const response = await fetch('http://localhost:5000/api/inquiry-cart', {
+      const response = await fetch('https://b2b-jute-backend.vercel.app/api/inquiry-cart', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -1383,7 +1383,7 @@ export default function InquiryCartPage() {
 
   const fetchProductDetails = async (productId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/products/${productId}`);
+      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/products/${productId}`);
       const data = await response.json();
       if (data.success) {
         setProductDetails(prev => ({ ...prev, [productId]: data.data }));
@@ -1425,7 +1425,7 @@ export default function InquiryCartPage() {
     
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/inquiry-cart/item/${itemId}/color/${colorIndex}`, {
+      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/inquiry-cart/item/${itemId}/color/${colorIndex}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -1459,7 +1459,7 @@ export default function InquiryCartPage() {
     
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/inquiry-cart/item/${itemId}`, {
+      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/inquiry-cart/item/${itemId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -1489,7 +1489,7 @@ export default function InquiryCartPage() {
     
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/inquiry-cart/clear', {
+      const response = await fetch('https://b2b-jute-backend.vercel.app/api/inquiry-cart/clear', {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -1584,7 +1584,7 @@ export default function InquiryCartPage() {
         orderUnit: item.orderUnit
       };
 
-      const response = await fetch('http://localhost:5000/api/inquiry-cart/add', {
+      const response = await fetch('https://b2b-jute-backend.vercel.app/api/inquiry-cart/add', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify(cartItem)
@@ -1747,7 +1747,7 @@ export default function InquiryCartPage() {
         orderUnit: item.orderUnit
       };
 
-      const response = await fetch('http://localhost:5000/api/inquiry-cart/add', {
+      const response = await fetch('https://b2b-jute-backend.vercel.app/api/inquiry-cart/add', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify(cartItem)
@@ -1792,7 +1792,7 @@ export default function InquiryCartPage() {
     setUploading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/inquiry-cart/upload', {
+      const response = await fetch('https://b2b-jute-backend.vercel.app/api/inquiry-cart/upload', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
@@ -1830,7 +1830,7 @@ export default function InquiryCartPage() {
     setSubmitting(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/inquiry-cart/submit', {
+      const response = await fetch('https://b2b-jute-backend.vercel.app/api/inquiry-cart/submit', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ specialInstructions, attachments })

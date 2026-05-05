@@ -404,7 +404,7 @@
 //         return;
 //       }
 
-//       const response = await fetch(`http://localhost:5000/api/invoices/${invoiceId}`, {
+//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/invoices/${invoiceId}`, {
 //         headers: {
 //           'Authorization': `Bearer ${token}`
 //         }
@@ -1431,7 +1431,7 @@ export default function CustomerInvoiceViewPage() {
         return;
       }
 
-      const response = await fetch(`http://localhost:5000/api/invoices/${invoiceId}`, {
+      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/invoices/${invoiceId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

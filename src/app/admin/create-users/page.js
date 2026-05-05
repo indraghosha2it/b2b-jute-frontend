@@ -75,7 +75,7 @@ export default function CreateUsers() {
       // Get the admin token from localStorage
       const token = localStorage.getItem('token');
 
-      const response = await fetch('http://localhost:5000/api/admin/users', {
+      const response = await fetch('https://b2b-jute-backend.vercel.app/api/admin/users', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -412,7 +412,7 @@ export default function CreateUsers() {
               {/* WhatsApp */}
               <div className="col-span-2 md:col-span-1">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  WhatsApp <span className="text-gray-400 text-xs">(Optional)</span>
+                  WhatsApp <span className="text-[#72553F]">*</span>
                 </label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

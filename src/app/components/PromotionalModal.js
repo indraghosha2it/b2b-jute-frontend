@@ -452,7 +452,7 @@
 //   const fetchPromotionalSettings = async () => {
 //     try {
 //       console.log('🔍 Fetching promotional settings...');
-//       const response = await fetch('http://localhost:5000/api/promotional');
+//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/promotional');
 //       const data = await response.json();
       
 //       console.log('📦 API Response:', data);
@@ -1067,7 +1067,7 @@ const PromotionalModal = ({ products = [], onClose, currentProductIndex = 0, onP
 //   const fetchPromotionalSettings = async () => {
 //     try {
 //       console.log('🔍 Fetching promotional settings...');
-//       const response = await fetch('http://localhost:5000/api/promotional');
+//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/promotional');
 //       const data = await response.json();
       
 //       console.log('📦 API Response:', data);
@@ -1225,7 +1225,7 @@ export const usePromotionalModal = () => {
   // Fetch promotional settings from API
   const fetchPromotionalSettings = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/promotional');
+      const response = await fetch('https://b2b-jute-backend.vercel.app/api/promotional');
       const data = await response.json();
       
       if (data.success && data.data.isActive && data.data.products && data.data.products.length > 0) {

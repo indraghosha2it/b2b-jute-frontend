@@ -600,7 +600,7 @@
 //         return;
 //       }
 
-//       const response = await fetch(`http://localhost:5000/api/invoices/${invoiceId}`, {
+//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/invoices/${invoiceId}`, {
 //         headers: {
 //           'Authorization': `Bearer ${token}`
 //         }
@@ -639,7 +639,7 @@
 //         updateData.dueAmount = 0;
 //       }
 
-//       const response = await fetch(`http://localhost:5000/api/invoices/${invoiceId}`, {
+//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/invoices/${invoiceId}`, {
 //         method: 'PUT',
 //         headers: {
 //           'Authorization': `Bearer ${token}`,
@@ -667,7 +667,7 @@
 //     setDeleting(true);
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch(`http://localhost:5000/api/invoices/${invoiceId}`, {
+//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/invoices/${invoiceId}`, {
 //         method: 'DELETE',
 //         headers: {
 //           'Authorization': `Bearer ${token}`
@@ -1789,7 +1789,7 @@ export default function AdminInvoiceViewPage() {
         return;
       }
 
-      const response = await fetch(`http://localhost:5000/api/invoices/${invoiceId}`, {
+      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/invoices/${invoiceId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -1828,7 +1828,7 @@ export default function AdminInvoiceViewPage() {
         updateData.dueAmount = 0;
       }
 
-      const response = await fetch(`http://localhost:5000/api/invoices/${invoiceId}`, {
+      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/invoices/${invoiceId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -1856,7 +1856,7 @@ export default function AdminInvoiceViewPage() {
     setDeleting(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/invoices/${invoiceId}`, {
+      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/invoices/${invoiceId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

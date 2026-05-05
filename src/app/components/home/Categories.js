@@ -21,7 +21,7 @@
 //   const fetchCategories = async () => {
 //     setIsLoading(true);
 //     try {
-//       const response = await fetch('http://localhost:5000/api/categories');
+//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/categories');
 //       const data = await response.json();
       
 //       if (data.success) {
@@ -358,7 +358,7 @@ export default function Categories() {
   const fetchCategories = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/categories');
+      const response = await fetch('https://b2b-jute-backend.vercel.app/api/categories');
       const data = await response.json();
       
       if (data.success) {
