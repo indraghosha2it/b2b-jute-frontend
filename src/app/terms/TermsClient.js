@@ -162,7 +162,7 @@ export default function TermsPage() {
               </h1>
               <p className="text-[#F5E6D3] text-base md:text-lg max-w-2xl mx-auto font-sans">
                 Our commitment to transparency, fair trade, and global compliance. 
-                Read our guidelines for B2B partnerships, orders, and sustainable cooperation.
+                Read our guidelines for partnerships, orders, and sustainable cooperation.
               </p>
               <div className="flex flex-wrap justify-center gap-3 mt-6">
                 {trustBadges.map((badge, index) => {
@@ -407,10 +407,7 @@ export default function TermsPage() {
         <section className="py-12 bg-gray-50">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
-              <div className="inline-flex items-center gap-2 text-gray-500">
-                <RefreshCw className="w-4 h-4" />
-                <span className="text-sm font-sans">Last reviewed: April 15, 2026 — Version 2.0</span>
-              </div>
+             
               <p className="text-sm text-gray-400 mt-2 font-sans">
                 We may update these Terms & Policies from time to time. The latest version will always be posted on this page.
               </p>

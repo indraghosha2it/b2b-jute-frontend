@@ -499,7 +499,7 @@
 //     }
 
 //     // Build query params for paginated invoices
-//     let url = `https://b2b-jute-backend.vercel.app/api/invoices?page=${currentPage}&limit=${itemsPerPage}`;
+//     let url = `http://localhost:5000/api/invoices?page=${currentPage}&limit=${itemsPerPage}`;
     
 //     // Add status filter if not "All" and not showing expired only
 //     // IMPORTANT: When showExpiredOnly is true, we DON'T send any paymentStatus filter
@@ -684,7 +684,7 @@
 //     setDeletingInvoice(invoiceToDelete._id);
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/invoices/${invoiceToDelete._id}`, {
+//       const response = await fetch(`http://localhost:5000/api/invoices/${invoiceToDelete._id}`, {
 //         method: 'DELETE',
 //         headers: {
 //           'Authorization': `Bearer ${token}`
@@ -722,7 +722,7 @@
 //         updateData.dueAmount = 0;
 //       }
 
-//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/invoices/${invoiceId}`, {
+//       const response = await fetch(`http://localhost:5000/api/invoices/${invoiceId}`, {
 //         method: 'PUT',
 //         headers: {
 //           'Authorization': `Bearer ${token}`,
@@ -1721,7 +1721,7 @@ export default function AdminInvoicesPage() {
         }
       }
 
-      let url = `https://b2b-jute-backend.vercel.app/api/invoices?page=${currentPage}&limit=${itemsPerPage}`;
+      let url = `http://localhost:5000/api/invoices?page=${currentPage}&limit=${itemsPerPage}`;
       
       if (activeFilter !== 'All' && !showExpiredOnly) {
         const filterMap = {
@@ -1880,7 +1880,7 @@ export default function AdminInvoicesPage() {
     setDeletingInvoice(invoiceToDelete._id);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/invoices/${invoiceToDelete._id}`, {
+      const response = await fetch(`http://localhost:5000/api/invoices/${invoiceToDelete._id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -1918,7 +1918,7 @@ export default function AdminInvoicesPage() {
         updateData.dueAmount = 0;
       }
 
-      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/invoices/${invoiceId}`, {
+      const response = await fetch(`http://localhost:5000/api/invoices/${invoiceId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

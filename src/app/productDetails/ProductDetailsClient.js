@@ -576,7 +576,7 @@
 //   const checkProfileCompleteness = async () => {
 //     if (!isAuthenticated) return false;
 //     try {
-//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/auth/profile-status', {
+//       const response = await fetch('http://localhost:5000/api/auth/profile-status', {
 //         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
 //       });
 //       const data = await response.json();
@@ -591,7 +591,7 @@
 //   const fetchProduct = async () => {
 //     setLoading(true);
 //     try {
-//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/products/${productId}`);
+//       const response = await fetch(`http://localhost:5000/api/products/${productId}`);
 //       const data = await response.json();
 //       if (data.success) {
 //         setProduct(data.data);
@@ -608,7 +608,7 @@
 //       const params = new URLSearchParams({ limit: 8 });
 //       if (categoryId) params.append('category', categoryId);
 //       if (targetedCustomer) params.append('targetedCustomer', targetedCustomer);
-//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/products?${params}`);
+//       const response = await fetch(`http://localhost:5000/api/products?${params}`);
 //       const data = await response.json();
 //       if (data.success) setRelatedProducts((data.data || []).filter(p => p._id !== productId).sort(() => 0.5 - Math.random()).slice(0, 12));
 //     } catch (error) { console.error(error); }
@@ -617,7 +617,7 @@
 //   const checkIfInCart = async () => {
 //     if (!isAuthenticated || !product) return;
 //     try {
-//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/inquiry-cart', {
+//       const response = await fetch('http://localhost:5000/api/inquiry-cart', {
 //         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
 //       });
 //       const data = await response.json();
@@ -687,7 +687,7 @@
 //         unit: getUnitLabel(product.orderUnit)
 //       })).filter(c => c.totalQuantity > 0);
 
-//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/inquiry-cart/add', {
+//       const response = await fetch('http://localhost:5000/api/inquiry-cart/add', {
 //         method: 'POST',
 //         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`, 'Content-Type': 'application/json' },
 //         body: JSON.stringify({
@@ -2122,7 +2122,7 @@ export default function ProductDetailsClient() {
   const checkProfileCompleteness = async () => {
     if (!isAuthenticated) return false;
     try {
-      const response = await fetch('https://b2b-jute-backend.vercel.app/api/auth/profile-status', {
+      const response = await fetch('http://localhost:5000/api/auth/profile-status', {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       const data = await response.json();
@@ -2137,7 +2137,7 @@ export default function ProductDetailsClient() {
   const fetchProduct = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/products/${productId}`);
+      const response = await fetch(`http://localhost:5000/api/products/${productId}`);
       const data = await response.json();
       if (data.success) {
         setProduct(data.data);
@@ -2185,7 +2185,7 @@ useEffect(() => {
       const params = new URLSearchParams({ limit: 12 });
       if (categoryId) params.append('category', categoryId);
       if (targetedCustomer) params.append('targetedCustomer', targetedCustomer);
-      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/products?${params}`);
+      const response = await fetch(`http://localhost:5000/api/products?${params}`);
       const data = await response.json();
       if (data.success) setRelatedProducts((data.data || []).filter(p => p._id !== productId).sort(() => 0.5 - Math.random()).slice(0, 12));
     } catch (error) { console.error(error); }
@@ -2194,7 +2194,7 @@ useEffect(() => {
   const checkIfInCart = async () => {
     if (!isAuthenticated || !product) return;
     try {
-      const response = await fetch('https://b2b-jute-backend.vercel.app/api/inquiry-cart', {
+      const response = await fetch('http://localhost:5000/api/inquiry-cart', {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       const data = await response.json();
@@ -2264,7 +2264,7 @@ useEffect(() => {
         unit: getUnitLabel(product.orderUnit)
       })).filter(c => c.totalQuantity > 0);
 
-      const response = await fetch('https://b2b-jute-backend.vercel.app/api/inquiry-cart/add', {
+      const response = await fetch('http://localhost:5000/api/inquiry-cart/add', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({

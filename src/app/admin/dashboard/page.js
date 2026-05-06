@@ -445,7 +445,7 @@ const fetchDashboardData = async () => {
       return;
     }
 
-    let url = `https://b2b-jute-backend.vercel.app/api/admin/inquiries/stats/dashboard`;
+    let url = `http://localhost:5000/api/admin/inquiries/stats/dashboard`;
     
     const params = new URLSearchParams();
     
@@ -529,7 +529,7 @@ const checkDirectDatabase = async () => {
     console.log('=== DIRECT DATABASE CHECK ===');
     
     // Check inquiries directly
-    const inquiriesRes = await fetch('https://b2b-jute-backend.vercel.app/api/admin/inquiries/all', {
+    const inquiriesRes = await fetch('http://localhost:5000/api/admin/inquiries/all', {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     const inquiriesData = await inquiriesRes.json();
@@ -539,7 +539,7 @@ const checkDirectDatabase = async () => {
     }
     
     // Check invoices directly
-    const invoicesRes = await fetch('https://b2b-jute-backend.vercel.app/api/invoices/all', {
+    const invoicesRes = await fetch('http://localhost:5000/api/invoices/all', {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     const invoicesData = await invoicesRes.json();

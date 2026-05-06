@@ -787,11 +787,11 @@ export default function PrivacyPolicyPage() {
               <div className="grid md:grid-cols-3 gap-4 mb-8">
                 <div className="bg-white/10 rounded-lg p-3">
                   <Mail className="w-5 h-5 mx-auto mb-2 text-[#3bc24f]" />
-                  <p className="text-sm font-sans">privacy@jutecraftify.com</p>
+                  <p className="text-sm font-sans">info@jutecraftify.com</p>
                 </div>
                 <div className="bg-white/10 rounded-lg p-3">
                   <Phone className="w-5 h-5 mx-auto mb-2 text-[#3bc24f]" />
-                  <p className="text-sm font-sans">+880 1234 567890</p>
+                  <p className="text-sm font-sans">+880 1871-733305</p>
                 </div>
                 <div className="bg-white/10 rounded-lg p-3">
                   <MapPin className="w-5 h-5 mx-auto mb-2 text-[#3bc24f]" />

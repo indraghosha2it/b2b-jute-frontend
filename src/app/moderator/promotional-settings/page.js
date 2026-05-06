@@ -1,9 +1,12 @@
+
+
 // 'use client';
 
 // import { useState, useEffect } from 'react';
 // import { 
 //   Save, 
 //   Plus, 
+//   Trash2, 
 //   X, 
 //   Loader2, 
 //   Package,
@@ -12,10 +15,32 @@
 //   Edit,
 //   RefreshCw,
 //   PlusCircle,
-//   MinusCircle
+//   MinusCircle,
+//   Globe,
+//   CheckSquare,
+//   Square,
+//   FolderTree,
+//   Tag,
+//   Calendar
 // } from 'lucide-react';
 // import { toast } from 'sonner';
 // import Link from 'next/link';
+
+// // Define available pages
+// const AVAILABLE_PAGES = [
+//   { path: '/', label: 'Home Page' },
+//   { path: '/products', label: 'Products Page' },
+//   { path: '/productDetails', label: 'Product Details Page' },
+//   { path: '/about', label: 'About Us' },
+//   { path: '/contact', label: 'Contact Us' },
+//   { path: '/blog', label: 'Blog Listing' },
+//   { path: '/blog/blogDetailsPage', label: 'Blog Details' },
+//   { path: '/shipping', label: 'Shipping Info' },
+//   { path: '/privacy', label: 'Privacy Policy' },
+//   { path: '/terms', label: 'Terms of Service' },
+//   { path: '/login', label: 'Login Page' },
+//   { path: '/register', label: 'Register Page' }
+// ];
 
 // export default function ModeratorPromotionalSettings() {
 //   const [loading, setLoading] = useState(true);
@@ -25,6 +50,7 @@
 //   const [searchTerm, setSearchTerm] = useState('');
 //   const [showProductDropdown, setShowProductDropdown] = useState(false);
 //   const [editingItem, setEditingItem] = useState(null);
+//   const [selectAllPages, setSelectAllPages] = useState(true);
   
 //   // Form for creating new promotional item
 //   const [newItemForm, setNewItemForm] = useState({
@@ -33,7 +59,8 @@
 //     tag: '',
 //     intervals: [{ delay: 5 }, { delay: 15 }, { delay: 15 }],
 //     maxShows: 3,
-//     isActive: true
+//     isActive: true,
+//     showOnPages: AVAILABLE_PAGES.map(p => p.path) // Select all by default
 //   });
 
 //   // Edit form
@@ -41,7 +68,8 @@
 //     tag: '',
 //     intervals: [{ delay: 5 }, { delay: 15 }, { delay: 15 }],
 //     maxShows: 3,
-//     isActive: true
+//     isActive: true,
+//     showOnPages: AVAILABLE_PAGES.map(p => p.path)
 //   });
 
 //   // Fetch products and promotional items
@@ -53,7 +81,7 @@
 //   const fetchProducts = async () => {
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/products?limit=100', {
+//       const response = await fetch('http://localhost:5000/api/products?limit=100', {
 //         headers: { 'Authorization': `Bearer ${token}` }
 //       });
 //       const data = await response.json();
@@ -70,7 +98,7 @@
 //     setLoading(true);
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/promotional-settings', {
+//       const response = await fetch('http://localhost:5000/api/promotional-settings', {
 //         headers: { 'Authorization': `Bearer ${token}` }
 //       });
 //       const data = await response.json();
@@ -82,6 +110,47 @@
 //       toast.error('Failed to fetch promotional items');
 //     } finally {
 //       setLoading(false);
+//     }
+//   };
+
+//   // Page selection handlers
+//   const togglePageSelection = (formType, pagePath) => {
+//     if (formType === 'new') {
+//       const currentPages = [...newItemForm.showOnPages];
+//       if (currentPages.includes(pagePath)) {
+//         const updatedPages = currentPages.filter(p => p !== pagePath);
+//         setNewItemForm({ ...newItemForm, showOnPages: updatedPages });
+//         setSelectAllPages(updatedPages.length === AVAILABLE_PAGES.length);
+//       } else {
+//         const updatedPages = [...currentPages, pagePath];
+//         setNewItemForm({ ...newItemForm, showOnPages: updatedPages });
+//         setSelectAllPages(updatedPages.length === AVAILABLE_PAGES.length);
+//       }
+//     } else if (formType === 'edit') {
+//       const currentPages = [...editForm.showOnPages];
+//       if (currentPages.includes(pagePath)) {
+//         setEditForm({ ...editForm, showOnPages: currentPages.filter(p => p !== pagePath) });
+//       } else {
+//         setEditForm({ ...editForm, showOnPages: [...currentPages, pagePath] });
+//       }
+//     }
+//   };
+
+//   const toggleSelectAllPages = (formType) => {
+//     if (formType === 'new') {
+//       if (selectAllPages) {
+//         setNewItemForm({ ...newItemForm, showOnPages: [] });
+//         setSelectAllPages(false);
+//       } else {
+//         setNewItemForm({ ...newItemForm, showOnPages: AVAILABLE_PAGES.map(p => p.path) });
+//         setSelectAllPages(true);
+//       }
+//     } else if (formType === 'edit') {
+//       if (editForm.showOnPages.length === AVAILABLE_PAGES.length) {
+//         setEditForm({ ...editForm, showOnPages: [] });
+//       } else {
+//         setEditForm({ ...editForm, showOnPages: AVAILABLE_PAGES.map(p => p.path) });
+//       }
 //     }
 //   };
 
@@ -145,11 +214,15 @@
 //       toast.error('At least one interval is required');
 //       return;
 //     }
+//     if (newItemForm.showOnPages.length === 0) {
+//       toast.error('Please select at least one page to show the popup');
+//       return;
+//     }
 
 //     setSaving(true);
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/promotional-settings', {
+//       const response = await fetch('http://localhost:5000/api/promotional-settings', {
 //         method: 'POST',
 //         headers: {
 //           'Authorization': `Bearer ${token}`,
@@ -160,7 +233,8 @@
 //           tag: newItemForm.tag,
 //           intervals: newItemForm.intervals,
 //           maxShows: newItemForm.maxShows,
-//           isActive: newItemForm.isActive
+//           isActive: newItemForm.isActive,
+//           showOnPages: newItemForm.showOnPages
 //         })
 //       });
 //       const data = await response.json();
@@ -175,8 +249,10 @@
 //           tag: '',
 //           intervals: [{ delay: 5 }, { delay: 15 }, { delay: 15 }],
 //           maxShows: 3,
-//           isActive: true
+//           isActive: true,
+//           showOnPages: AVAILABLE_PAGES.map(p => p.path)
 //         });
+//         setSelectAllPages(true);
 //         setShowProductDropdown(false);
 //         setSearchTerm('');
 //       } else {
@@ -196,7 +272,7 @@
 //     setSaving(true);
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/promotional-settings/${editingItem._id}`, {
+//       const response = await fetch(`http://localhost:5000/api/promotional-settings/${editingItem._id}`, {
 //         method: 'PUT',
 //         headers: {
 //           'Authorization': `Bearer ${token}`,
@@ -214,7 +290,8 @@
 //           tag: '',
 //           intervals: [{ delay: 5 }, { delay: 15 }, { delay: 15 }],
 //           maxShows: 3,
-//           isActive: true
+//           isActive: true,
+//           showOnPages: AVAILABLE_PAGES.map(p => p.path)
 //         });
 //       } else {
 //         toast.error(data.error || 'Failed to update promotional item');
@@ -233,7 +310,8 @@
 //       tag: item.tag,
 //       intervals: item.intervals || [{ delay: 5 }, { delay: 15 }, { delay: 15 }],
 //       maxShows: item.maxShows || 3,
-//       isActive: item.isActive
+//       isActive: item.isActive,
+//       showOnPages: item.showOnPages || AVAILABLE_PAGES.map(p => p.path)
 //     });
 //   };
 
@@ -243,7 +321,8 @@
 //       tag: '',
 //       intervals: [{ delay: 5 }, { delay: 15 }, { delay: 15 }],
 //       maxShows: 3,
-//       isActive: true
+//       isActive: true,
+//       showOnPages: AVAILABLE_PAGES.map(p => p.path)
 //     });
 //   };
 
@@ -278,6 +357,11 @@
 //     }
 //   };
 
+//   const getPageLabel = (pagePath) => {
+//     const page = AVAILABLE_PAGES.find(p => p.path === pagePath);
+//     return page ? page.label : pagePath;
+//   };
+
 //   if (loading) {
 //     return (
 //       <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center">
@@ -298,10 +382,10 @@
 //             </span>
 //           </div>
 //           <p className="text-sm text-gray-600 mt-1">
-//             Create and manage promotional posts for the popup
+//             Create and manage promotional posts with custom timing, tags, and page targeting
 //           </p>
 //           <p className="text-xs text-gray-400 mt-1">
-//             Note: You can create and edit promotional posts, but deletion is restricted to admins only.
+//             Note: You can create and edit promotional posts. Deletion is restricted to admins only.
 //           </p>
 //         </div>
 
@@ -335,6 +419,12 @@
 //                     <div className="flex-1">
 //                       <p className="font-medium text-gray-900 text-sm">{newItemForm.product.productName}</p>
 //                       <p className="text-xs text-gray-500">{formatPrice(newItemForm.product.pricePerUnit)} / {getUnitLabel(newItemForm.product.orderUnit)}</p>
+//                       {newItemForm.product.category && (
+//                         <p className="text-xs text-gray-400 mt-0.5 flex items-center gap-1">
+//                           <FolderTree className="w-3 h-3" />
+//                           Category: {typeof newItemForm.product.category === 'object' ? newItemForm.product.category.name : newItemForm.product.category}
+//                         </p>
+//                       )}
 //                     </div>
 //                     <button
 //                       onClick={() => setNewItemForm({ ...newItemForm, product: null, productId: null })}
@@ -390,6 +480,11 @@
 //                                 <div className="flex-1">
 //                                   <p className="text-sm font-medium text-gray-900">{product.productName}</p>
 //                                   <p className="text-xs text-gray-500">{formatPrice(product.pricePerUnit)} / {getUnitLabel(product.orderUnit)}</p>
+//                                   {product.category && (
+//                                     <p className="text-xs text-gray-400">
+//                                       Category: {typeof product.category === 'object' ? product.category.name : product.category}
+//                                     </p>
+//                                   )}
 //                                 </div>
 //                               </button>
 //                             ))
@@ -415,6 +510,37 @@
 //                 className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none"
 //               />
 //               <p className="text-xs text-gray-500 mt-1">This tag will appear on the popup badge</p>
+//             </div>
+
+//             {/* Page Selection */}
+//             <div className="mb-4">
+//               <label className="block text-sm font-medium text-gray-700 mb-2">
+//                 Show on Pages <span className="text-red-500">*</span>
+//               </label>
+//               <div className="border border-gray-200 rounded-lg p-3 bg-gray-50">
+//                 <button
+//                   type="button"
+//                   onClick={() => toggleSelectAllPages('new')}
+//                   className="flex items-center gap-2 text-sm text-[#6B4F3A] hover:underline mb-2"
+//                 >
+//                   {selectAllPages ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
+//                   {selectAllPages ? 'Deselect All' : 'Select All Pages'}
+//                 </button>
+//                 <div className="grid grid-cols-2 gap-2">
+//                   {AVAILABLE_PAGES.map((page) => (
+//                     <label key={page.path} className="flex items-center gap-2 cursor-pointer text-sm">
+//                       <input
+//                         type="checkbox"
+//                         checked={newItemForm.showOnPages.includes(page.path)}
+//                         onChange={() => togglePageSelection('new', page.path)}
+//                         className="rounded border-gray-300 text-[#6B4F3A] focus:ring-[#6B4F3A]"
+//                       />
+//                       <span className="text-gray-700">{page.label}</span>
+//                     </label>
+//                   ))}
+//                 </div>
+//               </div>
+//               <p className="text-xs text-gray-500 mt-1">Select where this promotional popup should appear</p>
 //             </div>
 
 //             {/* Intervals Configuration */}
@@ -470,16 +596,9 @@
 //                 onChange={(e) => setNewItemForm({ ...newItemForm, maxShows: parseInt(e.target.value) })}
 //                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6B4F3A] focus:border-transparent outline-none"
 //               >
-//                 <option value={1}>1 time</option>
-//                 <option value={2}>2 times</option>
-//                 <option value={3}>3 times</option>
-//                 <option value={4}>4 times</option>
-//                 <option value={5}>5 times</option>
-//                 <option value={6}>6 times</option>
-//                 <option value={7}>7 times</option>
-//                 <option value={8}>8 times</option>
-//                 <option value={9}>9 times</option>
-//                 <option value={10}>10 times</option>
+//                 {[1,2,3,4,5,6,7,8,9,10].map(num => (
+//                   <option key={num} value={num}>{num} time{num > 1 ? 's' : ''}</option>
+//                 ))}
 //               </select>
 //               <p className="text-xs text-gray-500 mt-1">Popup will not appear after this many total shows</p>
 //             </div>
@@ -500,7 +619,7 @@
 //             {/* Create Button */}
 //             <button
 //               onClick={createPromotionalItem}
-//               disabled={saving || !newItemForm.productId || !newItemForm.tag}
+//               disabled={saving || !newItemForm.productId || !newItemForm.tag || newItemForm.showOnPages.length === 0}
 //               className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-[#6B4F3A] text-white rounded-lg hover:bg-[#8B6B51] transition-colors disabled:opacity-50"
 //             >
 //               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
@@ -508,7 +627,7 @@
 //             </button>
 //           </div>
 
-//           {/* Right Column - List of Promotional Items (No Delete button) */}
+//           {/* Right Column - List of Promotional Items */}
 //           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
 //             <div className="flex items-center justify-between mb-4">
 //               <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
@@ -523,8 +642,8 @@
 //               </button>
 //             </div>
 
-//             <p className="text-sm text-gray-500 mb-4">
-//               Manage promotional posts. Click edit to modify settings.
+//             <p className="text-xs text-gray-500 mb-4">
+//               Click edit to modify promotional posts. Deletion is restricted to admins.
 //             </p>
 
 //             {promotionalItems.length === 0 ? (
@@ -534,13 +653,24 @@
 //                 <p className="text-xs text-gray-400 mt-1">Use the form to create your first promotional post</p>
 //               </div>
 //             ) : (
-//               <div className="space-y-4">
+//               <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
 //                 {promotionalItems.map((item) => {
 //                   const product = item.productId;
 //                   if (!product) return null;
                   
+//                   // Get category name
+//                   let categoryName = 'N/A';
+//                   if (product.category) {
+//                     if (typeof product.category === 'object' && product.category.name) {
+//                       categoryName = product.category.name;
+//                     } else if (typeof product.category === 'string') {
+//                       categoryName = product.category;
+//                     }
+//                   }
+                  
+                  
 //                   return (
-//                     <div key={item._id} className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
+//                     <div key={item._id} className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
 //                       <div className="p-4">
 //                         <div className="flex items-start gap-4">
 //                           {/* Product Image */}
@@ -557,37 +687,82 @@
 //                           </div>
                           
 //                           {/* Product Details */}
-//                           <div className="flex-1">
-//                             <h3 className="font-semibold text-gray-900 text-sm">{product.productName}</h3>
-//                             <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
-//                               <span>{formatPrice(product.pricePerUnit)}/{getUnitLabel(product.orderUnit)}</span>
+//                           <div className="flex-1 min-w-0">
+//                             <h3 className="font-semibold text-gray-900 text-sm truncate" title={product.productName}>
+//                               {product.productName}
+//                             </h3>
+//                             <div className="flex items-center gap-2 text-xs text-gray-500 mt-1 flex-wrap">
+//                               <span className="flex items-center gap-1">
+//                                 <span className="font-medium">Price:</span> {formatPrice(product.pricePerUnit)}/{getUnitLabel(product.orderUnit)}
+//                               </span>
 //                               <span>•</span>
-//                               <span>MOQ: {product.moq}</span>
+//                               <span className="flex items-center gap-1">
+//                                 <span className="font-medium">MOQ:</span> {product.moq} {getUnitLabel(product.orderUnit)}
+//                               </span>
 //                             </div>
+                            
+//                             {/* Category */}
+//                             {/* <div className="mt-2 flex items-center gap-1 text-xs text-gray-500">
+//                               <FolderTree className="w-3 h-3" />
+//                               <span className="font-medium">Category:</span>
+//                               <span>{categoryName}</span>
+//                             </div> */}
+                            
+//                             {/* Tags */}
 //                             <div className="mt-2 flex flex-wrap gap-2">
 //                               <span className="inline-flex items-center px-2 py-0.5 bg-[#F5E6D3] text-[#6B4F3A] text-xs rounded-full">
-//                                 Tag: {item.tag}
-//                               </span>
-//                               <span className="inline-flex items-center px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
-//                                 Max Shows: {item.maxShows}
+//                                 <Tag className="w-3 h-3 mr-1" />
+//                                 {item.tag}
 //                               </span>
 //                               <span className={`inline-flex items-center px-2 py-0.5 text-xs rounded-full ${item.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
 //                                 {item.isActive ? 'Active' : 'Inactive'}
 //                               </span>
+//                               <span className="inline-flex items-center px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
+//                                 Max Shows: {item.maxShows}
+//                               </span>
 //                             </div>
+                            
+//                             {/* Show on Pages */}
+//                             <div className="mt-2">
+//                               <div className="flex items-center gap-1 text-xs text-gray-500 mb-1">
+//                                 <Globe className="w-3 h-3" />
+//                                 <span className="font-medium">Shows on:</span>
+//                                 <span>{item.showOnPages?.length || AVAILABLE_PAGES.length} page(s)</span>
+//                               </div>
+//                               <div className="flex flex-wrap gap-1">
+//                                 {(item.showOnPages || AVAILABLE_PAGES.map(p => p.path)).slice(0, 4).map((pagePath, idx) => (
+//                                   <span key={idx} className="text-[10px] px-1.5 py-0.5 bg-gray-200 rounded-full text-gray-600">
+//                                     {getPageLabel(pagePath)}
+//                                   </span>
+//                                 ))}
+//                                 {(item.showOnPages?.length || AVAILABLE_PAGES.length) > 4 && (
+//                                   <span className="text-[10px] px-1.5 py-0.5 bg-gray-200 rounded-full text-gray-500">
+//                                     +{(item.showOnPages?.length || AVAILABLE_PAGES.length) - 4} more
+//                                   </span>
+//                                 )}
+//                               </div>
+//                             </div>
+                            
+//                             {/* Intervals */}
 //                             <div className="mt-2 text-xs text-gray-500">
-//                               Intervals: {item.intervals.map((i, idx) => (
-//                                 <span key={idx} className="inline-block mr-2">
-//                                   {idx === 0 ? 'First: ' : `${idx}th close: `}{i.delay}s
-//                                 </span>
-//                               ))}
+//                               <span className="font-medium">Intervals:</span>
+//                               <div className="flex flex-wrap gap-2 mt-1">
+//                                 {item.intervals.map((i, idx) => (
+//                                   <span key={idx} className="text-[10px] px-1.5 py-0.5 bg-gray-200 rounded-full">
+//                                     {idx === 0 ? 'First' : `After ${idx}`}: {i.delay}s
+//                                   </span>
+//                                 ))}
+//                               </div>
 //                             </div>
-//                             <div className="text-xs text-gray-400 mt-1">
-//                               Created: {new Date(item.createdAt).toLocaleDateString()} {new Date(item.createdAt).toLocaleTimeString()}
+                            
+//                             {/* Created Date */}
+//                             <div className="mt-2 flex items-center gap-1 text-[10px] text-gray-400">
+//                               <Calendar className="w-3 h-3" />
+//                               <span>Created: {new Date(item.createdAt).toLocaleDateString()} at {new Date(item.createdAt).toLocaleTimeString()}</span>
 //                             </div>
 //                           </div>
                           
-//                           {/* Actions - Only Edit button, NO DELETE */}
+//                           {/* Actions - Only Edit button */}
 //                           <div className="flex gap-2">
 //                             <button
 //                               onClick={() => startEditing(item)}
@@ -613,6 +788,26 @@
 //                                 onChange={(e) => setEditForm({ ...editForm, tag: e.target.value })}
 //                                 className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-[#6B4F3A] focus:border-[#6B4F3A] outline-none"
 //                               />
+//                             </div>
+                            
+//                             {/* Page Selection in Edit */}
+//                             <div className="mb-3">
+//                               <label className="block text-xs font-medium text-gray-700 mb-1">Show on Pages</label>
+//                               <div className="border border-gray-200 rounded-lg p-2 bg-gray-50">
+//                                 <div className="grid grid-cols-2 gap-1">
+//                                   {AVAILABLE_PAGES.map((page) => (
+//                                     <label key={page.path} className="flex items-center gap-2 cursor-pointer text-xs">
+//                                       <input
+//                                         type="checkbox"
+//                                         checked={editForm.showOnPages?.includes(page.path) || false}
+//                                         onChange={() => togglePageSelection('edit', page.path)}
+//                                         className="rounded border-gray-300 text-[#6B4F3A] focus:ring-[#6B4F3A]"
+//                                       />
+//                                       <span className="text-gray-700">{page.label}</span>
+//                                     </label>
+//                                   ))}
+//                                 </div>
+//                               </div>
 //                             </div>
                             
 //                             {/* Intervals */}
@@ -757,9 +952,11 @@ export default function ModeratorPromotionalSettings() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [promotionalItems, setPromotionalItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showProductDropdown, setShowProductDropdown] = useState(false);
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [selectAllPages, setSelectAllPages] = useState(true);
   
@@ -771,7 +968,9 @@ export default function ModeratorPromotionalSettings() {
     intervals: [{ delay: 5 }, { delay: 15 }, { delay: 15 }],
     maxShows: 3,
     isActive: true,
-    showOnPages: AVAILABLE_PAGES.map(p => p.path) // Select all by default
+    showOnPages: AVAILABLE_PAGES.map(p => p.path),
+    categoryId: null,
+    category: null
   });
 
   // Edit form
@@ -780,19 +979,22 @@ export default function ModeratorPromotionalSettings() {
     intervals: [{ delay: 5 }, { delay: 15 }, { delay: 15 }],
     maxShows: 3,
     isActive: true,
-    showOnPages: AVAILABLE_PAGES.map(p => p.path)
+    showOnPages: AVAILABLE_PAGES.map(p => p.path),
+    categoryId: null,
+    category: null
   });
 
-  // Fetch products and promotional items
+  // Fetch products, categories, and promotional items
   useEffect(() => {
     fetchProducts();
+    fetchCategories();
     fetchPromotionalItems();
   }, []);
 
   const fetchProducts = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('https://b2b-jute-backend.vercel.app/api/products?limit=100', {
+      const response = await fetch('http://localhost:5000/api/products?limit=100', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -805,11 +1007,23 @@ export default function ModeratorPromotionalSettings() {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/categories');
+      const data = await response.json();
+      if (data.success) {
+        setCategories(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
   const fetchPromotionalItems = async () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('https://b2b-jute-backend.vercel.app/api/promotional-settings', {
+      const response = await fetch('http://localhost:5000/api/promotional-settings', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -933,7 +1147,7 @@ export default function ModeratorPromotionalSettings() {
     setSaving(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('https://b2b-jute-backend.vercel.app/api/promotional-settings', {
+      const response = await fetch('http://localhost:5000/api/promotional-settings', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -945,7 +1159,8 @@ export default function ModeratorPromotionalSettings() {
           intervals: newItemForm.intervals,
           maxShows: newItemForm.maxShows,
           isActive: newItemForm.isActive,
-          showOnPages: newItemForm.showOnPages
+          showOnPages: newItemForm.showOnPages,
+          categoryId: newItemForm.categoryId
         })
       });
       const data = await response.json();
@@ -961,10 +1176,13 @@ export default function ModeratorPromotionalSettings() {
           intervals: [{ delay: 5 }, { delay: 15 }, { delay: 15 }],
           maxShows: 3,
           isActive: true,
-          showOnPages: AVAILABLE_PAGES.map(p => p.path)
+          showOnPages: AVAILABLE_PAGES.map(p => p.path),
+          categoryId: null,
+          category: null
         });
         setSelectAllPages(true);
         setShowProductDropdown(false);
+        setShowCategoryDropdown(false);
         setSearchTerm('');
       } else {
         toast.error(data.error || 'Failed to create promotional item');
@@ -983,13 +1201,20 @@ export default function ModeratorPromotionalSettings() {
     setSaving(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/promotional-settings/${editingItem._id}`, {
+      const response = await fetch(`http://localhost:5000/api/promotional-settings/${editingItem._id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(editForm)
+        body: JSON.stringify({
+          tag: editForm.tag,
+          intervals: editForm.intervals,
+          maxShows: editForm.maxShows,
+          isActive: editForm.isActive,
+          showOnPages: editForm.showOnPages,
+          categoryId: editForm.categoryId
+        })
       });
       const data = await response.json();
       
@@ -1002,7 +1227,9 @@ export default function ModeratorPromotionalSettings() {
           intervals: [{ delay: 5 }, { delay: 15 }, { delay: 15 }],
           maxShows: 3,
           isActive: true,
-          showOnPages: AVAILABLE_PAGES.map(p => p.path)
+          showOnPages: AVAILABLE_PAGES.map(p => p.path),
+          categoryId: null,
+          category: null
         });
       } else {
         toast.error(data.error || 'Failed to update promotional item');
@@ -1022,7 +1249,9 @@ export default function ModeratorPromotionalSettings() {
       intervals: item.intervals || [{ delay: 5 }, { delay: 15 }, { delay: 15 }],
       maxShows: item.maxShows || 3,
       isActive: item.isActive,
-      showOnPages: item.showOnPages || AVAILABLE_PAGES.map(p => p.path)
+      showOnPages: item.showOnPages || AVAILABLE_PAGES.map(p => p.path),
+      categoryId: item.categoryId || null,
+      category: item.categoryId ? categories.find(c => c._id === item.categoryId) : null
     });
   };
 
@@ -1033,7 +1262,9 @@ export default function ModeratorPromotionalSettings() {
       intervals: [{ delay: 5 }, { delay: 15 }, { delay: 15 }],
       maxShows: 3,
       isActive: true,
-      showOnPages: AVAILABLE_PAGES.map(p => p.path)
+      showOnPages: AVAILABLE_PAGES.map(p => p.path),
+      categoryId: null,
+      category: null
     });
   };
 
@@ -1045,6 +1276,32 @@ export default function ModeratorPromotionalSettings() {
     });
     setShowProductDropdown(false);
     setSearchTerm('');
+  };
+
+  const selectCategory = (category) => {
+    setNewItemForm({
+      ...newItemForm,
+      categoryId: category._id,
+      category: category
+    });
+    setShowCategoryDropdown(false);
+  };
+
+  const selectEditCategory = (category) => {
+    setEditForm({
+      ...editForm,
+      categoryId: category._id,
+      category: category
+    });
+    setShowCategoryDropdown(false);
+  };
+
+  const removeCategory = (formType) => {
+    if (formType === 'new') {
+      setNewItemForm({ ...newItemForm, categoryId: null, category: null });
+    } else {
+      setEditForm({ ...editForm, categoryId: null, category: null });
+    }
   };
 
   const filteredProducts = products.filter(product =>
@@ -1093,10 +1350,13 @@ export default function ModeratorPromotionalSettings() {
             </span>
           </div>
           <p className="text-sm text-gray-600 mt-1">
-            Create and manage promotional posts with custom timing, tags, and page targeting
+            Create promotional posts with custom timing, tags, page targeting, and category filtering
           </p>
           <p className="text-xs text-gray-400 mt-1">
-            Note: You can create and edit promotional posts. Deletion is restricted to admins only.
+            <span className="font-medium">Note:</span> If you select a category, this popup will only show on product listing pages when that category is filtered. Leave empty to show on all pages (latest first).
+          </p>
+          <p className="text-xs text-blue-600 mt-1">
+            Deletion of promotional posts is restricted to admins only.
           </p>
         </div>
 
@@ -1200,6 +1460,75 @@ export default function ModeratorPromotionalSettings() {
                               </button>
                             ))
                           )}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Category Selection */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                <div className="flex items-center gap-2">
+                  <FolderTree className="w-4 h-4" />
+                  Target Category <span className="text-gray-400 text-xs font-normal">(Optional)</span>
+                </div>
+              </label>
+              <p className="text-xs text-gray-500 mb-2">
+                Select a category to show this popup only when that category is filtered on products page. Leave empty to show on all pages.
+              </p>
+              <div className="relative">
+                {newItemForm.category ? (
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="flex items-center gap-2">
+                      <FolderTree className="w-4 h-4 text-[#6B4F3A]" />
+                      <span className="text-sm text-gray-700">{newItemForm.category.name}</span>
+                    </div>
+                    <button
+                      onClick={() => removeCategory('new')}
+                      className="p-1 text-red-500 hover:bg-red-50 rounded"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
+                    >
+                      <FolderTree className="w-4 h-4" />
+                      Select Category (Optional)
+                    </button>
+
+                    {showCategoryDropdown && (
+                      <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                        <div className="p-3 border-b border-gray-200">
+                          <p className="text-sm font-medium text-gray-700">Select a category</p>
+                        </div>
+                        <div className="max-h-48 overflow-y-auto">
+                          <button
+                            onClick={() => {
+                              setNewItemForm({ ...newItemForm, categoryId: null, category: null });
+                              setShowCategoryDropdown(false);
+                            }}
+                            className="w-full text-left px-3 py-2 hover:bg-gray-50 transition-colors flex items-center gap-2"
+                          >
+                            <span className="text-sm text-gray-500">-- No Category (Show on all pages) --</span>
+                          </button>
+                          {categories.map(category => (
+                            <button
+                              key={category._id}
+                              onClick={() => selectCategory(category)}
+                              className="w-full text-left px-3 py-2 hover:bg-gray-50 transition-colors flex items-center gap-2"
+                            >
+                              <FolderTree className="w-4 h-4 text-[#6B4F3A]" />
+                              <span className="text-sm text-gray-700">{category.name}</span>
+                            </button>
+                          ))}
                         </div>
                       </div>
                     )}
@@ -1369,16 +1698,7 @@ export default function ModeratorPromotionalSettings() {
                   const product = item.productId;
                   if (!product) return null;
                   
-                  // Get category name
-                  let categoryName = 'N/A';
-                  if (product.category) {
-                    if (typeof product.category === 'object' && product.category.name) {
-                      categoryName = product.category.name;
-                    } else if (typeof product.category === 'string') {
-                      categoryName = product.category;
-                    }
-                  }
-                  
+                  const categoryName = item.categoryId ? categories.find(c => c._id === item.categoryId)?.name : 'All Categories';
                   
                   return (
                     <div key={item._id} className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
@@ -1412,12 +1732,13 @@ export default function ModeratorPromotionalSettings() {
                               </span>
                             </div>
                             
-                            {/* Category */}
-                            {/* <div className="mt-2 flex items-center gap-1 text-xs text-gray-500">
-                              <FolderTree className="w-3 h-3" />
-                              <span className="font-medium">Category:</span>
-                              <span>{categoryName}</span>
-                            </div> */}
+                            {/* Category Filter Badge */}
+                            <div className="mt-2">
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded-full">
+                                <FolderTree className="w-3 h-3" />
+                                Target Category: {categoryName}
+                              </span>
+                            </div>
                             
                             {/* Tags */}
                             <div className="mt-2 flex flex-wrap gap-2">
@@ -1499,6 +1820,49 @@ export default function ModeratorPromotionalSettings() {
                                 onChange={(e) => setEditForm({ ...editForm, tag: e.target.value })}
                                 className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-[#6B4F3A] focus:border-[#6B4F3A] outline-none"
                               />
+                            </div>
+                            
+                            {/* Category Selection in Edit */}
+                            <div className="mb-3">
+                              <label className="block text-xs font-medium text-gray-700 mb-1">
+                                <div className="flex items-center gap-1">
+                                  <FolderTree className="w-3 h-3" />
+                                  Target Category (Optional)
+                                </div>
+                              </label>
+                              {editForm.category ? (
+                                <div className="flex items-center justify-between p-2 bg-gray-50 rounded border border-gray-200">
+                                  <div className="flex items-center gap-2">
+                                    <FolderTree className="w-3 h-3 text-[#6B4F3A]" />
+                                    <span className="text-xs text-gray-700">{editForm.category.name}</span>
+                                  </div>
+                                  <button
+                                    onClick={() => removeCategory('edit')}
+                                    className="p-0.5 text-red-500 hover:bg-red-50 rounded"
+                                  >
+                                    <X className="w-3 h-3" />
+                                  </button>
+                                </div>
+                              ) : (
+                                <select
+                                  value={editForm.categoryId || ''}
+                                  onChange={(e) => {
+                                    const catId = e.target.value;
+                                    if (catId) {
+                                      const cat = categories.find(c => c._id === catId);
+                                      setEditForm({ ...editForm, categoryId: catId, category: cat });
+                                    } else {
+                                      setEditForm({ ...editForm, categoryId: null, category: null });
+                                    }
+                                  }}
+                                  className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-[#6B4F3A] outline-none"
+                                >
+                                  <option value="">-- No Category (Show on all pages) --</option>
+                                  {categories.map(cat => (
+                                    <option key={cat._id} value={cat._id}>{cat.name}</option>
+                                  ))}
+                                </select>
+                              )}
                             </div>
                             
                             {/* Page Selection in Edit */}

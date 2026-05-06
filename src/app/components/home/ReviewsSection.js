@@ -44,7 +44,7 @@
 
 //   const fetchReviews = async () => {
 //     try {
-//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/reviews/featured?limit=6');
+//       const response = await fetch('http://localhost:5000/api/reviews/featured?limit=6');
 //       const data = await response.json();
       
 //       if (data.success) {
@@ -946,7 +946,7 @@ export default function ReviewsSection() {
 
   const fetchReviews = async () => {
     try {
-      const response = await fetch('https://b2b-jute-backend.vercel.app/api/reviews/featured?limit=20');
+      const response = await fetch('http://localhost:5000/api/reviews/featured?limit=20');
       const data = await response.json();
       
       if (data.success) {
@@ -1308,7 +1308,7 @@ const handleViewReview = (review) => {
                                 </p>
                               )}
                             </div>
-                            <p className="text-gray-600 text-xs md:text-sm leading-relaxed font-sans line-clamp-4">
+                            <p className="text-gray-600 text-xs md:text-sm leading-relaxed font-sans line-clamp-1 truncate">
                               "{review.comment}"
                             </p>
                           </div>

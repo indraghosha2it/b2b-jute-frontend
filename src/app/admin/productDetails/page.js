@@ -803,7 +803,7 @@
 //     setLoading(true);
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/products/${productId}`, {
+//       const response = await fetch(`http://localhost:5000/api/products/${productId}`, {
 //         headers: {
 //           'Authorization': `Bearer ${token}`
 //         }
@@ -838,7 +838,7 @@
 //   const handleDeleteConfirm = async () => {
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/products/${deleteModal.id}`, {
+//       const response = await fetch(`http://localhost:5000/api/products/${deleteModal.id}`, {
 //         method: 'DELETE',
 //         headers: { 'Authorization': `Bearer ${token}` }
 //       });
@@ -862,7 +862,7 @@
 //   const handleToggleStatus = async () => {
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/products/${productId}/toggle`, {
+//       const response = await fetch(`http://localhost:5000/api/products/${productId}/toggle`, {
 //         method: 'PUT',
 //         headers: { 
 //           'Authorization': `Bearer ${token}`,
@@ -2224,7 +2224,7 @@ export default function AdminProductDetails() {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/products/${productId}`, {
+      const response = await fetch(`http://localhost:5000/api/products/${productId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -2259,7 +2259,7 @@ export default function AdminProductDetails() {
   const handleDeleteConfirm = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/products/${deleteModal.id}`, {
+      const response = await fetch(`http://localhost:5000/api/products/${deleteModal.id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -2283,7 +2283,7 @@ export default function AdminProductDetails() {
   const handleToggleStatus = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/products/${productId}/toggle`, {
+      const response = await fetch(`http://localhost:5000/api/products/${productId}/toggle`, {
         method: 'PUT',
         headers: { 
           'Authorization': `Bearer ${token}`,

@@ -318,7 +318,7 @@
 //     setIsLoading(true);
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/categories', {
+//       const response = await fetch('http://localhost:5000/api/categories', {
 //         headers: { 'Authorization': `Bearer ${token}` }
 //       });
       
@@ -337,7 +337,7 @@
 //   const fetchSubcategories = async (categoryId) => {
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/categories/${categoryId}/subcategories`, {
+//       const response = await fetch(`http://localhost:5000/api/categories/${categoryId}/subcategories`, {
 //         headers: { 'Authorization': `Bearer ${token}` }
 //       });
 //       const data = await response.json();
@@ -356,7 +356,7 @@
 //   const fetchChildSubcategories = async (categoryId, subcategoryId) => {
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/categories/${categoryId}/subcategories/${subcategoryId}/children`, {
+//       const response = await fetch(`http://localhost:5000/api/categories/${categoryId}/subcategories/${subcategoryId}/children`, {
 //         headers: { 'Authorization': `Bearer ${token}` }
 //       });
 //       const data = await response.json();
@@ -378,7 +378,7 @@
 //   const fetchCategoryDetails = async (categoryId) => {
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/categories/${categoryId}`, {
+//       const response = await fetch(`http://localhost:5000/api/categories/${categoryId}`, {
 //         headers: { 'Authorization': `Bearer ${token}` }
 //       });
       
@@ -1032,7 +1032,7 @@
 //       metaSettings: formData.metaSettings
 //     };
 
-//     const response = await fetch('https://b2b-jute-backend.vercel.app/api/products', {
+//     const response = await fetch('http://localhost:5000/api/products', {
 //       method: 'POST',
 //       headers: {
 //         'Authorization': `Bearer ${token}`,
@@ -2268,8 +2268,8 @@ const ORDER_UNITS = [
 const uploadToCloudinary = async (file) => {
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('upload_preset', 'b2b-products');
-  formData.append('folder', 'b2b-products');
+  formData.append('upload_preset', 'jute-products');
+  formData.append('folder', 'jute-products');
   
   try {
     const response = await fetch(
@@ -2488,7 +2488,7 @@ export default function AdminCreateProduct() {
     setIsLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('https://b2b-jute-backend.vercel.app/api/categories', {
+      const response = await fetch('http://localhost:5000/api/categories', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -2507,7 +2507,7 @@ export default function AdminCreateProduct() {
   const fetchSubcategories = async (categoryId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/categories/${categoryId}/subcategories`, {
+      const response = await fetch(`http://localhost:5000/api/categories/${categoryId}/subcategories`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -2526,7 +2526,7 @@ export default function AdminCreateProduct() {
   const fetchChildSubcategories = async (categoryId, subcategoryId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/categories/${categoryId}/subcategories/${subcategoryId}/children`, {
+      const response = await fetch(`http://localhost:5000/api/categories/${categoryId}/subcategories/${subcategoryId}/children`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -2548,7 +2548,7 @@ export default function AdminCreateProduct() {
   const fetchCategoryDetails = async (categoryId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/categories/${categoryId}`, {
+      const response = await fetch(`http://localhost:5000/api/categories/${categoryId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -3220,7 +3220,7 @@ export default function AdminCreateProduct() {
         metaSettings: formData.metaSettings
       };
 
-      const response = await fetch('https://b2b-jute-backend.vercel.app/api/products', {
+      const response = await fetch('http://localhost:5000/api/products', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

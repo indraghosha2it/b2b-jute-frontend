@@ -64,7 +64,7 @@
       
 //       if (token && userData) {
 //         setIsLoggedIn(true);
-//         const response = await fetch('https://b2b-jute-backend.vercel.app/api/auth/subscription-status', {
+//         const response = await fetch('http://localhost:5000/api/auth/subscription-status', {
 //           headers: { 'Authorization': `Bearer ${token}` }
 //         });
 //         const data = await response.json();
@@ -215,7 +215,7 @@
 //     try {
 //       console.log('📡 Initializing promotional popup for path:', currentPathname);
       
-//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/promotional');
+//       const response = await fetch('http://localhost:5000/api/promotional');
 //       const data = await response.json();
       
 //       console.log('📦 Promotional products response:', data);
@@ -384,7 +384,7 @@
       
 //       try {
 //         console.log('📡 Fetching popup config from API...');
-//         const response = await fetch('https://b2b-jute-backend.vercel.app/api/popup-config');
+//         const response = await fetch('http://localhost:5000/api/popup-config');
 //         const data = await response.json();
         
 //         if (data.success && isActive) {
@@ -532,7 +532,7 @@
       
 //       if (token && userData) {
 //         setIsLoggedIn(true);
-//         const response = await fetch('https://b2b-jute-backend.vercel.app/api/auth/subscription-status', {
+//         const response = await fetch('http://localhost:5000/api/auth/subscription-status', {
 //           headers: { 'Authorization': `Bearer ${token}` }
 //         });
 //         const data = await response.json();
@@ -622,7 +622,7 @@
 //       }
       
 //       console.log('📦 Fetching product details for ID:', productId);
-//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/products/${productId}`);
+//       const response = await fetch(`http://localhost:5000/api/products/${productId}`);
 //       const data = await response.json();
       
 //       if (data.success && data.data) {
@@ -653,7 +653,7 @@
 //       console.log('Category filter:', currentCategoryId);
       
 //       // Build URL with query params
-//       let url = 'https://b2b-jute-backend.vercel.app/api/promotional';
+//       let url = 'http://localhost:5000/api/promotional';
 //       if (currentCategoryId) {
 //         url += `?categoryId=${currentCategoryId}`;
 //         console.log('🔍 Filtering by category ID:', currentCategoryId);
@@ -900,7 +900,7 @@
       
 //       try {
 //         console.log('📡 Fetching popup config from API...');
-//         const response = await fetch('https://b2b-jute-backend.vercel.app/api/popup-config');
+//         const response = await fetch('http://localhost:5000/api/popup-config');
 //         const data = await response.json();
         
 //         if (data.success && isActive) {
@@ -1048,7 +1048,7 @@
       
 //       if (token && userData) {
 //         setIsLoggedIn(true);
-//         const response = await fetch('https://b2b-jute-backend.vercel.app/api/auth/subscription-status', {
+//         const response = await fetch('http://localhost:5000/api/auth/subscription-status', {
 //           headers: { 'Authorization': `Bearer ${token}` }
 //         });
 //         const data = await response.json();
@@ -1153,7 +1153,7 @@
 //       }
       
 //       console.log('📦 Fetching product details for ID:', productId);
-//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/products/${productId}`);
+//       const response = await fetch(`http://localhost:5000/api/products/${productId}`);
 //       const data = await response.json();
       
 //       if (data.success && data.data) {
@@ -1183,7 +1183,7 @@
 //       console.log('Category filter:', currentCategoryId);
       
 //       // Build URL with query params
-//       let url = 'https://b2b-jute-backend.vercel.app/api/promotional';
+//       let url = 'http://localhost:5000/api/promotional';
 //       if (currentCategoryId) {
 //         url += `?categoryId=${currentCategoryId}`;
 //         console.log('🔍 Filtering by category ID:', currentCategoryId);
@@ -1447,7 +1447,7 @@
       
 //       try {
 //         console.log('📡 Fetching popup config from API...');
-//         const response = await fetch('https://b2b-jute-backend.vercel.app/api/popup-config');
+//         const response = await fetch('http://localhost:5000/api/popup-config');
 //         const data = await response.json();
         
 //         if (data.success && isActive) {
@@ -1588,7 +1588,7 @@ export default function UnifiedPopupManager() {
       
       if (token && userData) {
         setIsLoggedIn(true);
-        const response = await fetch('https://b2b-jute-backend.vercel.app/api/auth/subscription-status', {
+        const response = await fetch('http://localhost:5000/api/auth/subscription-status', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -1693,7 +1693,7 @@ export default function UnifiedPopupManager() {
       }
       
       console.log('📦 Fetching product details for ID:', productId);
-      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/products/${productId}`);
+      const response = await fetch(`http://localhost:5000/api/products/${productId}`);
       const data = await response.json();
       
       if (data.success && data.data) {
@@ -1716,91 +1716,290 @@ export default function UnifiedPopupManager() {
   };
   
   // Fetch promotional products function
-  const fetchPromotionalProducts = async (currentCount, currentPathname, currentCategoryId = null) => {
-    try {
-      console.log('📡 Fetching promotional products...');
-      console.log('Current path:', currentPathname);
-      console.log('Category filter:', currentCategoryId);
+  // const fetchPromotionalProducts = async (currentCount, currentPathname, currentCategoryId = null) => {
+  //   try {
+  //     console.log('📡 Fetching promotional products...');
+  //     console.log('Current path:', currentPathname);
+  //     console.log('Category filter:', currentCategoryId);
       
-      // Build URL with query params
-      let url = 'https://b2b-jute-backend.vercel.app/api/promotional';
-      if (currentCategoryId) {
-        url += `?categoryId=${currentCategoryId}`;
-        console.log('🔍 Filtering by category ID:', currentCategoryId);
-      } else {
-        console.log('🔍 No category filter - showing latest products');
-      }
+  //     // Build URL with query params
+  //     let url = 'http://localhost:5000/api/promotional';
+  //     if (currentCategoryId) {
+  //       url += `?categoryId=${currentCategoryId}`;
+  //       console.log('🔍 Filtering by category ID:', currentCategoryId);
+  //     } else {
+  //       console.log('🔍 No category filter - showing latest products');
+  //     }
       
-      const response = await fetch(url);
-      const data = await response.json();
+  //     const response = await fetch(url);
+  //     const data = await response.json();
       
-      console.log('📦 Promotional products response:', data);
+  //     console.log('📦 Promotional products response:', data);
       
-      if (data.success && data.data.isActive && data.data.products && data.data.products.length > 0) {
-        console.log('✅ Total products from API:', data.data.products.length);
+  //     if (data.success && data.data.isActive && data.data.products && data.data.products.length > 0) {
+  //       console.log('✅ Total products from API:', data.data.products.length);
         
-        const currentPath = normalizePath(currentPathname);
-        console.log('📍 Current page path (normalized):', currentPath);
+  //       const currentPath = normalizePath(currentPathname);
+  //       console.log('📍 Current page path (normalized):', currentPath);
         
-        // First filter by page permissions
-        const productsAllowedOnPage = data.data.products.filter(product => {
-          if (product.showOnPages && Array.isArray(product.showOnPages) && product.showOnPages.length > 0) {
-            const normalizedShowOnPages = product.showOnPages.map(page => normalizePath(page));
-            const isAllowed = normalizedShowOnPages.includes(currentPath);
-            console.log(`📌 Product "${product.productName?.substring(0, 40)}" allowed on ${currentPath}: ${isAllowed}`);
-            return isAllowed;
-          }
-          console.log(`⚠️ Product "${product.productName?.substring(0, 40)}" has no page restrictions - NOT SHOWING`);
-          return false;
-        });
+  //       // First filter by page permissions
+  //       const productsAllowedOnPage = data.data.products.filter(product => {
+  //         if (product.showOnPages && Array.isArray(product.showOnPages) && product.showOnPages.length > 0) {
+  //           const normalizedShowOnPages = product.showOnPages.map(page => normalizePath(page));
+  //           const isAllowed = normalizedShowOnPages.includes(currentPath);
+  //           console.log(`📌 Product "${product.productName?.substring(0, 40)}" allowed on ${currentPath}: ${isAllowed}`);
+  //           return isAllowed;
+  //         }
+  //         console.log(`⚠️ Product "${product.productName?.substring(0, 40)}" has no page restrictions - NOT SHOWING`);
+  //         return false;
+  //       });
         
-        console.log(`📊 Products after page filter: ${productsAllowedOnPage.length} of ${data.data.products.length}`);
+  //       console.log(`📊 Products after page filter: ${productsAllowedOnPage.length} of ${data.data.products.length}`);
         
-        if (productsAllowedOnPage.length === 0) {
-          console.log('⚠️ No products available for current page after page filter');
-          setPromotionalProducts([]);
-          setConfigLoaded(true);
-          return;
-        }
+  //       if (productsAllowedOnPage.length === 0) {
+  //         console.log('⚠️ No products available for current page after page filter');
+  //         setPromotionalProducts([]);
+  //         setConfigLoaded(true);
+  //         return;
+  //       }
         
-        console.log('🎯 Setting promotional products:', productsAllowedOnPage.map(p => p.productName));
-        setPromotionalProducts(productsAllowedOnPage);
-        setPromotionalIntervals(data.data.intervals || [{ delay: 5 }, { delay: 15 }, { delay: 15 }]);
-        setPromotionalMaxShows(data.data.maxShows || 3);
+  //       console.log('🎯 Setting promotional products:', productsAllowedOnPage.map(p => p.productName));
+  //       setPromotionalProducts(productsAllowedOnPage);
+  //       setPromotionalIntervals(data.data.intervals || [{ delay: 5 }, { delay: 15 }, { delay: 15 }]);
+  //       setPromotionalMaxShows(data.data.maxShows || 3);
         
-        if (currentCount >= (data.data.maxShows || 3)) {
-          console.log('🎯 Already shown maximum times');
-          setConfigLoaded(true);
-          return;
-        }
+  //       if (currentCount >= (data.data.maxShows || 3)) {
+  //         console.log('🎯 Already shown maximum times');
+  //         setConfigLoaded(true);
+  //         return;
+  //       }
         
-        // Clear any existing timer
-        if (timerRef.current) {
-          clearTimeout(timerRef.current);
-        }
+  //       // Clear any existing timer
+  //       if (timerRef.current) {
+  //         clearTimeout(timerRef.current);
+  //       }
         
-        const firstDelay = (data.data.intervals?.[0]?.delay || 5) * 1000;
-        console.log(`🎯 Will show popup in ${firstDelay/1000}s`);
+  //       const firstDelay = (data.data.intervals?.[0]?.delay || 5) * 1000;
+  //       console.log(`🎯 Will show popup in ${firstDelay/1000}s`);
         
-        timerRef.current = setTimeout(() => {
-          if (isMountedRef.current) {
-            console.log('🎯 SHOWING PROMOTIONAL POPUP!');
-            setShowPromotional(true);
-          }
-          timerRef.current = null;
-        }, firstDelay);
+  //       timerRef.current = setTimeout(() => {
+  //         if (isMountedRef.current) {
+  //           console.log('🎯 SHOWING PROMOTIONAL POPUP!');
+  //           setShowPromotional(true);
+  //         }
+  //         timerRef.current = null;
+  //       }, firstDelay);
         
-      } else {
-        console.log('⚠️ No promotional products found');
-        setPromotionalProducts([]);
+  //     } else {
+  //       console.log('⚠️ No promotional products found');
+  //       setPromotionalProducts([]);
+  //       setConfigLoaded(true);
+  //     }
+  //   } catch (error) {
+  //     console.error('❌ Error fetching promotional products:', error);
+  //     setPromotionalProducts([]);
+  //     setConfigLoaded(true);
+  //   }
+  // };
+
+// In UnifiedPopupManager.js - Update fetchPromotionalProducts workd for cat filter
+
+// const fetchPromotionalProducts = async (currentCount, currentPathname, currentCategoryId = null, isProductDetails = false) => {
+//   try {
+//     console.log('📡 Fetching promotional products...');
+//     console.log('Current path:', currentPathname);
+//     console.log('Category filter:', currentCategoryId);
+//     console.log('Is product details page:', isProductDetails);
+    
+//     // Build URL with query params
+//     let url = 'http://localhost:5000/api/promotional';
+//     const params = new URLSearchParams();
+    
+//     if (currentCategoryId) {
+//       params.set('categoryId', currentCategoryId);
+//     }
+    
+//     if (isProductDetails) {
+//       params.set('isProductDetailsPage', 'true');
+//     }
+    
+//     if (params.toString()) {
+//       url += `?${params.toString()}`;
+//     }
+    
+//     console.log('🔍 Fetching from URL:', url);
+    
+//     const response = await fetch(url);
+//     const data = await response.json();
+    
+//     console.log('📦 Promotional products response:', data);
+    
+//     // Check if we have products
+//     if (data.success && data.data.isActive && data.data.products && data.data.products.length > 0) {
+//       console.log('✅ Total products from API:', data.data.products.length);
+      
+//       // Log what products we got
+//       data.data.products.forEach((product, idx) => {
+//         console.log(`Product ${idx + 1}: ${product.productName} - Target Category: ${product.targetCategoryId || 'None'}`);
+//       });
+      
+//       const currentPath = normalizePath(currentPathname);
+//       console.log('📍 Current page path (normalized):', currentPath);
+      
+//       // Filter by page permissions (showOnPages)
+//       const productsAllowedOnPage = data.data.products.filter(product => {
+//         if (product.showOnPages && Array.isArray(product.showOnPages) && product.showOnPages.length > 0) {
+//           const normalizedShowOnPages = product.showOnPages.map(page => normalizePath(page));
+//           const isAllowed = normalizedShowOnPages.includes(currentPath);
+//           console.log(`📌 Product "${product.productName?.substring(0, 40)}" allowed on ${currentPath}: ${isAllowed}`);
+//           return isAllowed;
+//         }
+//         return true; // If no restrictions, show it
+//       });
+      
+//       console.log(`📊 Products after page filter: ${productsAllowedOnPage.length} of ${data.data.products.length}`);
+      
+//       if (productsAllowedOnPage.length === 0) {
+//         console.log('⚠️ No products available for current page after page filter');
+//         setPromotionalProducts([]);
+//         setConfigLoaded(true);
+//         return;
+//       }
+      
+//       console.log('🎯 Setting promotional products:', productsAllowedOnPage.map(p => p.productName));
+//       setPromotionalProducts(productsAllowedOnPage);
+//       setPromotionalIntervals(data.data.intervals || [{ delay: 5 }, { delay: 15 }, { delay: 15 }]);
+//       setPromotionalMaxShows(data.data.maxShows || 3);
+      
+//       if (currentCount >= (data.data.maxShows || 3)) {
+//         console.log('🎯 Already shown maximum times');
+//         setConfigLoaded(true);
+//         return;
+//       }
+      
+//       // Clear any existing timer
+//       if (timerRef.current) {
+//         clearTimeout(timerRef.current);
+//       }
+      
+//       const firstDelay = (data.data.intervals?.[0]?.delay || 5) * 1000;
+//       console.log(`🎯 Will show popup in ${firstDelay/1000}s`);
+      
+//       timerRef.current = setTimeout(() => {
+//         if (isMountedRef.current) {
+//           console.log('🎯 SHOWING PROMOTIONAL POPUP!');
+//           setShowPromotional(true);
+//         }
+//         timerRef.current = null;
+//       }, firstDelay);
+      
+//     } else {
+//       console.log('⚠️ No promotional products found');
+//       console.log('Response data:', data);
+//       setPromotionalProducts([]);
+//       setConfigLoaded(true);
+//     }
+//   } catch (error) {
+//     console.error('❌ Error fetching promotional products:', error);
+//     setPromotionalProducts([]);
+//     setConfigLoaded(true);
+//   }
+// };
+
+// In UnifiedPopupManager.js - Update the fetchPromotionalProducts function
+
+// In UnifiedPopupManager.js
+
+const fetchPromotionalProducts = async (currentCount, currentPathname, currentCategoryId = null, isProductDetails = false) => {
+  try {
+    console.log('========================================');
+    console.log('📡 Fetching promotional products...');
+    console.log('Current pathname:', currentPathname);
+    console.log('Category filter:', currentCategoryId);
+    console.log('Is product details page:', isProductDetails);
+    console.log('========================================');
+    
+    // Build URL with query params
+    let url = 'http://localhost:5000/api/promotional';
+    const params = new URLSearchParams();
+    
+    // ALWAYS pass the current path for page filtering
+    if (currentPathname) {
+      params.set('path', currentPathname);
+    }
+    
+    if (currentCategoryId) {
+      params.set('categoryId', currentCategoryId);
+    }
+    
+    if (isProductDetails) {
+      params.set('isProductDetailsPage', 'true');
+    }
+    
+    if (params.toString()) {
+      url += `?${params.toString()}`;
+    }
+    
+    console.log('🔍 Fetching from URL:', url);
+    
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    console.log('📦 API Response:', data);
+    
+    if (data.success && data.data.isActive && data.data.products && data.data.products.length > 0) {
+      console.log('✅ Total products from API:', data.data.products.length);
+      
+      // Log each product for debugging
+      data.data.products.forEach((product, idx) => {
+        console.log(`\n📦 Product ${idx + 1}: ${product.productName}`);
+        console.log(`   - Created: ${new Date(product.createdAt).toLocaleString()}`);
+        console.log(`   - Category Restriction: ${product.triggerCategoryName || 'None'}`);
+        console.log(`   - Page Restriction: ${product.showOnPages ? product.showOnPages.join(', ') : 'All pages'}`);
+      });
+      
+      // Check if we've already shown max times
+      if (currentCount >= (data.data.maxShows || 3)) {
+        console.log('🎯 Already shown maximum times:', currentCount);
         setConfigLoaded(true);
+        return;
       }
-    } catch (error) {
-      console.error('❌ Error fetching promotional products:', error);
+      
+      console.log('🎯 Setting promotional products:', data.data.products.map(p => p.productName));
+      setPromotionalProducts(data.data.products);
+      setPromotionalIntervals(data.data.intervals || [{ delay: 5 }, { delay: 15 }, { delay: 15 }]);
+      setPromotionalMaxShows(data.data.maxShows || 3);
+      
+      // Clear any existing timer
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+      
+      // Calculate first delay
+      const firstDelay = (data.data.intervals?.[0]?.delay || 5) * 1000;
+      console.log(`⏰ Will show popup in ${firstDelay/1000} seconds`);
+      
+      // Set timer to show popup
+      timerRef.current = setTimeout(() => {
+        if (isMountedRef.current) {
+          console.log('🎯 SHOWING PROMOTIONAL POPUP!');
+          setShowPromotional(true);
+        }
+        timerRef.current = null;
+      }, firstDelay);
+      
+    } else {
+      console.log('⚠️ No promotional products found');
+      console.log('Response data:', data);
       setPromotionalProducts([]);
       setConfigLoaded(true);
     }
-  };
+  } catch (error) {
+    console.error('❌ Error fetching promotional products:', error);
+    setPromotionalProducts([]);
+    setConfigLoaded(true);
+  }
+};
   
   // Handle promotional modal close
   const handlePromotionalClose = () => {
@@ -1862,56 +2061,110 @@ export default function UnifiedPopupManager() {
   };
   
   // Initialize popup system based on current page
-  const initializePopupSystem = useCallback(async (currentPathname, currentShowCount) => {
-    console.log('📡 Initializing popup system for path:', currentPathname);
+  // const initializePopupSystem = useCallback(async (currentPathname, currentShowCount) => {
+  //   console.log('📡 Initializing popup system for path:', currentPathname);
     
-    // Clear any existing timers
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
+  //   // Clear any existing timers
+  //   if (timerRef.current) {
+  //     clearTimeout(timerRef.current);
+  //     timerRef.current = null;
+  //   }
+    
+  //   // Reset show state
+  //   setShowPromotional(false);
+    
+  //   let categoryId = null;
+    
+  //   // Get the normalized path without query params
+  //   const normalizedPath = normalizePath(currentPathname);
+    
+  //   // Check if on product details page
+  //   const isProductDetailsPage = normalizedPath === '/productDetails';
+    
+  //   // Check if on products listing page
+  //   const isProductsPage = normalizedPath === '/products';
+    
+  //   if (isProductDetailsPage) {
+  //     console.log('🎯 On product details page - fetching category from current product...');
+  //     categoryId = await getCurrentProductCategory();
+  //     if (categoryId) {
+  //       console.log('✅ Will filter promotional products by product category:', categoryId);
+  //     } else {
+  //       console.log('⚠️ Could not get product category - will show latest products');
+  //     }
+  //   } 
+  //   else if (isProductsPage) {
+  //     console.log('🎯 On products listing page - checking for category filter in URL...');
+  //     const urlCategoryId = getCategoryFromURL();
+  //     if (urlCategoryId) {
+  //       categoryId = urlCategoryId;
+  //       console.log('✅ Will filter promotional products by URL category:', categoryId);
+  //     } else {
+  //       console.log('⚠️ No category filter in URL - will show latest products');
+  //     }
+  //   }
+  //   else {
+  //     console.log('🎯 On regular page - showing latest products (no category filter)');
+  //   }
+    
+  //   // Fetch promotional products with or without category filter
+  //   await fetchPromotionalProducts(currentShowCount, currentPathname, categoryId);
+    
+  // }, []);
+  // In UnifiedPopupManager.js - Update initializePopupSystem
+
+const initializePopupSystem = useCallback(async (currentPathname, currentShowCount) => {
+  console.log('📡 Initializing popup system for path:', currentPathname);
+  
+  // Clear any existing timers
+  if (timerRef.current) {
+    clearTimeout(timerRef.current);
+    timerRef.current = null;
+  }
+  
+  // Reset show state
+  setShowPromotional(false);
+  
+  let categoryId = null;
+  let isProductDetails = false;
+  
+  // Get the normalized path without query params
+  const normalizedPath = normalizePath(currentPathname);
+  
+  // Check if on product details page
+  const isProductDetailsPage = normalizedPath === '/productDetails';
+  
+  // Check if on products listing page
+  const isProductsPage = normalizedPath === '/products';
+  
+  if (isProductDetailsPage) {
+    console.log('🎯 On product details page - fetching category from current product...');
+    categoryId = await getCurrentProductCategory();
+    isProductDetails = true;
+    if (categoryId) {
+      console.log('✅ Will filter promotional products by product category:', categoryId);
+    } else {
+      console.log('⚠️ Could not get product category - will show products with no target category');
     }
-    
-    // Reset show state
-    setShowPromotional(false);
-    
-    let categoryId = null;
-    
-    // Get the normalized path without query params
-    const normalizedPath = normalizePath(currentPathname);
-    
-    // Check if on product details page
-    const isProductDetailsPage = normalizedPath === '/productDetails';
-    
-    // Check if on products listing page
-    const isProductsPage = normalizedPath === '/products';
-    
-    if (isProductDetailsPage) {
-      console.log('🎯 On product details page - fetching category from current product...');
-      categoryId = await getCurrentProductCategory();
-      if (categoryId) {
-        console.log('✅ Will filter promotional products by product category:', categoryId);
-      } else {
-        console.log('⚠️ Could not get product category - will show latest products');
-      }
-    } 
-    else if (isProductsPage) {
-      console.log('🎯 On products listing page - checking for category filter in URL...');
-      const urlCategoryId = getCategoryFromURL();
-      if (urlCategoryId) {
-        categoryId = urlCategoryId;
-        console.log('✅ Will filter promotional products by URL category:', categoryId);
-      } else {
-        console.log('⚠️ No category filter in URL - will show latest products');
-      }
+  } 
+  else if (isProductsPage) {
+    console.log('🎯 On products listing page - checking for category filter in URL...');
+    const urlCategoryId = getCategoryFromURL();
+    if (urlCategoryId) {
+      categoryId = urlCategoryId;
+      console.log('✅ Will filter promotional products by URL category:', categoryId);
+    } else {
+      console.log('⚠️ No category filter in URL - will show products with no target category');
     }
-    else {
-      console.log('🎯 On regular page - showing latest products (no category filter)');
-    }
-    
-    // Fetch promotional products with or without category filter
-    await fetchPromotionalProducts(currentShowCount, currentPathname, categoryId);
-    
-  }, []);
+  }
+  else {
+    console.log('🎯 On regular page - showing products with no target category');
+  }
+  
+  // Fetch promotional products with or without category filter
+  await fetchPromotionalProducts(currentShowCount, currentPathname, categoryId, isProductDetails);
+  
+}, []);
   
   // Handle page navigation - re-initialize based on active popup
   useEffect(() => {
@@ -2038,6 +2291,38 @@ export default function UnifiedPopupManager() {
     };
   }, [pathname, configLoaded, subscriptionChecked, popupConfig?.activePopup, shouldHideAll, initializePopupSystem]);
   
+
+  // Listen for category filter changes from products page
+useEffect(() => {
+  if (!configLoaded || !subscriptionChecked) return;
+  if (popupConfig?.activePopup !== 'promotional') return;
+  if (shouldHideAll) return;
+  
+  console.log('🔍 Setting up category filter change listener');
+  
+  const handleCategoryFilterChange = (event) => {
+    console.log('🔍 Category filter changed from products page:', event.detail);
+    
+    // Clear existing timer
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+    
+    // Get current show count
+    const storedPromoCount = localStorage.getItem('promotionalShowCount');
+    const promoCount = storedPromoCount ? parseInt(storedPromoCount) : 0;
+    
+    // Re-initialize popup system with new category
+    initializePopupSystem(pathname, promoCount);
+  };
+  
+  window.addEventListener('categoryFilterChanged', handleCategoryFilterChange);
+  
+  return () => {
+    window.removeEventListener('categoryFilterChanged', handleCategoryFilterChange);
+  };
+}, [pathname, configLoaded, subscriptionChecked, popupConfig?.activePopup, shouldHideAll, initializePopupSystem]);
   // Fetch popup configuration - only once
   useEffect(() => {
     let isActive = true;
@@ -2047,7 +2332,7 @@ export default function UnifiedPopupManager() {
       
       try {
         console.log('📡 Fetching popup config from API...');
-        const response = await fetch('https://b2b-jute-backend.vercel.app/api/popup-config');
+        const response = await fetch('http://localhost:5000/api/popup-config');
         const data = await response.json();
         
         if (data.success && isActive) {

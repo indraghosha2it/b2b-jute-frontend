@@ -76,7 +76,7 @@
 //         params.append('search', filters.search);
 //       }
 
-//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/reviews/public?${params}`);
+//       const response = await fetch(`http://localhost:5000/api/reviews/public?${params}`);
 //       const data = await response.json();
 
 //       if (data.success) {
@@ -97,7 +97,7 @@
 
 //   const fetchStats = async () => {
 //     try {
-//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/reviews/public?limit=1000');
+//       const response = await fetch('http://localhost:5000/api/reviews/public?limit=1000');
 //       const data = await response.json();
       
 //       if (data.success) {
@@ -878,7 +878,7 @@ export default function AllReviewsPage() {
         params.append('search', filters.search);
       }
 
-      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/reviews/public?${params}`);
+      const response = await fetch(`http://localhost:5000/api/reviews/public?${params}`);
       const data = await response.json();
 
       if (data.success) {
@@ -899,7 +899,7 @@ export default function AllReviewsPage() {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('https://b2b-jute-backend.vercel.app/api/reviews/public?limit=1000');
+      const response = await fetch('http://localhost:5000/api/reviews/public?limit=1000');
       const data = await response.json();
       
       if (data.success) {

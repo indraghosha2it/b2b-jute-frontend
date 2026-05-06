@@ -95,7 +95,7 @@ useEffect(() => {
 const fetchCategories = async () => {
   setIsLoadingCategories(true);
   try {
-    const response = await fetch('https://b2b-jute-backend.vercel.app/api/categories');
+    const response = await fetch('http://localhost:5000/api/categories');
     const data = await response.json();
     
     if (data.success) {
@@ -219,7 +219,7 @@ const scrollCategories = (direction) => {
     { name: 'Facebook', icon: Facebook, url: 'https://facebook.com/JuteCraftify', color: 'hover:bg-[#1877F2]' },
     { name: 'Instagram', icon: Instagram, url: 'https://instagram.com/jutecraftify5730', color: 'hover:bg-gradient-to-r from-[#833AB4] to-[#E4405F]' },
     { name: 'Twitter', icon: Twitter, url: 'https://x.com/jutecraftify', color: 'hover:bg-[#000000]' },
-    { name: 'LinkedIn', icon: Linkedin, url: 'https://linkedin.com/company/jutecraftify', color: 'hover:bg-[#0077B5]' },
+    { name: 'LinkedIn', icon: Linkedin, url: 'https://www.linkedin.com/in/jutecraftify', color: 'hover:bg-[#0077B5]' },
     { name: 'YouTube', icon: Youtube, url: 'https://youtube.com/@Juteccraftify', color: 'hover:bg-[#FF0000]' },
   ];
 
@@ -664,12 +664,7 @@ const scrollCategories = (direction) => {
                     );
                   })}
                 </div>
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  <div className="flex items-center gap-2 text-gray-500">
-                    <Star className="w-4 h-4 fill-gray-300 text-gray-300" />
-                    <span className="text-sm font-sans">Not yet rated (0 reviews)</span>
-                  </div>
-                </div>
+              
               </div>
             </div>
           </div>

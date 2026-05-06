@@ -520,7 +520,7 @@
 //   const searchProducts = async () => {
 //     setSearching(true);
 //     try {
-//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/products?search=${encodeURIComponent(searchTerm)}&limit=20`);
+//       const response = await fetch(`http://localhost:5000/api/products?search=${encodeURIComponent(searchTerm)}&limit=20`);
 //       const data = await response.json();
 //       if (data.success) {
 //         const filtered = data.data.filter(p => !existingProductIds.includes(p._id));
@@ -913,7 +913,7 @@
 //     setLoadingNextNumber(true);
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/invoices/next-number', {
+//       const response = await fetch('http://localhost:5000/api/invoices/next-number', {
 //         headers: {
 //           'Authorization': `Bearer ${token}`
 //         }
@@ -1157,7 +1157,7 @@
 //   // Fetch product details for available colors and sizes
 //   const fetchProductDetails = async (productId) => {
 //     try {
-//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/products/${productId}`);
+//       const response = await fetch(`http://localhost:5000/api/products/${productId}`);
 //       const data = await response.json();
 //       if (data.success) {
 //         setProductDetails(prev => ({
@@ -1570,7 +1570,7 @@
 
 //       const token = localStorage.getItem('token');
       
-//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/upload/company-logo', {
+//       const response = await fetch('http://localhost:5000/api/upload/company-logo', {
 //         method: 'POST',
 //         headers: {
 //           'Authorization': `Bearer ${token}`
@@ -1598,7 +1598,7 @@
 
 //   const resetToDefaultLogo = () => {
 //     if (invoiceData.company.logoPublicId) {
-//       fetch(`https://b2b-jute-backend.vercel.app/api/upload/delete-logo?publicId=${invoiceData.company.logoPublicId}`, {
+//       fetch(`http://localhost:5000/api/upload/delete-logo?publicId=${invoiceData.company.logoPublicId}`, {
 //         method: 'DELETE',
 //         headers: {
 //           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -1839,7 +1839,7 @@
 //         finalTotal: invoicePayload.finalTotal
 //       });
 
-//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/invoices', {
+//       const response = await fetch('http://localhost:5000/api/invoices', {
 //         method: 'POST',
 //         headers: {
 //           'Authorization': `Bearer ${token}`,
@@ -3486,7 +3486,7 @@ const SearchProductModal = ({ isOpen, onClose, onSelectProduct, existingProductI
   const fetchAllProducts = async () => {
     setLoadingProducts(true);
     try {
-      const response = await fetch('https://b2b-jute-backend.vercel.app/api/products?limit=100');
+      const response = await fetch('http://localhost:5000/api/products?limit=100');
       const data = await response.json();
       if (data.success) {
         const filtered = data.data.filter(p => !existingProductIds.includes(p._id));
@@ -3944,7 +3944,7 @@ const recalculateTotals = (items) => {
     setLoadingNextNumber(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('https://b2b-jute-backend.vercel.app/api/invoices/next-number', {
+      const response = await fetch('http://localhost:5000/api/invoices/next-number', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -4095,7 +4095,7 @@ const recalculateTotals = (items) => {
   // Fetch product details
   const fetchProductDetails = async (productId) => {
     try {
-      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/products/${productId}`);
+      const response = await fetch(`http://localhost:5000/api/products/${productId}`);
       const data = await response.json();
       if (data.success) {
         setProductDetails(prev => ({
@@ -4409,7 +4409,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
 
       const token = localStorage.getItem('token');
       
-      const response = await fetch('https://b2b-jute-backend.vercel.app/api/upload/company-logo', {
+      const response = await fetch('http://localhost:5000/api/upload/company-logo', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
@@ -4435,7 +4435,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
 
   const resetToDefaultLogo = () => {
     if (invoiceData.company.logoPublicId) {
-      fetch(`https://b2b-jute-backend.vercel.app/api/upload/delete-logo?publicId=${invoiceData.company.logoPublicId}`, {
+      fetch(`http://localhost:5000/api/upload/delete-logo?publicId=${invoiceData.company.logoPublicId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       }).catch(err => console.error('Error deleting old logo:', err));
@@ -4622,7 +4622,7 @@ const handleColorUnitPriceChange = (itemIndex, colorIndex, newUnitPrice) => {
         createdAt: new Date().toISOString()
       };
 
-      const response = await fetch('https://b2b-jute-backend.vercel.app/api/invoices', {
+      const response = await fetch('http://localhost:5000/api/invoices', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

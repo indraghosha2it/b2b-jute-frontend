@@ -758,7 +758,7 @@
 
 //       console.log('Submitting blog payload:', payload);
 
-//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/blogs', {
+//       const response = await fetch('http://localhost:5000/api/blogs', {
 //         method: 'POST',
 //         headers: {
 //           'Authorization': `Bearer ${token}`,
@@ -1497,7 +1497,7 @@ const validateYoutubeUrl = (url) => {
 const uploadToCloudinary = async (file, folder = 'blogs') => {
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('upload_preset', 'b2b-products');
+  formData.append('upload_preset', 'jute-products');
   formData.append('folder', folder);
   
   try {
@@ -2183,7 +2183,7 @@ const removeThumbnailImage = (imageId) => {
           }))
       };
 
-      const response = await fetch('https://b2b-jute-backend.vercel.app/api/blogs', {
+      const response = await fetch('http://localhost:5000/api/blogs', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

@@ -73,14 +73,14 @@ const getUnitLabel = (orderUnit) => {
   }
 };
 
-const formatBulkRange = (range) => {
+const formatBulkRange = (range, unitLabel = 'pcs') => {
   if (!range) return '';
   if (range.includes('-')) {
     const [min, max] = range.split('-');
-    return `${min}+ pcs`;
+    return `${min}+ ${unitLabel}`;
   }
   if (range.includes('+')) {
-    return `${range.replace('+', '')}+ pcs`;
+    return `${range.replace('+', '')}+ ${unitLabel}`;
   }
   return range;
 };
@@ -472,7 +472,7 @@ const ProductGridCard = ({ product }) => {
   const tagStyle = primaryTag ? getTagStyles(primaryTag) : '';
   const audienceStyle = product.targetedCustomer ? getTargetedAudienceStyle(product.targetedCustomer) : '';
   const unitLabel = getUnitLabel(product.orderUnit);
-  const bulkRangeDisplay = firstTier ? formatBulkRange(firstTier.range) : '';
+const bulkRangeDisplay = firstTier ? formatBulkRange(firstTier.range, unitLabel === 'pcs' ? 'pc' : unitLabel) : '';
 
   useEffect(() => {
     const checkMobile = () => {
@@ -690,7 +690,7 @@ const ProductListCard = ({ product }) => {
   const primaryTag = product.tags?.[0];
   const audienceStyle = product.targetedCustomer ? getTargetedAudienceStyle(product.targetedCustomer) : '';
   const unitLabel = getUnitLabel(product.orderUnit);
-  const bulkRangeDisplay = firstTier ? formatBulkRange(firstTier.range) : '';
+const bulkRangeDisplay = firstTier ? formatBulkRange(firstTier.range, unitLabel === 'pcs' ? 'pc' : unitLabel) : '';
 
   return (
     <motion.div
@@ -1039,7 +1039,7 @@ export default function ProductsClient() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('https://b2b-jute-backend.vercel.app/api/categories');
+      const response = await fetch('http://localhost:5000/api/categories');
       const data = await response.json();
       if (data.success) {
         setCategories(data.data);
@@ -1053,7 +1053,7 @@ export default function ProductsClient() {
 
   const fetchSubcategories = async (categoryId) => {
     try {
-      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/categories/${categoryId}/subcategories`);
+      const response = await fetch(`http://localhost:5000/api/categories/${categoryId}/subcategories`);
       const data = await response.json();
       if (data.success && Array.isArray(data.data.subcategories)) {
         setSubcategories(data.data.subcategories);
@@ -1071,7 +1071,7 @@ export default function ProductsClient() {
 
   const fetchChildSubcategories = async (categoryId, subcategoryId) => {
     try {
-      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/categories/${categoryId}/subcategories/${subcategoryId}/children`);
+      const response = await fetch(`http://localhost:5000/api/categories/${categoryId}/subcategories/${subcategoryId}/children`);
       const data = await response.json();
       if (data.success && Array.isArray(data.data.children)) {
         setChildSubcategories(data.data.children);
@@ -1168,7 +1168,7 @@ export default function ProductsClient() {
       }
       queryParams.append('sort', sortParam);
 
-      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/products?${queryParams.toString()}`);
+      const response = await fetch(`http://localhost:5000/api/products?${queryParams.toString()}`);
       const data = await response.json();
       
       if (data.success) {
@@ -1189,28 +1189,85 @@ export default function ProductsClient() {
     setCurrentPage(1);
   };
 
-  const handleCategoryChange = (categoryId) => {
-    saveScrollPosition();
-    setFilters(prev => {
-      const newCategories = prev.categories.includes(categoryId)
-        ? prev.categories.filter(id => id !== categoryId)
-        : [...prev.categories, categoryId];
-      return { ...prev, categories: newCategories, subcategories: [], childSubcategories: [] };
-    });
-    setCurrentPage(1);
-  };
+  // const handleCategoryChange = (categoryId) => {
+  //   saveScrollPosition();
+  //   setFilters(prev => {
+  //     const newCategories = prev.categories.includes(categoryId)
+  //       ? prev.categories.filter(id => id !== categoryId)
+  //       : [...prev.categories, categoryId];
+  //     return { ...prev, categories: newCategories, subcategories: [], childSubcategories: [] };
+  //   });
+  //   setCurrentPage(1);
+  // };
+
+const handleCategoryChange = (categoryId) => {
+  saveScrollPosition();
+  setFilters(prev => {
+    const newCategories = prev.categories.includes(categoryId)
+      ? prev.categories.filter(id => id !== categoryId)
+      : [...prev.categories, categoryId];
+    return { ...prev, categories: newCategories, subcategories: [], childSubcategories: [] };
+  });
+  setCurrentPage(1);
+  
+  // Dispatch custom event to notify popup manager about category change
+  if (typeof window !== 'undefined') {
+    const isSelected = !filters.categories.includes(categoryId);
+    const newCategory = isSelected ? categoryId : null;
+    
+    if (newCategory) {
+      // Update URL to reflect the new category
+      const params = new URLSearchParams(window.location.search);
+      params.set('category', newCategory);
+      const newUrl = `${window.location.pathname}?${params.toString()}`;
+      window.history.pushState({}, '', newUrl);
+    } else {
+      // Remove category from URL
+      const params = new URLSearchParams(window.location.search);
+      params.delete('category');
+      const newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`;
+      window.history.pushState({}, '', newUrl);
+    }
+    
+    // Dispatch event for popup manager
+    window.dispatchEvent(new CustomEvent('categoryFilterChanged', { 
+      detail: { categoryId: newCategory }
+    }));
+  }
+};
+  // const handleRemoveCategory = (categoryId) => {
+  //   saveScrollPosition();
+  //   setFilters(prev => ({
+  //     ...prev,
+  //     categories: prev.categories.filter(id => id !== categoryId),
+  //     subcategories: [],
+  //     childSubcategories: []
+  //   }));
+  //   setCurrentPage(1);
+  // };
 
   const handleRemoveCategory = (categoryId) => {
-    saveScrollPosition();
-    setFilters(prev => ({
-      ...prev,
-      categories: prev.categories.filter(id => id !== categoryId),
-      subcategories: [],
-      childSubcategories: []
+  saveScrollPosition();
+  setFilters(prev => ({
+    ...prev,
+    categories: prev.categories.filter(id => id !== categoryId),
+    subcategories: [],
+    childSubcategories: []
+  }));
+  setCurrentPage(1);
+  
+  // Notify popup manager
+  if (typeof window !== 'undefined') {
+    const params = new URLSearchParams(window.location.search);
+    params.delete('category');
+    const newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`;
+    window.history.pushState({}, '', newUrl);
+    
+    window.dispatchEvent(new CustomEvent('categoryFilterChanged', { 
+      detail: { categoryId: null }
     }));
-    setCurrentPage(1);
-  };
-
+  }
+};
   const handleTargetedCustomerChange = (customer) => {
     saveScrollPosition();
     setFilters(prev => {
@@ -1238,23 +1295,47 @@ export default function ProductsClient() {
     setFilters(prev => ({ ...prev, priceRange: { min: '', max: '' } }));
   };
 
-  const clearFilters = () => {
-    saveScrollPosition();
-    setSearchInput('');
-    setFilters({
-      search: '',
-      categories: [],
-      subcategories: [],
-      childSubcategories: [],
-      targetedCustomer: [],
-      priceRange: { min: '', max: '' },
-      sortBy: 'newest'
-    });
-    setMinPriceInput('');
-    setMaxPriceInput('');
-    setCurrentPage(1);
-  };
+  // const clearFilters = () => {
+  //   saveScrollPosition();
+  //   setSearchInput('');
+  //   setFilters({
+  //     search: '',
+  //     categories: [],
+  //     subcategories: [],
+  //     childSubcategories: [],
+  //     targetedCustomer: [],
+  //     priceRange: { min: '', max: '' },
+  //     sortBy: 'newest'
+  //   });
+  //   setMinPriceInput('');
+  //   setMaxPriceInput('');
+  //   setCurrentPage(1);
+  // };
 
+  const clearFilters = () => {
+  saveScrollPosition();
+  setSearchInput('');
+  setFilters({
+    search: '',
+    categories: [],
+    subcategories: [],
+    childSubcategories: [],
+    targetedCustomer: [],
+    priceRange: { min: '', max: '' },
+    sortBy: 'newest'
+  });
+  setMinPriceInput('');
+  setMaxPriceInput('');
+  setCurrentPage(1);
+  
+  // Clear URL and notify popup
+  if (typeof window !== 'undefined') {
+    window.history.pushState({}, '', window.location.pathname);
+    window.dispatchEvent(new CustomEvent('categoryFilterChanged', { 
+      detail: { categoryId: null }
+    }));
+  }
+};
   const handlePageChange = (newPage) => {
     saveScrollPosition();
     setCurrentPage(newPage);
@@ -1589,6 +1670,8 @@ export default function ProductsClient() {
 }
 
 
+
+
 // 'use client';
 
 // import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -1663,14 +1746,14 @@ export default function ProductsClient() {
 //   }
 // };
 
-// const formatBulkRange = (range) => {
+// const formatBulkRange = (range, unitLabel = 'pcs') => {
 //   if (!range) return '';
 //   if (range.includes('-')) {
 //     const [min, max] = range.split('-');
-//     return `${min}+ pcs`;
+//     return `${min}+ ${unitLabel}`;
 //   }
 //   if (range.includes('+')) {
-//     return `${range.replace('+', '')}+ pcs`;
+//     return `${range.replace('+', '')}+ ${unitLabel}`;
 //   }
 //   return range;
 // };
@@ -1709,7 +1792,7 @@ export default function ProductsClient() {
 //   return styles[audience] || `bg-gradient-to-r from-[${JUTE_COLORS.primary}] to-[#8B6B51] text-white`;
 // };
 
-// // Filter Sidebar Component - Left Side
+// // Filter Sidebar Component - Left Side (same as before)
 // const FilterSidebar = ({ 
 //   expandedSections, 
 //   toggleSection, 
@@ -2049,7 +2132,7 @@ export default function ProductsClient() {
 //   </div>
 // );
 
-// // Product Grid Card - With Shadow
+// // Product Grid Card - With Shadow (shortened for brevity)
 // const ProductGridCard = ({ product }) => {
 //   const [isMobile, setIsMobile] = useState(false);
 //   const [activeIndex, setActiveIndex] = useState(0);
@@ -2062,7 +2145,7 @@ export default function ProductsClient() {
 //   const tagStyle = primaryTag ? getTagStyles(primaryTag) : '';
 //   const audienceStyle = product.targetedCustomer ? getTargetedAudienceStyle(product.targetedCustomer) : '';
 //   const unitLabel = getUnitLabel(product.orderUnit);
-//   const bulkRangeDisplay = firstTier ? formatBulkRange(firstTier.range) : '';
+//   const bulkRangeDisplay = firstTier ? formatBulkRange(firstTier.range, unitLabel === 'pcs' ? 'pc' : unitLabel) : '';
 
 //   useEffect(() => {
 //     const checkMobile = () => {
@@ -2094,7 +2177,6 @@ export default function ProductsClient() {
 //         }
 //       }}
 //     >
-//       {/* Image Container */}
 //       <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-44 overflow-hidden bg-white">
 //         <motion.img
 //           src={productImages[activeIndex]?.url || productImages[0]?.url || 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500'}
@@ -2109,7 +2191,6 @@ export default function ProductsClient() {
 //           loading="lazy"
 //         />
         
-//         {/* Top Right Action Icons */}
 //         <motion.div 
 //           className="absolute top-2 right-2 flex flex-col gap-1.5 z-30"
 //           initial={{ opacity: 0, x: 10 }}
@@ -2140,7 +2221,6 @@ export default function ProductsClient() {
 //           </div>
 //         </motion.div>
 
-//         {/* Tag Badge - Top Left */}
 //         {primaryTag && (
 //           <motion.div 
 //             initial={{ x: -10, opacity: 0 }}
@@ -2153,7 +2233,6 @@ export default function ProductsClient() {
 //         )}
 //       </div>
       
-//       {/* Thumbnail Images */}
 //       {hasMultipleImages && (
 //         <div className="flex justify-center items-center gap-1 py-1">
 //           {productImages.slice(0, 4).map((image, index) => (
@@ -2176,14 +2255,11 @@ export default function ProductsClient() {
 //         </div>
 //       )}
 
-//       {/* Content */}
 //       <div className="p-2 md:p-3">
-//         {/* Product Name */}
 //         <h3 className="text-[11px] md:text-sm font-semibold text-gray-900 truncate hover:text-[#6B4F3A] transition-colors" style={{ fontFamily: 'Playfair Display, serif' }} title={product.productName}>
 //           {truncateText(product.productName, 25)}
 //         </h3>
 
-//         {/* Starting Price and MOQ Row */}
 //         <div className="flex items-center justify-between mb-2">
 //           <div>
 //             <span className="text-[7px] md:text-[8px] text-[#8B7355]">Starting from</span>
@@ -2198,7 +2274,6 @@ export default function ProductsClient() {
 //           </div>
 //         </div>
 
-//         {/* Category, Targeted Audience, First Bulk Price */}
 //         <div className="flex items-center justify-start flex-wrap gap-1.5 mb-1.5">
 //           {product.category?.name && (
 //             <div className="flex items-center gap-0.5">
@@ -2231,7 +2306,6 @@ export default function ProductsClient() {
 //           )}
 //         </div>
 
-//         {/* Color Dots */}
 //         {product.colors && product.colors.length > 0 && (
 //           <div className="flex items-center gap-0.5 mb-1.5">
 //             <Palette className="w-2.5 h-2.5 text-[#A8947A]" />
@@ -2252,7 +2326,6 @@ export default function ProductsClient() {
 //         )}
 //       </div>
 
-//       {/* Add to Inquiry Button */}
 //       <button
 //         onClick={(e) => {
 //           e.stopPropagation();
@@ -2267,7 +2340,7 @@ export default function ProductsClient() {
 //   );
 // };
 
-// // Product List Card - With Shadow and Hover Icons
+// // Product List Card - With Shadow and Hover Icons (shortened)
 // const ProductListCard = ({ product }) => {
 //   const [activeIndex, setActiveIndex] = useState(0);
 //   const [isHovered, setIsHovered] = useState(false);
@@ -2278,7 +2351,7 @@ export default function ProductsClient() {
 //   const primaryTag = product.tags?.[0];
 //   const audienceStyle = product.targetedCustomer ? getTargetedAudienceStyle(product.targetedCustomer) : '';
 //   const unitLabel = getUnitLabel(product.orderUnit);
-//   const bulkRangeDisplay = firstTier ? formatBulkRange(firstTier.range) : '';
+//   const bulkRangeDisplay = firstTier ? formatBulkRange(firstTier.range, unitLabel === 'pcs' ? 'pc' : unitLabel) : '';
 
 //   return (
 //     <motion.div
@@ -2308,7 +2381,6 @@ export default function ProductsClient() {
 //               loading="lazy"
 //             />
             
-//             {/* Hover Icons - Top Right for List View */}
 //             <motion.div 
 //               className="absolute top-2 right-2 flex flex-col gap-1.5 z-30"
 //               initial={{ opacity: 0, x: 10 }}
@@ -2471,7 +2543,6 @@ export default function ProductsClient() {
 //   const [selectedCategory, setSelectedCategory] = useState(null);
 //   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
 //   const [showChildSubcategory, setShowChildSubcategory] = useState(false);
-//   const [isUpdatingURL, setIsUpdatingURL] = useState(false);
   
 //   const [expandedSections, setExpandedSections] = useState({
 //     price: true,
@@ -2484,7 +2555,6 @@ export default function ProductsClient() {
 //   const productsContainerRef = useRef(null);
 //   const scrollPositionRef = useRef(0);
 //   const searchTimerRef = useRef(null);
-//   const isInitialLoadFromURL = useRef(false);
 
 //   const [filters, setFilters] = useState({
 //     search: '',
@@ -2539,174 +2609,75 @@ export default function ProductsClient() {
 //     setCurrentPage(1);
 //   };
 
-//   // Update URL when filters change
-//   const updateURLWithFilters = useCallback(() => {
-//     if (isUpdatingURL || isInitialLoadFromURL.current) return;
-    
-//     const params = new URLSearchParams();
-    
-//     if (filters.categories.length === 1) {
-//       params.set('category', filters.categories[0]);
-//     }
-    
-//     if (filters.subcategories.length === 1) {
-//       params.set('subcategory', filters.subcategories[0]);
-//     }
-    
-//     if (filters.childSubcategories.length === 1) {
-//       params.set('childSubcategory', filters.childSubcategories[0]);
-//     }
-    
-//     const newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`;
-    
-//     if (window.location.search !== params.toString()) {
-//       window.history.replaceState({}, '', newUrl);
-//     }
-//   }, [filters.categories, filters.subcategories, filters.childSubcategories, isUpdatingURL]);
-
 //   useEffect(() => {
 //     fetchCategories();
 //   }, []);
 
-
-//   // Add this to ProductsClient.js - near your other useEffects
-// // Listen for route changes to re-read URL parameters
-// useEffect(() => {
-//   // Reset initialCategorySet when the URL changes (for client-side navigation)
-//   const categoryParam = searchParams.get('category');
-//   const subcategoryParam = searchParams.get('subcategory');
-//   const childSubcategoryParam = searchParams.get('childSubcategory');
-  
-//   console.log('🔍 Route change detected - URL params:', { 
-//     category: categoryParam, 
-//     subcategory: subcategoryParam, 
-//     child: childSubcategoryParam 
-//   });
-  
-//   if (categoryParam && categories.length > 0) {
-//     // Check if category exists
-//     const categoryExists = categories.some(cat => cat._id === categoryParam);
-//     if (categoryExists) {
-//       console.log('✅ Setting filter for category:', categoryParam);
-//       setFilters(prev => ({ ...prev, categories: [categoryParam] }));
-//       setSelectedCategory(categoryParam);
-      
-//       // Also fetch subcategories if needed
-//       if (subcategoryParam) {
-//         fetchSubcategories(categoryParam).then(subcats => {
-//           if (subcats && Array.isArray(subcats)) {
-//             const subcategoryExists = subcats.some(sub => sub._id === subcategoryParam);
-//             if (subcategoryExists) {
-//               setFilters(prev => ({ ...prev, subcategories: [subcategoryParam] }));
-//               setSelectedSubcategory(subcategoryParam);
-//             }
-//           }
-//         });
-//       }
-//     }
-//   } else if (!categoryParam && filters.categories.length > 0) {
-//     // Clear filters if no category in URL
-//     console.log('🔄 No category in URL, clearing filters');
-//     setFilters(prev => ({ ...prev, categories: [], subcategories: [], childSubcategories: [] }));
-//     setSelectedCategory(null);
-//     setSelectedSubcategory(null);
-//   }
-// }, [searchParams, categories]);
-//   // Sync URL when filters change
+//   // Listen for route changes (when coming from category page)
 //   useEffect(() => {
-//     if (!isInitialLoadFromURL.current) {
-//       updateURLWithFilters();
-//     }
-//   }, [filters.categories, filters.subcategories, filters.childSubcategories, updateURLWithFilters]);
-
-//   // Handle browser back/forward buttons
-//   useEffect(() => {
-//     const handlePopState = () => {
-//       setIsUpdatingURL(true);
-//       const params = new URLSearchParams(window.location.search);
-//       const categoryParam = params.get('category');
-//       const subcategoryParam = params.get('subcategory');
-//       const childSubcategoryParam = params.get('childSubcategory');
-      
-//       if (categoryParam) {
-//         setFilters(prev => ({ ...prev, categories: [categoryParam] }));
-//       } else {
-//         setFilters(prev => ({ ...prev, categories: [] }));
-//       }
-      
-//       if (subcategoryParam) {
-//         setFilters(prev => ({ ...prev, subcategories: [subcategoryParam] }));
-//       } else {
-//         setFilters(prev => ({ ...prev, subcategories: [] }));
-//       }
-      
-//       if (childSubcategoryParam) {
-//         setFilters(prev => ({ ...prev, childSubcategories: [childSubcategoryParam] }));
-//       } else {
-//         setFilters(prev => ({ ...prev, childSubcategories: [] }));
-//       }
-      
-//       setTimeout(() => {
-//         setIsUpdatingURL(false);
-//       }, 100);
-//     };
-    
-//     window.addEventListener('popstate', handlePopState);
-//     return () => window.removeEventListener('popstate', handlePopState);
-//   }, []);
-
-// // Initial load from URL parameters - MODIFIED
-// useEffect(() => {
-//   if (categories.length > 0 && !initialCategorySet) {
-//     console.log('🔍 Initial load - Setting up filters from URL');
-//     console.log('🔍 Categories loaded:', categories.length);
-    
 //     const categoryParam = searchParams.get('category');
 //     const subcategoryParam = searchParams.get('subcategory');
 //     const childSubcategoryParam = searchParams.get('childSubcategory');
     
-//     console.log('🔍 URL params - Category:', categoryParam);
-//     console.log('🔍 URL params - Subcategory:', subcategoryParam);
-//     console.log('🔍 URL params - Child:', childSubcategoryParam);
+//     console.log('🔍 Route change detected - URL params:', { 
+//       category: categoryParam, 
+//       subcategory: subcategoryParam, 
+//       child: childSubcategoryParam 
+//     });
     
-//     if (categoryParam) {
+//     if (categoryParam && categories.length > 0) {
 //       const categoryExists = categories.some(cat => cat._id === categoryParam);
-//       console.log('🔍 Category exists:', categoryExists);
-      
 //       if (categoryExists) {
-//         // Set the category filter
+//         console.log('✅ Setting filter for category from route change:', categoryParam);
 //         setFilters(prev => ({ ...prev, categories: [categoryParam] }));
 //         setSelectedCategory(categoryParam);
         
-//         // Handle subcategory if present
 //         if (subcategoryParam) {
-//           const loadSubcategoriesAndSetFilter = async () => {
-//             try {
-//               const subcats = await fetchSubcategories(categoryParam);
-//               console.log('🔍 Subcategories fetched:', subcats?.length);
-              
+//           fetchSubcategories(categoryParam).then(subcats => {
+//             if (subcats && Array.isArray(subcats)) {
+//               const subcategoryExists = subcats.some(sub => sub._id === subcategoryParam);
+//               if (subcategoryExists) {
+//                 setFilters(prev => ({ ...prev, subcategories: [subcategoryParam] }));
+//                 setSelectedSubcategory(subcategoryParam);
+//               }
+//             }
+//           });
+//         }
+//       }
+//     }
+//   }, [searchParams, categories.length]);
+
+//   // Initial load from URL parameters
+//   useEffect(() => {
+//     if (categories.length > 0 && !initialCategorySet) {
+//       const categoryParam = searchParams.get('category');
+//       const subcategoryParam = searchParams.get('subcategory');
+//       const childSubcategoryParam = searchParams.get('childSubcategory');
+      
+//       console.log('🔍 Initial load - URL params:', { categoryParam, subcategoryParam, childSubcategoryParam });
+      
+//       if (categoryParam) {
+//         const categoryExists = categories.some(cat => cat._id === categoryParam);
+//         if (categoryExists) {
+//           setFilters(prev => ({ ...prev, categories: [categoryParam] }));
+//           setSelectedCategory(categoryParam);
+          
+//           if (subcategoryParam) {
+//             fetchSubcategories(categoryParam).then(subcats => {
 //               if (subcats && Array.isArray(subcats)) {
 //                 const subcategoryExists = subcats.some(sub => sub._id === subcategoryParam);
-//                 console.log('🔍 Subcategory exists:', subcategoryExists);
-                
 //                 if (subcategoryExists) {
 //                   setFilters(prev => ({ ...prev, subcategories: [subcategoryParam] }));
 //                   setSelectedSubcategory(subcategoryParam);
 //                 }
 //               }
-//             } catch (error) {
-//               console.error('Error loading subcategories:', error);
-//             }
-//           };
-//           loadSubcategoriesAndSetFilter();
+//             });
+//           }
 //         }
 //       }
+//       setInitialCategorySet(true);
 //     }
-    
-//     // Mark initial load as complete
-//     setInitialCategorySet(true);
-//   }
-// }, [categories, searchParams, initialCategorySet]);
+//   }, [categories, searchParams, initialCategorySet]);
 
 //   useEffect(() => {
 //     if (filters.categories.length === 1) {
@@ -2743,14 +2714,11 @@ export default function ProductsClient() {
 //     }
 //   }, [filters.subcategories, selectedCategory]);
 
-// // Make sure fetchProducts is called when filters change
-// // Make sure fetchProducts is called when filters change
-// useEffect(() => {
-//   if (initialCategorySet && !isInitialLoadFromURL.current) {
-//     console.log('🔍 Fetching products with filters:', filters.categories);
-//     fetchProducts();
-//   }
-// }, [filters, currentPage, initialCategorySet]);
+//   useEffect(() => {
+//     if (initialCategorySet) {
+//       fetchProducts();
+//     }
+//   }, [filters, currentPage, initialCategorySet]);
 
 //   useEffect(() => {
 //     if (!loading) restoreScrollPosition();
@@ -2758,7 +2726,7 @@ export default function ProductsClient() {
 
 //   const fetchCategories = async () => {
 //     try {
-//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/categories');
+//       const response = await fetch('http://localhost:5000/api/categories');
 //       const data = await response.json();
 //       if (data.success) {
 //         setCategories(data.data);
@@ -2770,50 +2738,44 @@ export default function ProductsClient() {
 //     }
 //   };
 
-// const fetchSubcategories = async (categoryId) => {
-//   try {
-//     console.log('🔍 Fetching subcategories for category:', categoryId);
-//     const response = await fetch(`https://b2b-jute-backend.vercel.app/api/categories/${categoryId}/subcategories`);
-//     const data = await response.json();
-//     console.log('🔍 Subcategories response:', data);
-    
-//     if (data.success && Array.isArray(data.data.subcategories)) {
-//       setSubcategories(data.data.subcategories);
-//       return data.data.subcategories;
-//     } else {
+//   const fetchSubcategories = async (categoryId) => {
+//     try {
+//       const response = await fetch(`http://localhost:5000/api/categories/${categoryId}/subcategories`);
+//       const data = await response.json();
+//       if (data.success && Array.isArray(data.data.subcategories)) {
+//         setSubcategories(data.data.subcategories);
+//         return data.data.subcategories;
+//       } else {
+//         setSubcategories([]);
+//         return [];
+//       }
+//     } catch (error) {
+//       console.error('Error fetching subcategories:', error);
 //       setSubcategories([]);
 //       return [];
 //     }
-//   } catch (error) {
-//     console.error('Error fetching subcategories:', error);
-//     setSubcategories([]);
-//     return [];
-//   }
-// };
+//   };
 
-// const fetchChildSubcategories = async (categoryId, subcategoryId) => {
-//   try {
-//     console.log('🔍 Fetching child subcategories for:', { categoryId, subcategoryId });
-//     const response = await fetch(`https://b2b-jute-backend.vercel.app/api/categories/${categoryId}/subcategories/${subcategoryId}/children`);
-//     const data = await response.json();
-//     console.log('🔍 Child subcategories response:', data);
-    
-//     if (data.success && Array.isArray(data.data.children)) {
-//       setChildSubcategories(data.data.children);
-//       setShowChildSubcategory(data.data.children.length > 0);
-//       return data.data.children;
-//     } else {
+//   const fetchChildSubcategories = async (categoryId, subcategoryId) => {
+//     try {
+//       const response = await fetch(`http://localhost:5000/api/categories/${categoryId}/subcategories/${subcategoryId}/children`);
+//       const data = await response.json();
+//       if (data.success && Array.isArray(data.data.children)) {
+//         setChildSubcategories(data.data.children);
+//         setShowChildSubcategory(data.data.children.length > 0);
+//         return data.data.children;
+//       } else {
+//         setChildSubcategories([]);
+//         setShowChildSubcategory(false);
+//         return [];
+//       }
+//     } catch (error) {
+//       console.error('Error fetching child subcategories:', error);
 //       setChildSubcategories([]);
 //       setShowChildSubcategory(false);
 //       return [];
 //     }
-//   } catch (error) {
-//     console.error('Error fetching child subcategories:', error);
-//     setChildSubcategories([]);
-//     setShowChildSubcategory(false);
-//     return [];
-//   }
-// };
+//   };
 
 //   const handleSubcategoryChange = (subcategoryId) => {
 //     saveScrollPosition();
@@ -2893,7 +2855,7 @@ export default function ProductsClient() {
 //       }
 //       queryParams.append('sort', sortParam);
 
-//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/products?${queryParams.toString()}`);
+//       const response = await fetch(`http://localhost:5000/api/products?${queryParams.toString()}`);
 //       const data = await response.json();
       
 //       if (data.success) {

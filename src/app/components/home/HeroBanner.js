@@ -89,26 +89,27 @@ const scrollToQuoteSection = () => {
             </div>
 
             {/* Main Headline - Smaller on mobile */}
-            <h1 
-              className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-2 md:mb-3 leading-tight transition-all duration-700 delay-100 ${
-                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-              }`}
-            >
-              Premium Jute Products
-              <br />
-              <span className="relative inline-block mt-0.5">
-                Supplier from Bangladesh
-                <svg 
-                  className="absolute -bottom-1 left-0 w-full h-1.5 md:h-2 text-[#3A7D44]" 
-                  viewBox="0 0 400 20" 
-                  fill="currentColor"
-                  preserveAspectRatio="none"
-                >
-                  <path d="M0,10 C50,20 100,0 150,10 C200,20 250,0 300,10 C350,20 400,10 400,10 L400,20 L0,20 Z" />
-                </svg>
-              </span>
-              <span className="text-white"> to the World</span>
-            </h1>
+         <h1 
+  className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-2 md:mb-3 leading-tight transition-all duration-700 delay-100 font-serif ${
+    isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+  }`}
+  style={{ fontFamily: 'Playfair Display, Georgia, Times New Roman, serif' }}
+>
+  Premium Jute Products
+  <br />
+  <span className="relative inline-block mt-0.5">
+    Supplier from Bangladesh
+    <svg 
+      className="absolute -bottom-1 left-0 w-full h-1.5 md:h-2 text-[#3A7D44]" 
+      viewBox="0 0 400 20" 
+      fill="currentColor"
+      preserveAspectRatio="none"
+    >
+      <path d="M0,10 C50,20 100,0 150,10 C200,20 250,0 300,10 C350,20 400,10 400,10 L400,20 L0,20 Z" />
+    </svg>
+  </span>
+  <span className="text-white"> to the World</span>
+</h1>
 
             {/* Subtext with bullet points - Smaller on mobile */}
             <div 

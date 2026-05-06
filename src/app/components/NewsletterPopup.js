@@ -131,7 +131,7 @@
 //       const token = localStorage.getItem('token');
 //       if (!token) return;
       
-//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/auth/subscription-status', {
+//       const response = await fetch('http://localhost:5000/api/auth/subscription-status', {
 //         headers: { 'Authorization': `Bearer ${token}` }
 //       });
       
@@ -249,7 +249,7 @@
     
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/auth/subscribe', {
+//       const response = await fetch('http://localhost:5000/api/auth/subscribe', {
 //         method: 'POST',
 //         headers: {
 //           'Authorization': `Bearer ${token}`,
@@ -294,7 +294,7 @@
 //     const verifyingToast = toast.loading('Verifying OTP...');
 
 //     try {
-//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/auth/verify-otp', {
+//       const response = await fetch('http://localhost:5000/api/auth/verify-otp', {
 //         method: 'POST',
 //         headers: { 'Content-Type': 'application/json' },
 //         body: JSON.stringify({ email: otpEmail, otp: otp }),
@@ -354,7 +354,7 @@
 //     const resendToast = toast.loading('Resending OTP...');
 
 //     try {
-//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/auth/resend-otp', {
+//       const response = await fetch('http://localhost:5000/api/auth/resend-otp', {
 //         method: 'POST',
 //         headers: { 'Content-Type': 'application/json' },
 //         body: JSON.stringify({ email: otpEmail }),
@@ -392,7 +392,7 @@
 //     setLoginLoading(true);
     
 //     try {
-//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/auth/login', {
+//       const response = await fetch('http://localhost:5000/api/auth/login', {
 //         method: 'POST',
 //         headers: { 'Content-Type': 'application/json' },
 //         body: JSON.stringify({ email: loginEmail, password: loginPassword })
@@ -480,7 +480,7 @@
 //     setIsRegistering(true);
     
 //     try {
-//       const response = await fetch('https://b2b-jute-backend.vercel.app/api/auth/register', {
+//       const response = await fetch('http://localhost:5000/api/auth/register', {
 //         method: 'POST',
 //         headers: { 'Content-Type': 'application/json' },
 //         body: JSON.stringify({
@@ -1382,7 +1382,7 @@ export default function NewsletterPopup({
       const token = localStorage.getItem('token');
       if (!token) return;
       
-      const response = await fetch('https://b2b-jute-backend.vercel.app/api/auth/subscription-status', {
+      const response = await fetch('http://localhost:5000/api/auth/subscription-status', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -1501,7 +1501,7 @@ export default function NewsletterPopup({
     
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('https://b2b-jute-backend.vercel.app/api/auth/subscribe', {
+      const response = await fetch('http://localhost:5000/api/auth/subscribe', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -1546,7 +1546,7 @@ export default function NewsletterPopup({
     const verifyingToast = toast.loading('Verifying OTP...');
 
     try {
-      const response = await fetch('https://b2b-jute-backend.vercel.app/api/auth/verify-otp', {
+      const response = await fetch('http://localhost:5000/api/auth/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: otpEmail, otp: otp }),
@@ -1606,7 +1606,7 @@ export default function NewsletterPopup({
     const resendToast = toast.loading('Resending OTP...');
 
     try {
-      const response = await fetch('https://b2b-jute-backend.vercel.app/api/auth/resend-otp', {
+      const response = await fetch('http://localhost:5000/api/auth/resend-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: otpEmail }),
@@ -1644,7 +1644,7 @@ export default function NewsletterPopup({
     setLoginLoading(true);
     
     try {
-      const response = await fetch('https://b2b-jute-backend.vercel.app/api/auth/login', {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: loginEmail, password: loginPassword })
@@ -1732,7 +1732,7 @@ export default function NewsletterPopup({
     setIsRegistering(true);
     
     try {
-      const response = await fetch('https://b2b-jute-backend.vercel.app/api/auth/register', {
+      const response = await fetch('http://localhost:5000/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

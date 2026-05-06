@@ -96,14 +96,15 @@ const getUnitLabel = (orderUnit) => {
 };
 
 // Format bulk range display
-const formatBulkRange = (range) => {
+// Format bulk range display with dynamic unit label
+const formatBulkRange = (range, unitLabel = 'pcs') => {
   if (!range) return '';
   if (range.includes('-')) {
     const [min, max] = range.split('-');
-    return `${min}+ pcs`;
+    return `${min}+ ${unitLabel}`;
   }
   if (range.includes('+')) {
-    return `${range.replace('+', '')}+ pcs`;
+    return `${range.replace('+', '')}+ ${unitLabel}`;
   }
   return range;
 };
@@ -166,7 +167,7 @@ export default function FeaturedProducts() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('https://b2b-jute-backend.vercel.app/api/products?isFeatured=true&limit=20&sort=-createdAt');
+      const response = await fetch('http://localhost:5000/api/products?isFeatured=true&limit=20&sort=-createdAt');
       const data = await response.json();
       
       if (data.success) {
@@ -601,15 +602,15 @@ export default function FeaturedProducts() {
                             </div>
                           )}
 
-                          {firstTier && (
-                            <div className="flex items-center gap-0.5 px-1 py-0.5 bg-[#F5E6D3]/50 rounded border border-[#E5D5C0]">
-                              <span className="text-[6px] text-[#8B7355]">Bulk:</span>
-                              <span className="text-[7px] font-medium text-[#6B4F3A]">
-                                ${formatPrice(firstTier.price)}/{unitLabel === 'pcs' ? 'pc' : unitLabel}
-                              </span>
-                              <span className="text-[6px] text-[#A8947A]">({bulkRangeDisplay})</span>
-                            </div>
-                          )}
+                         {firstTier && (
+  <div className="flex items-center gap-0.5 px-1 py-0.5 bg-[#F5E6D3]/50 rounded border border-[#E5D5C0]">
+    <span className="text-[6px] text-[#8B7355]">Bulk:</span>
+    <span className="text-[7px] font-medium text-[#6B4F3A]">
+      ${formatPrice(firstTier.price)}/{unitLabel === 'pcs' ? 'pc' : unitLabel}
+    </span>
+    <span className="text-[6px] text-[#A8947A]">({formatBulkRange(firstTier.range, unitLabel === 'pcs' ? 'pc' : unitLabel)})</span>
+  </div>
+)}
                         </div>
 
                         {/* Color Dots - Compact */}

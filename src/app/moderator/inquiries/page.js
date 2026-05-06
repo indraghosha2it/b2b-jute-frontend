@@ -1087,7 +1087,7 @@
 //       }
 
 //       // Build query params
-//       let url = `https://b2b-jute-backend.vercel.app/api/moderator/inquiries?page=${currentPage}&limit=${itemsPerPage}`;
+//       let url = `http://localhost:5000/api/moderator/inquiries?page=${currentPage}&limit=${itemsPerPage}`;
       
 //       if (activeFilter !== 'All') {
 //         url += `&status=${activeFilter.toLowerCase()}`;
@@ -2270,7 +2270,7 @@ export default function ModeratorInquiriesPage() {
         return;
       }
 
-      let url = `https://b2b-jute-backend.vercel.app/api/moderator/inquiries?page=${currentPage}&limit=${itemsPerPage}`;
+      let url = `http://localhost:5000/api/moderator/inquiries?page=${currentPage}&limit=${itemsPerPage}`;
       
       if (activeFilter !== 'All') {
         url += `&status=${activeFilter.toLowerCase()}`;

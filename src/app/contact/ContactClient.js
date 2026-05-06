@@ -83,19 +83,19 @@ export default function AboutPage() {
     },
     {
       name: 'Customer Support',
-      email: 'support@jutecraftify.com',
+      email: 'info@jutecraftify.com',
       phone: '01871-733306',
       icon: <Headphones className="w-5 h-5" />
     },
     {
       name: 'Export & Shipping',
-      email: 'export@jutecraftify.com',
+      email: 'sales@jutecraftify.com',
       phone: '01871-733307',
       icon: <Truck className="w-5 h-5" />
     },
     {
       name: 'Quality Control',
-      email: 'quality@jutecraftify.com',
+      email: 'info@jutecraftify.com',
       phone: '01871-733308',
       icon: <ShieldCheck className="w-5 h-5" />
     }
@@ -216,7 +216,7 @@ const handleChange = (e) => {
   setIsSubmitting(true);
 
   try {
-    const response = await fetch('https://b2b-jute-backend.vercel.app/api/contact', {
+    const response = await fetch('http://localhost:5000/api/contact', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -914,12 +914,7 @@ const handleChange = (e) => {
               })}
             </div>
           </div>
-          <div className="text-center">
-            <div className="inline-flex items-center gap-2 text-gray-500">
-              <Star className="w-4 h-4 fill-gray-300 text-gray-300" />
-              <span className="text-sm font-sans">Not yet rated (0 reviews)</span>
-            </div>
-          </div>
+       
         </div>
       </section>
 

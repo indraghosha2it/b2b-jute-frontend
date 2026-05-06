@@ -620,8 +620,8 @@ export default function ModeratorDashboardPage() {
         return;
       }
 
-      let statsUrl = 'https://b2b-jute-backend.vercel.app/api/moderator/inquiries?limit=10000';
-      let recentUrl = 'https://b2b-jute-backend.vercel.app/api/moderator/inquiries?limit=10';
+      let statsUrl = 'http://localhost:5000/api/moderator/inquiries?limit=10000';
+      let recentUrl = 'http://localhost:5000/api/moderator/inquiries?limit=10';
       
       if (filterType === 'month') {
         statsUrl += `&year=${selectedYear}&month=${selectedMonth + 1}`;
@@ -643,7 +643,7 @@ export default function ModeratorDashboardPage() {
       
       const recentData = await recentResponse.json();
       
-      const productsResponse = await fetch('https://b2b-jute-backend.vercel.app/api/products?limit=1000&includeInactive=true', {
+      const productsResponse = await fetch('http://localhost:5000/api/products?limit=1000&includeInactive=true', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       

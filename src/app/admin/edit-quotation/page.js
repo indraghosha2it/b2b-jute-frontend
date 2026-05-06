@@ -79,7 +79,7 @@
 //   const fetchInquiry = async () => {
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/admin/inquiries/${inquiryId}`, {
+//       const response = await fetch(`http://localhost:5000/api/admin/inquiries/${inquiryId}`, {
 //         headers: {
 //           'Authorization': `Bearer ${token}`
 //         }
@@ -397,7 +397,7 @@
 //   quotedAt: new Date().toISOString()
 // };
       
-//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/admin/inquiries/${inquiryId}/quotation`, {
+//       const response = await fetch(`http://localhost:5000/api/admin/inquiries/${inquiryId}/quotation`, {
 //         method: 'PUT',
 //         headers: {
 //           'Authorization': `Bearer ${token}`,
@@ -912,7 +912,7 @@ export default function EditQuotationPage() {
 const fetchInquiry = async () => {
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch(`https://b2b-jute-backend.vercel.app/api/admin/inquiries/${inquiryId}`, {
+    const response = await fetch(`http://localhost:5000/api/admin/inquiries/${inquiryId}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -1256,7 +1256,7 @@ const handleSubmitQuotation = async () => {
     
     console.log('Submitting quotation with availability flags:', JSON.stringify(quotationData, null, 2));
     
-    const response = await fetch(`https://b2b-jute-backend.vercel.app/api/admin/inquiries/${inquiryId}/quotation`, {
+    const response = await fetch(`http://localhost:5000/api/admin/inquiries/${inquiryId}/quotation`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,

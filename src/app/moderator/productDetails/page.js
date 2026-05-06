@@ -776,7 +776,7 @@
 //     setLoading(true);
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await fetch(`https://b2b-jute-backend.vercel.app/api/products/${productId}`, {
+//       const response = await fetch(`http://localhost:5000/api/products/${productId}`, {
 //         headers: {
 //           'Authorization': `Bearer ${token}`
 //         }
@@ -2121,7 +2121,7 @@ export default function ModeratorProductDetails() {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`https://b2b-jute-backend.vercel.app/api/products/${productId}`, {
+      const response = await fetch(`http://localhost:5000/api/products/${productId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
