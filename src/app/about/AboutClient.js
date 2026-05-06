@@ -352,7 +352,6 @@ const scrollCategories = (direction) => {
         </section>
 
 {/* OUR PRODUCT CATEGORIES */}
-{/* OUR PRODUCT CATEGORIES */}
 <section className="py-16 bg-white">
   <div className="container mx-auto px-4 sm:px-6 lg:px-8">
     <div className="text-center max-w-3xl mx-auto mb-12">
@@ -423,18 +422,31 @@ const scrollCategories = (direction) => {
               href={`/products?category=${category._id}`}
               className="flex-shrink-0 w-28 sm:w-32 md:w-52"
             >
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: Math.min(index * 0.05, 0.5) }}
-                viewport={{ once: true }}
-                className="bg-[#F5E6D3] rounded-xl p-4 text-center hover:bg-[#3bc24f] hover:text-white transition-all duration-300 cursor-pointer group h-32 flex flex-col items-center justify-center"
-              >
-                <Package className="w-8 h-8 mx-auto mb-2 text-[#6B4F3A] group-hover:text-white transition-colors flex-shrink-0" />
-                <p className="font-semibold text-xs sm:text-sm group-hover:text-white font-sans line-clamp-2 text-center px-1">
-                  {category.name}
-                </p>
-              </motion.div>
+             <motion.div
+  initial={{ opacity: 0, y: 20 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  transition={{ delay: Math.min(index * 0.05, 0.5) }}
+  viewport={{ once: true }}
+  className="bg-[#F5E6D3] rounded-xl p-4 text-center hover:bg-[#2f963f] transition-all duration-300 cursor-pointer h-32 flex flex-col items-center justify-center"
+  style={{ transition: 'all 0.3s ease' }}
+  onMouseEnter={(e) => {
+    const icon = e.currentTarget.querySelector('.category-icon');
+    const text = e.currentTarget.querySelector('.category-text');
+    if (icon) icon.style.color = 'white';
+    if (text) text.style.color = 'white';
+  }}
+  onMouseLeave={(e) => {
+    const icon = e.currentTarget.querySelector('.category-icon');
+    const text = e.currentTarget.querySelector('.category-text');
+    if (icon) icon.style.color = '#6B4F3A';
+    if (text) text.style.color = '#6B4F3A';
+  }}
+>
+  <Package className="category-icon w-8 h-8 mx-auto mb-2 text-[#6B4F3A] transition-colors duration-300" />
+  <p className="category-text font-semibold text-xs sm:text-sm text-[#6B4F3A] transition-colors duration-300 font-sans line-clamp-2 text-center px-1">
+    {category.name}
+  </p>
+</motion.div>
             </Link>
           ))}
         </div>
